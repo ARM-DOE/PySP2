@@ -1,9 +1,9 @@
 import xarray as xr
 import struct
 import numpy as np
+import dask.bag as db
 
 from datetime import datetime, timedelta
-
 
 def read_sp2(file_name, debug=False):
     """
@@ -20,6 +20,7 @@ def read_sp2(file_name, debug=False):
     # Get file date from name
     split_file_name = file_name.split("/")
     dt = datetime.strptime(split_file_name[-1][0:8], "%Y%m%d")
+
 
     if len(my_data) > 0:
         bytepos = 0
@@ -45,13 +46,13 @@ def read_sp2(file_name, debug=False):
 
         numRecords = int(len(my_data) / bytes_per_record)
         totalRows = numChannels * numRecords
-        DataWave = np.zeros((totalRows, numCols), dtype='int')
-        Flag = np.zeros(int(totalRows / numChannels), dtype='int')
-        TimeWave = np.zeros(numRecords, dtype='float32')
+        DataWave = np.zeros((totalRows, numCols), dtype='int16')
+        Flag = np.zeros(int(totalRows / numChannels), dtype='int16')
+        TimeWave = np.zeros(numRecords, dtype='float64')
         Res1 = np.zeros(numRecords, dtype='float32')
         EventIndex = np.zeros(numRecords, dtype='float32')
-        TimeDiv10000 = np.zeros(numRecords, dtype='float32')
-        TimeRemainder = np.zeros(numRecords, dtype='float32')
+        TimeDiv10000 = np.zeros(numRecords, dtype='float64')
+        TimeRemainder = np.zeros(numRecords, dtype='float64')
         Res5 = np.zeros(numRecords, dtype='float32')
         Res6 = np.zeros(numRecords, dtype='float32')
         Res7 = np.zeros(numRecords, dtype='float64')
@@ -61,8 +62,8 @@ def read_sp2(file_name, debug=False):
 
         arrayFmt = ">"
         for i in range(data_points_per_record):
-            arrayFmt += "H"
-        print(bytes_per_record)
+            arrayFmt += "h"
+
         for record in range(numRecords):
             dataStartPoint = record * bytes_per_record + 8
             startRow = record * numChannels
@@ -98,7 +99,10 @@ def read_sp2(file_name, debug=False):
                     struck.unpack(spareFmt, my_data[dataStartPoint:dataStartPoint+4*num_spare_cols]))
 
         UTCtime = TimeDiv10000 * 10000 + TimeRemainder
-        UTCdatetime = np.array([dt + timedelta(seconds=float(x)) for x in TimeWave])
+        UTCdatetime = np.array([datetime.fromtimestamp(x) for x in UTCtime])
+        DateTimeWaveUTC = UTCtime
+        DateTimeWave = datetime.timestamp(dt) + TimeWave - datetime.timestamp(datetime(1904, 1, 1))
+
 
         # Make an xarray dataset for SP2
         Flag = xr.DataArray(Flag, dims={'event_index': EventIndex})
@@ -108,9 +112,16 @@ def read_sp2(file_name, debug=False):
         Res7 = xr.DataArray(Res7, dims={'event_index': EventIndex})
         Res8 = xr.DataArray(Res8, dims={'event_index': EventIndex})
         Time = xr.DataArray(UTCdatetime, dims={'event_index': EventIndex})
-
+        EventInd = xr.DataArray(EventIndex, dims={'event_index': EventIndex})
+        DateTimeWaveUTC = xr.DataArray(UTCtime, dims={'event_index': EventIndex})
+        DateTimeWave = xr.DataArray(DateTimeWave, dims={'event_index': EventIndex})
+        TimeWave = xr.DataArray(TimeWave, dims={'event_index': EventIndex})
         my_ds = xr.Dataset({'time': Time, 'Flag': Flag, 'Res1': Res1, 'Res5': Res5,
-                                'Res6': Res6, 'Res7': Res7, 'Res8': Res8})
+                                'Res6': Res6, 'Res7': Res7, 'Res8': Res8, 'EventIndex': EventInd,
+                            'DateTimeWaveUTC': DateTimeWaveUTC, 'TimeWave': TimeWave,
+                            'DateTimeWave': DateTimeWave})
+
+
         for i in range(numChannels):
             temp_array = np.zeros((numRecords, numCols), dtype='int')
             for j in range(numRecords):
