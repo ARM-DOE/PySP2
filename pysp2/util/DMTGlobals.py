@@ -18,4 +18,30 @@ class DMTGlobals(object):
         self.IncanMinPeakRatio = 0.1
         self.IncanMaxPeakRatio = 25
         self.IncanMaxPeakOffset = 11
-
+        # Default values are for Brookhaven SP2, unit  # 24 - 2010-11-17 - RS
+        #  mass(fg) = c0Mass1 + c1Mass1 * PkHt_ch1 + c2Mass1 * PkHt_ch1 ^ 2 + c3Mass1 * PkHt_ch1 ^ 3 - High - gain
+        self.c0Mass1 = -0.143
+        self.c1Mass1 = 2.801e-4
+        self.c2Mass1 = 0
+        self.c3Mass1 = 0
+        #mass(fg) = c0Mass2 + c1Mass2 * PkHt_ch5 + c2Mass2 * PkHt_ch5 ^ 2 - Low - gain
+        self.c0Mass2 = -0.566
+        self.c1Mass2 = 2.829e-3
+        self.c2Mass2 = 3.109e-8
+        self.c3Mass2 = 0
+        #    // Scattering(1e18
+        #    cm2) = c0Scat1 + c1Scat1 * PkHt_ch0 + c2Scat1 * PkHt_ch0 ^ 2 - High - gain
+        #    scattering
+        #    Variable / g
+        self.c0Scat1 = 0
+        self.c1Scat1 = 107.38
+        self.c2Scat1 = 0
+        #    // Scattering(1e18
+        #    cm2) = c0Scat2 + c1Scat2 * PkHt_ch4 + c2Scat2 * PkHt_ch4 ^ 2 - Low - gain
+        self.c0Scat2 = 0
+        self.c1Scat2 = 1003.1
+        self.c2Scat2 = 0
+        self.densitySO4 = 1.8
+        self.densityBC = 1.8
+        self.TempSTP = 273.15
+        self.PressSTP = 1013.25

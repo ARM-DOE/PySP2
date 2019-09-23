@@ -2,7 +2,12 @@
 Python module for reading housekeeping files
 """
 
-import pandas as pd
+import xarray as xr
+import act
+import datetime
+import os
+import numpy as np
+
 from glob import glob
 
 def read_hk_file(file_name):
@@ -21,8 +26,26 @@ def read_hk_file(file_name):
         The housekeeping information in a pandas DataFrame
     """
 
-    my_df = pd.read_csv(file_name, delimiter="\t")
-    my_df = my_df.set_index('Time (sec)')
+    my_df = act.io.csvfiles.read_csv(file_name, sep="\t")
+    # Parse time from filename
+    the_file = os.path.split(file_name)[1]
+    start_time = datetime.datetime.strptime(the_file.split(".")[0], '%Y%m%d%H%M%S'
+                                            )
+    my_df = my_df.set_index({'index': 'Time (sec)'})
+    my_df = my_df.rename({'index': 'time'})
+    my_df['time'] = np.array([start_time + datetime.timedelta(seconds=x) for x in my_df['time'].values])
+    my_df['time'].attrs['units'] = "datetime"
+    my_df['time'].attrs['long_name'] = "Time [SP2 time]"
+    for vars in my_df.variables.keys():
+        splits = vars.split("(")
+        try:
+            units = splits[1][:-1]
+            my_df[vars].attrs['units'] = units
+            my_df[vars].attrs['long_name'] = vars
+            my_df = my_df.rename({vars: splits[0][:-1]})
+        except (IndexError, ValueError):
+            continue
+
     return my_df
 
 def get_hk_variable_names(my_df):
@@ -32,7 +55,7 @@ def get_hk_variable_names(my_df):
 
     Parameters
     ----------
-    my_df: pandas DataFrame
+    my_df: ACT Dataset
         The dataframe to get the variable names from
 
     Returns
@@ -40,7 +63,7 @@ def get_hk_variable_names(my_df):
     var_names: list
         The names of each variable in the file.
     """
-    return [my_str for my_str in my_df.keys()]
+    return [my_str for my_str in my_df.variables.keys()]
 
 def read_multi_hk_file(file_path):
     """
@@ -55,7 +78,7 @@ def read_multi_hk_file(file_path):
 
     Returns
     -------
-    my_df: pandas dataframe
+    my_df: ACT dataset
         The pandas DataFrame containing the data loaded.
     """
 
@@ -66,4 +89,4 @@ def read_multi_hk_file(file_path):
         df = read_hk_file(f)
         the_list.append(df)
 
-    return pd.concat(df, axis=0)
+    return xr.concat(df, dim='index')

@@ -131,9 +131,6 @@ def read_sp2(file_name, debug=False):
                 dims={'event_index': EventIndex, 'columns': np.arange(0, 100, 1)})
         del my_data
         del DataWave
-
-
-
         return my_ds
     else:
         return None
