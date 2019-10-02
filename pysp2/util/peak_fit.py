@@ -373,8 +373,11 @@ def _fit_record_gaussian(my_ds, record_number):
     start = np.nan
     error = np.nan
     try:
-        p0 = [data.max()-data.min(), np.argmax(data), np.argmax(data), np.nanmin(data)]
-        coeff, var_matrix = curve_fit(_gaus, bins, data, p0=p0)
+        valid_inds = np.where(data < 32767)
+        data_fit = data[valid_inds]
+        bins_fit = bins[valid_inds]
+        p0 = [data_fit.max()-data_fit.min(), float(np.argmax(data_fit)), 20., np.nanmean(data_fit)]
+        coeff, var_matrix = curve_fit(_gaus, bins_fit, data_fit, p0=p0)
         amplitude = coeff[0]
         peakpos = coeff[1]
         width = coeff[2]*(2.35482/np.sqrt(2))
@@ -469,7 +472,7 @@ def _fit_record_incan_ave_base(my_ds, record_number, channel, num_trig_pts):
     base = np.nanmean(data[0:num_base_pts_2_avg])
     data2 = data + abs(base)
     V_max = data.max()
-    V_maxloc = np.argmax(data)
+    V_maxloc = np.where(data == V_max)[0][0]
     try:
         peak2area = np.max(data2)/np.sum(data2[20:81])
     except ZeroDivisionError:
@@ -477,12 +480,12 @@ def _fit_record_incan_ave_base(my_ds, record_number, channel, num_trig_pts):
 
     if channel in [1, 5]:
         upperbound = 100000.
-        # Original code had 0.063, but this seems to be too strict
         lowerbound = 0.063
     else:
         upperbound = 1000000.
         lowerbound = -1000000.
 
+    #if(len(V_maxloc) > 1):
 
     if((V_max - base) > 1 and V_maxloc > 0 and V_maxloc < len(data) and
        peak2area > lowerbound and peak2area < upperbound):
