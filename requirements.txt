@@ -3,3 +3,4 @@ numpy
 scipy
 xarray
 act-atmos
+numba

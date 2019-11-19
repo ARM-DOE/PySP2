@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import glob
 import numpy as np
 
-my_dat_files = sorted(glob.glob('/nfs/gce/projects/digr/SP2Data4ANL/20181110/20181110x*_py.dat'))
+my_dat_files = sorted(glob.glob('/nfs/gce/projects/digr/SP2Data4ANL/pyprocessing/20181110x0*.dat'))
 igor_dat_files = sorted(glob.glob('/nfs/gce/projects/digr/SP2Data4ANL/20181110/20181110x*.dat'))
 igor_dat_files = sorted(list(set(igor_dat_files) - set(my_dat_files)))
 
@@ -11,7 +11,7 @@ python_ds = pd.concat([pd.read_csv(x, sep='\t', skiprows=2) for x in my_dat_file
 igor_ds = pd.concat([pd.read_csv(x, sep='\t', skiprows=2) for x in igor_dat_files])
 
 print(python_ds.columns.values)
-variable = 'FtpAmp'
+variable = 'FtAmp_ch0'
 plt.figure(figsize=(10,10))
 plt.scatter(python_ds[variable], igor_ds[variable])
 minv = python_ds[variable].min()
