@@ -67,5 +67,5 @@ def write_dat(ds, file_name):
     with open(file_name, 'w') as f:
         for line_in_header in sp2_header:
             f.write(line_in_header)
-        pandas_ds.to_csv(f, header=True, columns=index_label,
-                         index_label=index_label, index=False, float_format="%.8g", sep='\t')
+        print(pandas_ds.columns)
+        pandas_ds.to_csv(f, header=True, float_format="%.8g", sep='\t')

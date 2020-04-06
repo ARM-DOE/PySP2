@@ -1,9 +1,10 @@
 import xarray as xr
 import struct
 import numpy as np
+import platform
 import dask.bag as db
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo
 
 def read_sp2(file_name, debug=False):
     """
@@ -18,7 +19,10 @@ def read_sp2(file_name, debug=False):
 
     my_data = open(file_name, "rb").read()
     # Get file date from name
-    split_file_name = file_name.split("/")
+    if platform.system() == "Windows":
+        split_file_name = file_name.split("\\")
+    else:
+        split_file_name = file_name.split("/")
     dt = datetime.strptime(split_file_name[-1][0:8], "%Y%m%d")
 
 
@@ -101,8 +105,8 @@ def read_sp2(file_name, debug=False):
         UTCtime = TimeDiv10000 * 10000 + TimeRemainder
         UTCdatetime = np.array([datetime.fromtimestamp(x) for x in UTCtime])
         DateTimeWaveUTC = UTCtime
-        DateTimeWave = datetime.timestamp(dt) + TimeWave - datetime.timestamp(datetime(1904, 1, 1))
 
+        DateTimeWave = (dt - datetime(1904, 1, 1)).total_seconds() + TimeWave
 
         # Make an xarray dataset for SP2
         Flag = xr.DataArray(Flag, dims={'event_index': EventIndex})

@@ -180,10 +180,10 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
 
     # Channel 0
     i = 0
-    my_ds['FtAmp_ch' + str(i)] = (('event_index'), FtAmp[:,0])
+    my_ds['FtAmp_ch' + str(i)] = (('event_index'), FtAmp[:, 0])
     my_ds['FtAmp_ch' + str(i)].attrs["long_name"] = "Fit Amplitude for channel %d" % i
     my_ds['FtAmp_ch' + str(i)].attrs["_FillValue"] = np.nan
-    my_ds['FtPos_ch' + str(i)] = (('event_index'), FtPos[:,0])
+    my_ds['FtPos_ch' + str(i)] = (('event_index'), FtPos[:, 0])
     my_ds['FtPos_ch' + str(i)].attrs["long_name"] = "Fit Position for channel %d" % i
     my_ds['FtPos_ch' + str(i)].attrs["_FillValue"] = np.nan
     my_ds['Base_ch' + str(i)] = (('event_index'), Base[:, 0])
@@ -255,57 +255,70 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
     scat_reject = np.logical_and.reduce(
         (np.isfinite(my_ds['PkHt_ch0'].values), np.isfinite(my_ds['PkFWHM_ch0'].values),
          np.isfinite(my_ds['PkPos_ch0'].values)))
-    scat_reject = np.logical_and.reduce(
+    scat_reject = ~np.logical_and.reduce(
          (scat_reject, np.isfinite(my_ds['PkHt_ch3'].values), np.isfinite(my_ds['PkSplitPos_ch3'].values)))
     incan_reject = np.logical_and.reduce(
         (np.isfinite(my_ds['PkHt_ch1'].values), np.isfinite(my_ds['PkEnd_ch1'].values),
          np.isfinite(my_ds['PkStart_ch1'].values), np.isfinite(my_ds['PkPos_ch1'].values)))
-    incan_reject = np.logical_and.reduce(
+    incan_reject = ~np.logical_and.reduce(
         (incan_reject, np.isfinite(my_ds['PkHt_ch2'].values), np.isfinite(my_ds['PkEnd_ch2'].values),
          np.isfinite(my_ds['PkStart_ch2'].values), np.isfinite(my_ds['PkPos_ch2'].values)))
 
-    scat_reject_key = np.where(~scat_reject, 1, 0)
-    incan_reject_key = np.where(~incan_reject, 1, 0)
+    scat_reject_key = np.where(scat_reject, 1, 0)
+    incan_reject_key = np.where(incan_reject, 1, 0)
     DMTglobals = DMTGlobals()
     # Then we apply criteria to max.min peak heights
-    scat_reject_reason2 = np.logical_and.reduce((~scat_reject, my_ds['PkHt_ch0'].values < DMTglobals.ScatMinPeakHt,
-                                                 my_ds['PkHt_ch3'].values < DMTglobals.ScatMinPeakHt))
-    scat_reject_reason3 = np.logical_and.reduce((~scat_reject_reason2, my_ds['PkHt_ch0'].values > DMTglobals.ScatMaxPeakHt,
-                                                 my_ds['PkHt_ch3'].values > DMTglobals.ScatMaxPeakHt))
-    scat_reject_reason4 = np.logical_and.reduce((~scat_reject_reason3, my_ds['PkFWHM_ch0'].values < DMTglobals.ScatMinWidth,
-                                                 ))
-    scat_reject_reason5 = np.logical_and.reduce((~scat_reject_reason4, my_ds['PkFWHM_ch0'].values < DMTglobals.ScatMaxWidth,
-                                                 ))
-    scat_reject_reason6 = np.logical_and.reduce((~scat_reject_reason5, my_ds['PkPos_ch0'].values < DMTglobals.ScatMinPeakPos,
-                                                 my_ds['PkPos_ch3'].values < DMTglobals.ScatMinPeakPos))
-    scat_reject_reason7 = np.logical_and.reduce((~scat_reject_reason6, my_ds['PkPos_ch0'].values < DMTglobals.ScatMaxPeakPos,
-                                                 my_ds['PkPos_ch3'].values > DMTglobals.ScatMaxPeakPos))
+    scat_reject_reason2 = np.logical_and.reduce((~scat_reject, my_ds['PkHt_ch0'].values < DMTglobals.ScatMinPeakHt))
+    prev_scat_reject = np.logical_or(scat_reject, scat_reject_reason2)
+    scat_reject_reason3 = np.logical_and.reduce((~prev_scat_reject, np.logical_or(my_ds['PkHt_ch0'].values > DMTglobals.ScatMaxPeakHt,
+                                                 my_ds['PkHt_ch3'].values > DMTglobals.ScatMaxPeakHt)))
+    prev_scat_reject = np.logical_or(prev_scat_reject, scat_reject_reason3)
+    scat_reject_reason4 = np.logical_and(~prev_scat_reject, my_ds['PkFWHM_ch0'].values < DMTglobals.ScatMinWidth)
+    prev_scat_reject = np.logical_or(prev_scat_reject, scat_reject_reason4)
+    scat_reject_reason5 = np.logical_and(~prev_scat_reject, my_ds['PkFWHM_ch0'].values > DMTglobals.ScatMaxWidth)
+    prev_scat_reject = np.logical_or(prev_scat_reject, scat_reject_reason5)
+    scat_reject_reason6 = np.logical_and.reduce((~prev_scat_reject,
+                                                 np.logical_or(my_ds['PkPos_ch0'].values < DMTglobals.ScatMinPeakPos,
+                                                 my_ds['PkPos_ch3'].values < DMTglobals.ScatMinPeakPos)))
+    prev_scat_reject = np.logical_or(prev_scat_reject, scat_reject_reason6)
+    scat_reject_reason7 = np.logical_and.reduce((~prev_scat_reject,
+                                                 np.logical_or(my_ds['PkPos_ch0'].values > DMTglobals.ScatMaxPeakPos,
+                                                 my_ds['PkPos_ch3'].values > DMTglobals.ScatMaxPeakPos)))
 
-    incan_reject_reason2 = np.logical_and.reduce((~incan_reject, my_ds['PkHt_ch1'].values < DMTglobals.IncanMinPeakHt,
-                                                 my_ds['PkHt_ch2'].values < DMTglobals.IncanMinPeakHt))
-    incan_reject_reason3 = np.logical_and.reduce((~incan_reject_reason2, my_ds['PkHt_ch1'].values > DMTglobals.IncanMaxPeakHt,
-                                                 my_ds['PkHt_ch2'].values > DMTglobals.IncanMaxPeakHt))
+    incan_reject_reason2 = np.logical_and.reduce((~incan_reject, np.logical_or(my_ds['PkHt_ch1'].values < DMTglobals.IncanMinPeakHt,
+                                                 my_ds['PkHt_ch2'].values > DMTglobals.IncanMinPeakHt)))
+    prev_incan_reject = np.logical_or(incan_reject, incan_reject_reason2)
+    incan_reject_reason3 = np.logical_and.reduce((~prev_incan_reject, np.logical_or(my_ds['PkHt_ch1'].values > DMTglobals.IncanMaxPeakHt,
+                                                 my_ds['PkHt_ch2'].values > DMTglobals.IncanMaxPeakHt)))
     width1 = my_ds['PkEnd_ch1'].values-my_ds['PkStart_ch1'].values
     width2 = my_ds['PkEnd_ch2'].values-my_ds['PkStart_ch2'].values
-    incan_reject_reason4 = np.logical_and.reduce((~incan_reject_reason3, width1 < DMTglobals.IncanMinWidth,
-                                                 width2 < DMTglobals.IncanMinWidth))
-    incan_reject_reason5 = np.logical_and.reduce((~incan_reject_reason4, width1 < DMTglobals.IncanMaxWidth,
-                                                 width2  > DMTglobals.IncanMaxWidth))
+    prev_incan_reject = np.logical_or(prev_incan_reject, incan_reject_reason3)
+    incan_reject_reason4 = np.logical_and.reduce((~prev_incan_reject, np.logical_or(width1 < DMTglobals.IncanMinWidth,
+                                                 width2 < DMTglobals.IncanMinWidth)))
+    prev_incan_reject = np.logical_or(prev_incan_reject, incan_reject_reason4)
+    incan_reject_reason5 = np.logical_and.reduce((~prev_incan_reject, np.logical_or(width1 > DMTglobals.IncanMaxWidth,
+                                                 width2 > DMTglobals.IncanMaxWidth)))
+    prev_incan_reject = np.logical_or(prev_incan_reject, incan_reject_reason5)
     incan_reject_reason6 = np.logical_and.reduce(
-        (~incan_reject_reason5, my_ds['PkPos_ch1'].values < DMTglobals.IncanMinPeakPos,
-         my_ds['PkPos_ch2'].values < DMTglobals.IncanMinPeakPos))
+        (~prev_incan_reject, np.logical_or(my_ds['PkPos_ch1'].values < DMTglobals.IncanMinPeakPos,
+         my_ds['PkPos_ch2'].values < DMTglobals.IncanMinPeakPos)))
+    prev_incan_reject = np.logical_or(prev_incan_reject, incan_reject_reason6)
     incan_reject_reason7 = np.logical_and.reduce(
-        (~incan_reject_reason6, my_ds['PkPos_ch1'].values < DMTglobals.IncanMaxPeakPos,
-         my_ds['PkPos_ch2'].values > DMTglobals.IncanMaxPeakPos))
+        (~prev_incan_reject, np.logical_or(my_ds['PkPos_ch1'].values > DMTglobals.IncanMaxPeakPos,
+         my_ds['PkPos_ch2'].values > DMTglobals.IncanMaxPeakPos)))
+    prev_incan_reject = np.logical_or(prev_incan_reject, incan_reject_reason7)
     incan_reject_reason8 = np.logical_and.reduce(
-        (~incan_reject_reason7, my_ds['IncanRatioch1ch2'].values < DMTglobals.IncanMinPeakRatio,
-         my_ds['IncanRatioch5ch6'].values > DMTglobals.IncanMinPeakRatio))
+        (~prev_incan_reject, np.logical_or(my_ds['IncanRatioch1ch2'].values < DMTglobals.IncanMinPeakRatio,
+         my_ds['IncanRatioch5ch6'].values < DMTglobals.IncanMinPeakRatio)))
+    prev_incan_reject = np.logical_or(prev_incan_reject, incan_reject_reason8)
     incan_reject_reason9 = np.logical_and.reduce(
-        (~incan_reject_reason8, my_ds['IncanRatioch1ch2'].values > DMTglobals.IncanMaxPeakRatio,
-         my_ds['IncanRatioch5ch6'].values > DMTglobals.IncanMaxPeakRatio))
+        (~prev_incan_reject, np.logical_or(my_ds['IncanRatioch1ch2'].values > DMTglobals.IncanMaxPeakRatio,
+         my_ds['IncanRatioch5ch6'].values > DMTglobals.IncanMaxPeakRatio)))
+    prev_incan_reject = np.logical_or(prev_incan_reject, incan_reject_reason9)
     incan_reject_reason10 = np.logical_and.reduce(
-        (~incan_reject_reason9, my_ds['IncanPkOffsetch1ch2'].values > DMTglobals.IncanMaxPeakOffset,
-         my_ds['IncanPkOffsetch5ch6'].values > DMTglobals.IncanMaxPeakOffset))
+        (~prev_incan_reject, np.logical_or(my_ds['IncanPkOffsetch1ch2'].values > DMTglobals.IncanMaxPeakOffset,
+         my_ds['IncanPkOffsetch5ch6'].values > DMTglobals.IncanMaxPeakOffset)))
+    prev_incan_reject = np.logical_or(prev_incan_reject, incan_reject_reason10)
 
     scat_reject_key[scat_reject_reason2] = 2
     scat_reject_key[scat_reject_reason3] = 3
@@ -335,7 +348,7 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
 
 @jit(nopython=True)
 def _gaus(x, a, x0, sigma, base):
-    return a * np.exp(-((x - x0)/sigma)**2) + base
+    return a * np.exp(-((x - x0)**2/(2 * sigma**2))) + base
 
 def _fit_record_gaussian(my_ds, record_number):
     """ Only used for channel 0."""
@@ -348,19 +361,20 @@ def _fit_record_gaussian(my_ds, record_number):
     start = np.nan
     error = np.nan
     try:
-        valid_inds = np.where(data < 32767)
-        data_fit = data[valid_inds]
-        bins_fit = bins[valid_inds]
-        p0 = [data_fit.max()-data_fit.min(), float(np.argmax(data_fit)), 20., np.nanmean(data_fit)]
-        coeff, var_matrix = curve_fit(_gaus, bins_fit, data_fit, p0=p0, ftol=0.01, xtol=0.01)
+        #valid_inds = np.where(data < 327)
+        data_fit = data
+        bins_fit = bins
+        p0 = np.array([data_fit.max()-data_fit.min(), np.argmax(data_fit), 20., np.nanmin(data_fit)]).astype(float)
+
+        coeff, var_matrix = curve_fit(_gaus, bins_fit, data_fit, p0=p0, method='lm', maxfev=40, ftol=1e-3)
         amplitude = coeff[0]
         peakpos = coeff[1]
-        width = coeff[2]*(2.35482/np.sqrt(2))
+        width = coeff[2]*(2.35482)
         base = coeff[3]
         fit_data = _gaus(np.array(bins, dtype=np.float64), *coeff)
         chi2 = chisquare(np.array(data, dtype='float64'), f_exp=np.array(fit_data, dtype='float64'))
         if not (amplitude > 1 and peakpos > 0 and
-                peakpos < len(data) and width < len(data) and width < amplitude):
+                peakpos < len(data) and width < len(data) and width < amplitude and width > 0):
             amplitude = np.nan
             width = np.nan
             peakpos = np.nan
@@ -384,7 +398,7 @@ def _fit_record_gaussian(my_ds, record_number):
 
     if np.isfinite(base):
         try:
-            height = data.max() - base
+            height = data_fit.max() - base
             pos = np.argmax(data)
         except ValueError:
             height = np.nan
@@ -398,7 +412,6 @@ def _fit_record_gaussian(my_ds, record_number):
                 start = start[start <= pos][-1]
         except IndexError:
             start = np.nan
-
 
         # Filter out bad points
         bad = ~np.logical_and.reduce(
@@ -527,25 +540,29 @@ def _gaussian_sat_fit(my_ds, record_number):
         temp1 = data.astype(float)
         temp1[temp1 == data.max()] = np.nan
         clipped_wave = True
+    else:
+        temp1 = data.astype(float)
+        clipped_wave = False
 
     bins = np.arange(0, 100, 1.)
     try:
-        p0 = [data.max()-data.min(), np.argmax(data), np.argmax(data), np.nanmin(data)]
-        coeff, var_matrix = curve_fit(_gaus, bins, data, p0=p0, ftol=0.01, xtol=0.01)
+        bins_fit = bins[np.isfinite(temp1)]
+        temp1_fit = temp1[np.isfinite(temp1)]
+        p0 = np.array([data.max()-data.min(), 50., np.argmax(data), np.nanmin(data)]).astype(float)
+        coeff, var_matrix = curve_fit(_gaus, bins_fit, temp1_fit, p0=p0, method='lm', maxfev=40, ftol=1e-3)
         if clipped_wave:
             p0[1] = coeff[1]
             bins_fit = bins[np.isfinite(temp1)]
             temp1_fit = temp1[np.isfinite(temp1)]
-
-            coeff, var_matrix = curve_fit(_gaus, bins_fit, temp1_fit, p0=p0, ftol=0.01, xtol=0.01)
+            coeff, var_matrix = curve_fit(_gaus, bins_fit, temp1_fit, p0=p0, method='lm', maxfev=40, ftol=1e-3)
 
         fit_data = _gaus(bins, *coeff)
         chi2 = chisquare(np.array(data, dtype='float64'), f_exp=np.array(fit_data, dtype='float64'))
         fitamplitude = coeff[0]
         fitpos = coeff[1]
-        width = coeff[2]*(2.35482/np.sqrt(2))
+        width = coeff[2]*(2.35482)
         base = coeff[3]
-        if not (fitamplitude > 1 and fitpos > 0 and width < len(data) and width < fitamplitude):
+        if not (fitamplitude > 1 and fitpos > 0 and width < len(data) and width < fitamplitude and width > 0):
             fitamplitude = np.nan
             fitpos = np.nan
             width = np.nan
