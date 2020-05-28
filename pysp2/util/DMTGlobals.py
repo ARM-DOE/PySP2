@@ -3,14 +3,18 @@ import numpy as np
 
 class DMTGlobals(object):
     def __init__(self):
-        self.ScatMaxPeakHt = 60000
-        self.ScatMinPeakHt = 2500
+        self.ScatMaxPeakHt1 = 60000
+        self.ScatMinPeakHt1 = 2500
+        self.ScatMaxPeakHt2 = 65535
+        self.ScatMinPeakHt2 = 250
         self.ScatMinWidth = 10
         self.ScatMaxWidth = 90
         self.ScatMinPeakPos = 20
         self.ScatMaxPeakPos = 90
-        self.IncanMinPeakHt = 20
-        self.IncanMaxPeakHt = 60000
+        self.IncanMinPeakHt1 = 200
+        self.IncanMinPeakHt2 = 2000
+        self.IncanMaxPeakHt1 = 60000
+        self.IncanMaxPeakHt2 = 62750
         self.IncanMinWidth = 5
         self.IncanMaxWidth = np.inf
         self.IncanMinPeakPos = 20

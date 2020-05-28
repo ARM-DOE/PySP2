@@ -66,7 +66,7 @@ def _calc_incan_ratio(my_ds, ch1, ch2):
     Base_ch2_tile = np.tile(Base_ch2, (data_ch1.shape[1], 1)).T
     finite_mask = np.logical_and(np.isfinite(PeakPos_ch1_tile), halfDecay_ch1_tile)
     counting_up = np.tile(np.arange(data_ch1.shape[1]), (data_ch1.shape[0], 1))
-    range_mask = np.logical_and(counting_up >= PeakPos_ch1_tile, counting_up < halfDecay_ch1_tile+1)
+    range_mask = np.logical_and(counting_up >= PeakPos_ch1_tile, counting_up <= halfDecay_ch1_tile)
     data_ch2 = np.where(np.logical_and(finite_mask, range_mask), data_ch2, np.nan)
     data_ch1 = np.where(np.logical_and(finite_mask, range_mask), data_ch1, np.nan)
     ratio = np.nanmean((data_ch1 - Base_ch1_tile)/(data_ch2 - Base_ch2_tile), axis=1)
@@ -252,26 +252,27 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
     my_ds['IncanRatioch5ch6'].attrs["_FillValue"] = np.nan
 
     # First do initial filter step
-    scat_reject = np.logical_and.reduce(
-        (np.isfinite(my_ds['PkHt_ch0'].values), np.isfinite(my_ds['PkFWHM_ch0'].values),
-         np.isfinite(my_ds['PkPos_ch0'].values)))
-    scat_reject = ~np.logical_and.reduce(
-         (scat_reject, np.isfinite(my_ds['PkHt_ch3'].values), np.isfinite(my_ds['PkSplitPos_ch3'].values)))
-    incan_reject = np.logical_and.reduce(
-        (np.isfinite(my_ds['PkHt_ch1'].values), np.isfinite(my_ds['PkEnd_ch1'].values),
-         np.isfinite(my_ds['PkStart_ch1'].values), np.isfinite(my_ds['PkPos_ch1'].values)))
-    incan_reject = ~np.logical_and.reduce(
-        (incan_reject, np.isfinite(my_ds['PkHt_ch2'].values), np.isfinite(my_ds['PkEnd_ch2'].values),
-         np.isfinite(my_ds['PkStart_ch2'].values), np.isfinite(my_ds['PkPos_ch2'].values)))
+    scat_reject = np.logical_or.reduce(
+        (~np.isfinite(my_ds['PkHt_ch0'].values), ~np.isfinite(my_ds['PkFWHM_ch0'].values),
+         ~np.isfinite(my_ds['PkPos_ch0'].values)))
+    scat_reject = np.logical_or.reduce(
+         (scat_reject, ~np.isfinite(my_ds['PkHt_ch3'].values), ~np.isfinite(my_ds['PkSplitPos_ch3'].values)))
+    incan_reject = np.logical_or.reduce(
+        (~np.isfinite(my_ds['PkHt_ch1'].values), ~np.isfinite(my_ds['PkEnd_ch1'].values),
+         ~np.isfinite(my_ds['PkStart_ch1'].values), ~np.isfinite(my_ds['PkPos_ch1'].values, ~np.isfinite(my_ds['IncanRatioch1ch2'].values))))
+    incan_reject = np.logical_or.reduce(
+        (incan_reject, ~np.isfinite(my_ds['PkHt_ch2'].values), ~np.isfinite(my_ds['PkEnd_ch2'].values),
+         ~np.isfinite(my_ds['PkStart_ch2'].values), ~np.isfinite(my_ds['PkPos_ch2'].values)))
 
     scat_reject_key = np.where(scat_reject, 1, 0)
     incan_reject_key = np.where(incan_reject, 1, 0)
     DMTglobals = DMTGlobals()
     # Then we apply criteria to max.min peak heights
-    scat_reject_reason2 = np.logical_and.reduce((~scat_reject, my_ds['PkHt_ch0'].values < DMTglobals.ScatMinPeakHt))
+    scat_reject_reason2 = np.logical_and.reduce((~scat_reject, my_ds['PkHt_ch0'].values < DMTglobals.ScatMinPeakHt1
+                                                 , my_ds['PkHt_ch3'].values < DMTglobals.ScatMinPeakHt2))
     prev_scat_reject = np.logical_or(scat_reject, scat_reject_reason2)
-    scat_reject_reason3 = np.logical_and.reduce((~prev_scat_reject, np.logical_or(my_ds['PkHt_ch0'].values > DMTglobals.ScatMaxPeakHt,
-                                                 my_ds['PkHt_ch3'].values > DMTglobals.ScatMaxPeakHt)))
+    scat_reject_reason3 = np.logical_and.reduce((~prev_scat_reject, np.logical_or(my_ds['PkHt_ch0'].values > DMTglobals.ScatMaxPeakHt1,
+                                                 my_ds['PkHt_ch3'].values > DMTglobals.ScatMaxPeakHt2)))
     prev_scat_reject = np.logical_or(prev_scat_reject, scat_reject_reason3)
     scat_reject_reason4 = np.logical_and(~prev_scat_reject, my_ds['PkFWHM_ch0'].values < DMTglobals.ScatMinWidth)
     prev_scat_reject = np.logical_or(prev_scat_reject, scat_reject_reason4)
@@ -285,11 +286,11 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
                                                  np.logical_or(my_ds['PkPos_ch0'].values > DMTglobals.ScatMaxPeakPos,
                                                  my_ds['PkPos_ch3'].values > DMTglobals.ScatMaxPeakPos)))
 
-    incan_reject_reason2 = np.logical_and.reduce((~incan_reject, np.logical_or(my_ds['PkHt_ch1'].values < DMTglobals.IncanMinPeakHt,
-                                                 my_ds['PkHt_ch2'].values > DMTglobals.IncanMinPeakHt)))
+    incan_reject_reason2 = np.logical_and.reduce((~incan_reject, np.logical_or(my_ds['PkHt_ch1'].values < DMTglobals.IncanMinPeakHt1,
+                                                 my_ds['PkHt_ch2'].values < DMTglobals.IncanMinPeakHt2)))
     prev_incan_reject = np.logical_or(incan_reject, incan_reject_reason2)
-    incan_reject_reason3 = np.logical_and.reduce((~prev_incan_reject, np.logical_or(my_ds['PkHt_ch1'].values > DMTglobals.IncanMaxPeakHt,
-                                                 my_ds['PkHt_ch2'].values > DMTglobals.IncanMaxPeakHt)))
+    incan_reject_reason3 = np.logical_and.reduce((~prev_incan_reject, np.logical_or(my_ds['PkHt_ch1'].values > DMTglobals.IncanMaxPeakHt1,
+                                                 my_ds['PkHt_ch2'].values > DMTglobals.IncanMaxPeakHt2)))
     width1 = my_ds['PkEnd_ch1'].values-my_ds['PkStart_ch1'].values
     width2 = my_ds['PkEnd_ch2'].values-my_ds['PkStart_ch2'].values
     prev_incan_reject = np.logical_or(prev_incan_reject, incan_reject_reason3)
@@ -438,7 +439,7 @@ def _fit_record_gaussian(my_ds, record_number):
 def _fit_record_incan_ave_base(my_ds, channel, num_trig_pts):
     """ Channels 1, 2, 6, 7"""
     num_base_pts_2_avg_backup = 20
-    num_pts = len(my_ds['Data_ch' + str(channel)].values)
+    num_pts = my_ds['Data_ch' + str(channel)].values.shape[1]
     if num_trig_pts != -1:
         num_base_pts_2_avg = round(0.8*num_trig_pts)
         if((not np.isfinite(num_base_pts_2_avg)) or
@@ -448,27 +449,28 @@ def _fit_record_incan_ave_base(my_ds, channel, num_trig_pts):
     else:
         num_base_pts_2_avg = num_base_pts_2_avg_backup
 
-
-    data = my_ds['Data_ch' + str(channel)].values
-    base = np.nanmean(data[:, 0:num_base_pts_2_avg], axis=1)
+    data = my_ds['Data_ch' + str(channel)].values.astype(int)
+    base = np.mean(data[:, 0:num_base_pts_2_avg], axis=1)
     data2 = data + abs(np.tile(base, (data.shape[1], 1))).T
     V_max = data.max(axis=1)
     V_maxloc = np.argmax(data, axis=1)
     denominator = np.sum(data2[:, 20:81], axis=1)
-    peak2area = np.where(denominator > 0, np.max(data2, axis=1)/denominator, np.nan)
+    peak2area = np.max(data2, axis=1)/denominator
 
     if channel in [1, 5]:
         upperbound = 100000.
-        lowerbound = 0.063
+        lowerbound = -100000.
     else:
         upperbound = 1000000.
         lowerbound = -1000000.
 
     conditions = np.logical_and.reduce(
         (V_max - base > 1, V_maxloc > 0, V_maxloc < data.shape[1], peak2area > lowerbound, peak2area < upperbound))
-
+    #conditions = np.logical_and.reduce(
+    #    (V_max - base > 1, V_maxloc > 0, V_maxloc < data.shape[1]))
     height = np.where(conditions, V_max - base, np.nan)
     pos = np.where(conditions, V_maxloc, np.nan)
+    base = np.where(conditions, base, np.nan)
 
     diffs = data - np.tile(base, (data.shape[1], 1)).T
     pos_tile = np.tile(pos, (data.shape[1], 1)).T
@@ -486,6 +488,10 @@ def _fit_record_incan_ave_base(my_ds, channel, num_trig_pts):
     end_numbers = np.where(np.logical_and(diffs <= 0.5*height_tile, counting_up >= pos_tile), counting_up, 9999)
     half_decay = end_numbers.min(axis=1).astype(float)
     half_decay[half_decay == 9999] = np.nan
+    start = np.where(conditions, start, np.nan)
+    end = np.where(conditions, end, np.nan)
+    half_rise = np.where(conditions, half_rise, np.nan)
+    half_decay = np.where(conditions, half_decay, np.nan)
 
     fit_coeffs = {'base': base, 'height': height, 'pos': pos, 'start': start,
                   'end': end, 'half_rise': half_rise, 'half_decay': half_decay,
@@ -504,7 +510,7 @@ def _split_scatter_fit(my_ds, channel):
     data[V_maxloc < V_minloc, :] = -data[V_maxloc < V_minloc, :]
     base = np.nanmean(data[:, 0:num_base_pts_2_avg], axis=1)
     V_max = data.max(axis=1)
-    conditions = np.logical_and((V_max - base) > 1, V_maxloc < len(data))
+    conditions = np.logical_and.reduce(((V_max - base) > 1, V_maxloc < len(data), V_maxloc > 0))
     height = np.where(conditions, V_max - base, np.nan)
     pos = np.where(conditions, np.argmax(data, axis=1), np.nan)
     start = np.zeros_like(height)
@@ -536,7 +542,7 @@ def _gaussian_sat_fit(my_ds, record_number):
     global_vars = DMTGlobals()
     data = my_ds['Data_ch' + str(channel)].values[record_number]
 
-    if data.max() - data.min() >= global_vars.ScatMaxPeakHt:
+    if data.max() - data.min() >= global_vars.ScatMaxPeakHt1:
         temp1 = data.astype(float)
         temp1[temp1 == data.max()] = np.nan
         clipped_wave = True
