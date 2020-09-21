@@ -5,13 +5,13 @@ plt.rcParams.update({'font.size': 14})
 
 calibration_path = 'C:\\Users\\rjackson\\Documents\\SP2Data4ANL\\AquaDag_PSL_cal\\pyprocessing\\'
 my_cal_data = pysp2.io.read_calibration(calibration_path)
-calibration_path_igor = 'C:\\Users\\rjackson\\Documents\\SP2Data4ANL\\AquaDag_PSL_cal\\PAPI_Generated_Numbers\\'
-my_cal_data_igor = pysp2.io.read_calibration(calibration_path_igor)
+#calibration_path_igor = 'C:\\Users\\rjackson\\Documents\\SP2Data4ANL\\AquaDag_PSL_cal\\PAPI_Generated_Numbers\\'
+#my_cal_data_igor = pysp2.io.read_calibration(calibration_path_igor)
 print(my_cal_data.keys())
 
 
-scat_350 = my_cal_data['scat_350'] # .where(my_cal_data['scat_350'].ScatRejectKey == 0)
-scat_350_igor = my_cal_data_igor['scat_350'] # .where(my_cal_data_igor['scat_350'].ScatRejectKey == 0)
+scat_350 = my_cal_data['scat_220'] # .where(my_cal_data['scat_350'].ScatRejectKey == 0)
+scat_350_igor = my_cal_data_igor['scat_220'] # .where(my_cal_data_igor['scat_350'].ScatRejectKey == 0)
 
 print(scat_350)
 fig, ax = plt.subplots(1, 1, figsize=(4, 4))
