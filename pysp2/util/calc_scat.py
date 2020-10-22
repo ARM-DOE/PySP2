@@ -97,5 +97,6 @@ def calc_mass_aquadag(diam):
     mass: float
         Mass in femtograms.
     """
-    c = [-0.096, 0.00422, -4.82e-5, 6.26e-7, -5.65e-10, -1.99e-13, 3.80e-16]
-    return np.polyval(c, diams)
+    c = np.array([3.80e-16, -1.99e-13, -5.65e-10, 6.26e-7, -4.82e-5, 0.00422, -0.096])
+
+    return np.polyval(c, diam)

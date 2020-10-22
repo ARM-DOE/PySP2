@@ -15,10 +15,9 @@ def _gaus(x, a, x0, sigma, base):
     return a * np.exp(-((x - x0)**2/(2 * sigma**2))) + base
 
 if __name__ == "__main__":
-    calibration_path = 'C:\\Users\\rjackson\\Documents\\SP2Data4ANL\\AquaDag_PSL_cal\\pyprocessing\\'
+    calibration_path = '/nfs/gce/projects/digr/SP2Data4ANL/AquaDag_PSL_cal/Py_generated_numbers/'
     my_cal_data = pysp2.io.read_calibration(calibration_path)
     print(my_cal_data.keys())
-
 
     def bkapp(doc):
         def fitButtonCallback(new):
