@@ -60,12 +60,15 @@ def write_dat(ds, file_name):
     pandas_ds["GaussChiSq_ch4"] = pandas_ds["GaussChiSq_ch4"].map(lambda x: "%.16g" % x)
     pandas_ds["GaussChiSq_ch0"] = pandas_ds["GaussChiSq_ch0"].replace('nan', '')
     pandas_ds["GaussChiSq_ch4"] = pandas_ds["GaussChiSq_ch4"].replace('nan', '')
+    pandas_ds["GaussErrorCode_ch0"] = pandas_ds["GaussChiSq_ch0"].map(lambda x: x*0)
+    pandas_ds["GaussErrorCode_ch4"] = pandas_ds["GaussChiSq_ch4"].map(lambda x: x*0)
     pandas_ds["IncanRatioch1ch2"] = pandas_ds["IncanRatioch1ch2"].map(lambda x: "%.16g" % x)
     pandas_ds["IncanRatioch5ch6"] = pandas_ds["IncanRatioch5ch6"].map(lambda x: "%.16g" % x)
     pandas_ds["IncanRatioch1ch2"] = pandas_ds["IncanRatioch1ch2"].replace('nan', '')
     pandas_ds["IncanRatioch5ch6"] = pandas_ds["IncanRatioch5ch6"].replace('nan', '')
-    with open(file_name, 'w') as f:
+    with open(file_name, 'w', newline='\n') as f:
         for line_in_header in sp2_header:
             f.write(line_in_header)
-        pandas_ds.to_csv(f, header=True, columns=index_label,
-                         index_label=index_label, index=False, float_format="%.8g", sep='\t')
+        pandas_ds = pandas_ds[index_label]
+        #print(pandas_ds)
+        pandas_ds.to_csv(f, header=True, index=False, float_format="%.8g", sep='\t', encoding='utf-8')
