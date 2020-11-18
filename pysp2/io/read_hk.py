@@ -29,8 +29,7 @@ def read_hk_file(file_name):
     my_df = act.io.csvfiles.read_csv(file_name, sep="\t")
     # Parse time from filename
     the_file = os.path.split(file_name)[1]
-    start_time = datetime.datetime.strptime(the_file.split(".")[0], '%Y%m%d%H%M%S'
-                                            )
+    start_time = datetime.datetime(1904, 1, 1)
     my_df = my_df.set_index({'index': 'Time (sec)'})
     my_df = my_df.rename({'index': 'time'})
     my_df['time'] = np.array([start_time + datetime.timedelta(seconds=x) for x in my_df['time'].values])

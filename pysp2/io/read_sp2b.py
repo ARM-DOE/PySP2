@@ -25,7 +25,6 @@ def read_sp2(file_name, debug=False):
         split_file_name = file_name.split("/")
     dt = datetime.strptime(split_file_name[-1][0:8], "%Y%m%d")
 
-
     if len(my_data) > 0:
         bytepos = 0
         numCols = struct.unpack(">I", my_data[bytepos:bytepos + 4])[0]
