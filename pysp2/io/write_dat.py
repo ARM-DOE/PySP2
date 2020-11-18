@@ -72,3 +72,20 @@ def write_dat(ds, file_name):
         pandas_ds = pandas_ds[index_label]
         #print(pandas_ds)
         pandas_ds.to_csv(f, header=True, index=False, float_format="%.8g", sep='\t', encoding='utf-8')
+
+def write_dat_psds(ds, file_name):
+    """
+    This writes the .dat files that generate the intermediate parameters used
+    by the Igor processing.
+
+    Parameters
+    ----------
+    ds: xarray Dataset
+        The dataset containing the processed signal data.
+    file_name: str
+        The name of the file to save to.
+    """
+
+    pandas_df = pd.DataFrame()
+    time = ds.time.values
+

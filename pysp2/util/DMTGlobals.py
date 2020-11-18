@@ -25,12 +25,12 @@ class DMTGlobals(object):
         # Default values are for Brookhaven SP2, unit  # 24 - 2010-11-17 - RS
         #  mass(fg) = c0Mass1 + c1Mass1 * PkHt_ch1 + c2Mass1 * PkHt_ch1 ^ 2 + c3Mass1 * PkHt_ch1 ^ 3 - High - gain
         self.c0Mass1 = 0
-        self.c1Mass1 = 1.6345e-3
+        self.c1Mass1 = 1.9268e-4
         self.c2Mass1 = 0
         self.c3Mass1 = 0
         #mass(fg) = c0Mass2 + c1Mass2 * PkHt_ch5 + c2Mass2 * PkHt_ch5 ^ 2 - Low - gain
         self.c0Mass2 = 0
-        self.c1Mass2 = 1.9268e-4
+        self.c1Mass2 = 1.6345e-3
         self.c2Mass2 = 0
         self.c3Mass2 = 0
         #    // Scattering(1e18
