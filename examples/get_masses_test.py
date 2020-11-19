@@ -11,3 +11,4 @@ config = pysp2.io.read_config(config_file)
 particles = pysp2.util.calc_diams_masses(ds)
 out_mass = pysp2.util.process_psds(particles, hk_ds, config)
 out_mass.to_netcdf('SP2_masses.nc')
+

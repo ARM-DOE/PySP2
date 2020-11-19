@@ -3,6 +3,8 @@
 import xarray as xr
 import pandas as pd
 import numpy as np
+import datetime
+import numpy as np
 
 def write_dat(ds, file_name):
     """
@@ -73,9 +75,9 @@ def write_dat(ds, file_name):
         #print(pandas_ds)
         pandas_ds.to_csv(f, header=True, index=False, float_format="%.8g", sep='\t', encoding='utf-8')
 
-def write_dat_psds(ds, file_name):
+def write_dat_concs(ds, file_name):
     """
-    This writes the .dat files that generate the intermediate parameters used
+    This writes the .dat files for the mass and number concentrations
     by the Igor processing.
 
     Parameters
@@ -87,5 +89,31 @@ def write_dat_psds(ds, file_name):
     """
 
     pandas_df = pd.DataFrame()
-    time = ds.time.values
+    cur_date = datetime.datetime(ds.time.dt.year[0], ds.time.dt.month[0], ds.time.dt.day[0])
+    interval = (ds.time.values[1] - ds.time.values[0]) / np.timedelta64(1, 's')
+    start_time = ds.time.dt.hour.values * 3600 + ds.time.dt.minute.values * 60 + ds.time.dt.second.values
+    end_time = ds.time.dt.hour.values * 3600 + ds.time.dt.minute.values * 60 + ds.time.dt.second.values + interval
+    time_wave = (ds.time.values - np.datetime64('1904-01-01T00:00:00')) / np.timedelta64(1, 's')
+    pandas_df['Start time'] = start_time
+    pandas_df['End time'] = end_time
+    pandas_df['Start DateTime'] = time_wave
+    pandas_df['End DateTime'] = time_wave + interval
+    pandas_df['Scattering conc (#/cm3-STP)'] = ds.NumConcScat.values
+    pandas_df['Incandescent conc (#/cm3-STP)'] = ds.NumConcIncan.values
+    pandas_df['Total scattering mass conc (ng/m3-STP)'] = ds.MassScat2.values
+    pandas_df['Scattering mass conc (ng/m3-STP)'] = ds.MassScat2.values
+    pandas_df['Incandescent mass conc (ng/m3-STP)'] = ds.MassIncand2total.values
+
+    pandas_df['Start time'] = pandas_df['Start time'].map(lambda x: '%5d' % x)
+    pandas_df['End time'] = pandas_df['End time'].map(lambda x: '%5d' % x)
+    pandas_df['Start DateTime'] = pandas_df['Start DateTime'].map(lambda x: '%11d' % x)
+    pandas_df['End DateTime'] = pandas_df['End DateTime'].map(lambda x: '%11d' % x)
+    pandas_df['Scattering conc (#/cm3-STP)'] = pandas_df['Scattering conc (#/cm3-STP)'].map(lambda x: "%.8g" % x)
+    pandas_df['Scattering mass conc (ng/m3-STP)'] = pandas_df['Scattering mass conc (ng/m3-STP)'].map(lambda x: "%.8g" % x)
+    pandas_df['Incandescent mass conc (ng/m3-STP)'] = pandas_df['Incandescent mass conc (ng/m3-STP)'].map(
+        lambda x: "%.8g" % x)
+    pandas_df['Incandescent conc (#/cm3-STP)'] = pandas_df['Incandescent conc (#/cm3-STP)'].map(lambda x: "%.8g" % x)
+    pandas_df['Total scattering mass conc (ng/m3-STP)'] = pandas_df['Total scattering mass conc (ng/m3-STP)'].map(lambda x: "%.8g" % x)
+    with open(file_name, 'w', newline='\n') as f:
+        pandas_df.to_csv(f, header=True, index=False, float_format="%.8g", sep='\t', encoding='utf-8')
 
