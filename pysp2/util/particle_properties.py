@@ -155,9 +155,10 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
         The xarray Dataset containing the time-averaged particle statistics.
     """
     DMTGlobal = DMTGlobals()
-    time_bins = np.arange(round(hk_ds['Timestamp'].values[0], -1),
-                          round(hk_ds['Timestamp'].values[-1], -1), avg_interval)
+    time_bins = np.arange(round(particle_ds['DateTimeWave'].values[0], -1),
+                          round(particle_ds['DateTimeWave'].values[-1], -1), avg_interval)
     time_wave = particle_ds['DateTimeWave'].values
+
     flow = hk_ds['Sample Flow LFE'].values
     ChmPress = hk_ds['Chamber Temp'].values
     ChmTemp = hk_ds['Chamber Pressure'].values
@@ -259,7 +260,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
             MassIncand2[t] = 1000 * massAvgIncandCycle / FlowCycle
             MassIncand2Sat[t] = 1000 * massAvgIncandSatCycle / FlowCycle
             MassScat2[t] = 1000 * massAvgScatCycle / FlowCycle
-            MassScat2total[t] = 1000 * massAvgScatSatCycle / FlowCycle
+            MassScat2total[t] = 1000 * (massAvgScatSatCycle + massAvgScatCycle) / FlowCycle
             NumFracBC[t] = fracBCnum / FlowCycle
             NumFracBCSat[t] = fracBCnumSat / FlowCycle
             IncanNumEnsemble[t, :] = IncanNumEnsemble[t, :] / FlowCycle
@@ -345,10 +346,13 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     SpecSizeBins.attrs["standard_name"] = "particle_diameter"
     SpecSizeBins.attrs["units"] = "nm"
     psd_ds = xr.Dataset({'time': time,
+                         'TimeWave': time_wave,
                          'NumConcIncan': NumConcIncan,
                          'NumConcIncanScat': NumConcIncanScat,
                          'NumConcTotal': NumConcTotal,
                          'NumConcScatSat': NumConcScatSat,
+                         'NumConcScat': NumConcScat,
+                         'MassIncand2': MassIncand2,
                          'MassIncand2Sat': MassIncand2Sat,
                          'MassIncand2total': MassIncand2total,
                          'MassScat2': MassScat2,
