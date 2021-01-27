@@ -90,7 +90,10 @@ def write_dat_concs(ds, file_name):
 
     pandas_df = pd.DataFrame()
     cur_date = datetime.datetime(ds.time.dt.year[0], ds.time.dt.month[0], ds.time.dt.day[0])
-    interval = (ds.time.values[1] - ds.time.values[0]) / np.timedelta64(1, 's')
+    try:
+        interval = (ds.time.values[1] - ds.time.values[0]) / np.timedelta64(1, 's')
+    except IndexError:
+        interval = 10
     start_time = ds.time.dt.hour.values * 3600 + ds.time.dt.minute.values * 60 + ds.time.dt.second.values
     end_time = ds.time.dt.hour.values * 3600 + ds.time.dt.minute.values * 60 + ds.time.dt.second.values + interval
     time_wave = (ds.time.values - np.datetime64('1904-01-01T00:00:00')) / np.timedelta64(1, 's')
@@ -108,12 +111,12 @@ def write_dat_concs(ds, file_name):
     pandas_df['End time'] = pandas_df['End time'].map(lambda x: '%5d' % x)
     pandas_df['Start DateTime'] = pandas_df['Start DateTime'].map(lambda x: '%11d' % x)
     pandas_df['End DateTime'] = pandas_df['End DateTime'].map(lambda x: '%11d' % x)
-    pandas_df['Scattering conc (#/cm3-STP)'] = pandas_df['Scattering conc (#/cm3-STP)'].map(lambda x: "%.8g" % x)
-    pandas_df['Scattering mass conc (ng/m3-STP)'] = pandas_df['Scattering mass conc (ng/m3-STP)'].map(lambda x: "%.8g" % x)
+    pandas_df['Scattering conc (#/cm3-STP)'] = pandas_df['Scattering conc (#/cm3-STP)'].map(lambda x: "%.12g" % x)
+    pandas_df['Scattering mass conc (ng/m3-STP)'] = pandas_df['Scattering mass conc (ng/m3-STP)'].map(lambda x: "%.12g" % x)
     pandas_df['Incandescent mass conc (ng/m3-STP)'] = pandas_df['Incandescent mass conc (ng/m3-STP)'].map(
-        lambda x: "%.8g" % x)
-    pandas_df['Incandescent conc (#/cm3-STP)'] = pandas_df['Incandescent conc (#/cm3-STP)'].map(lambda x: "%.8g" % x)
-    pandas_df['Total scattering mass conc (ng/m3-STP)'] = pandas_df['Total scattering mass conc (ng/m3-STP)'].map(lambda x: "%.8g" % x)
+        lambda x: "%.12g" % x)
+    pandas_df['Incandescent conc (#/cm3-STP)'] = pandas_df['Incandescent conc (#/cm3-STP)'].map(lambda x: "%.12g" % x)
+    pandas_df['Total scattering mass conc (ng/m3-STP)'] = pandas_df['Total scattering mass conc (ng/m3-STP)'].map(lambda x: "%.12g" % x)
     with open(file_name, 'w', newline='\n') as f:
         pandas_df.to_csv(f, header=True, index=False, float_format="%.8g", sep='\t', encoding='utf-8')
 

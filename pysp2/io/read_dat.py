@@ -8,7 +8,7 @@ import platform
 import os
 
 from glob import glob
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def read_dat(file_name, type):
     """
@@ -32,11 +32,17 @@ def read_dat(file_name, type):
     if type.lower() not in ['particle', 'conc']:
         raise ValueError("Invalid input for type, must be either 'particle' or 'conc'!")
 
-    fname = glob(file_name)
+    fname = glob(file_name, recursive=True)
     ds_list = []
     for f in fname:
-        ds_list.append(act.io.csvfiles.read_csv(f, sep="\t", skiprows=2))
-
+        try:
+            if type.lower() == 'particle':
+                ds = act.io.csvfiles.read_csv(f, sep="\t", skiprows=2)
+            else:
+                ds = act.io.csvfiles.read_csv(f, sep="\t")
+            ds_list.append(ds)
+        except (pd.errors.EmptyDataError, IndexError):
+            continue
     if type.lower() == 'particle':
         return xr.concat(ds_list, dim='index').sortby('DateTimeWave')
     elif type.lower() == 'conc':
