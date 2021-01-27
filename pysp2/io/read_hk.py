@@ -32,7 +32,7 @@ def read_hk_file(file_name):
     start_time = datetime.datetime(1904, 1, 1)
     my_df = my_df.set_index({'index': 'Time (sec)'})
     my_df = my_df.rename({'index': 'time'})
-    my_df['time'] = np.array([start_time + datetime.timedelta(seconds=x) for x in my_df['time'].values])
+    my_df['time'] = np.array([start_time + datetime.timedelta(seconds=x) for x in my_df['Timestamp'].values])
     my_df['time'].attrs['units'] = "datetime"
     my_df['time'].attrs['long_name'] = "Time [SP2 time]"
     for vars in my_df.variables.keys():

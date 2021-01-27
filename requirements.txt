@@ -3,6 +3,5 @@ numpy
 scipy
 xarray
 act-atmos
-miepython
 xlrd
 numba

@@ -28,12 +28,13 @@ def calc_diams_masses(input_ds, debug=True):
     Globals = DMTGlobals()
     PkHt_ch0 = np.nanmax(np.stack([input_ds['PkHt_ch0'].values, input_ds['FtAmp_ch0'].values]), axis=0)
     PkHt_ch4 = np.nanmax(np.stack([input_ds['PkHt_ch4'].values, input_ds['FtAmp_ch4'].values]), axis=0)
-    accepted = np.logical_and.reduce((PkHt_ch0 > Globals.ScatMinPeakHt1,
-                                      input_ds['PkFWHM_ch0'].values > Globals.ScatMinWidth,
-                                      input_ds['PkFWHM_ch0'].values < Globals.ScatMaxWidth,
-                                      input_ds['FtPos_ch0'].values < Globals.ScatMaxPeakPos,
-                                      input_ds['FtPos_ch0'].values >= Globals.ScatMinPeakPos,
-                                      np.greater(input_ds['FtAmp_ch0'].values, input_ds['PkFWHM_ch0'].values)))
+    #accepted = np.logical_and.reduce((PkHt_ch0 > Globals.ScatMinPeakHt1,
+    #                                  input_ds['PkFWHM_ch0'].values > Globals.ScatMinWidth,
+    #                                  input_ds['PkFWHM_ch0'].values < Globals.ScatMaxWidth,
+    #                                  input_ds['FtPos_ch0'].values < Globals.ScatMaxPeakPos,
+    #                                  input_ds['FtPos_ch0'].values >= Globals.ScatMinPeakPos,
+    #                                  np.greater(input_ds['FtAmp_ch0'].values, input_ds['PkFWHM_ch0'].values)))
+    accepted = input_ds['ScatRejectKey'].values == 0
     numScatFlag = np.sum(accepted)
 
     rejectMinScatTotal += np.sum(PkHt_ch0 < Globals.ScatMinPeakHt1)
@@ -50,57 +51,7 @@ def calc_diams_masses(input_ds, debug=True):
         print("Number of scattering particles rejected for fat peak = %d" % rejectFatPeakTotal)
         print("Number of scattering particles rejected for peak pos. = %d" % rejectFtPosTotal)
 
-    accepted_incand = np.logical_and(input_ds['PkHt_ch1'].values >= Globals.IncanMinPeakHt1,
-                                     input_ds['PkHt_ch2'].values >= Globals.IncanMinPeakHt2)
-    numMinCh2reject = np.sum(~accepted_incand)
-    already_rejected = numMinCh2reject
-    peak_width = input_ds['PkEnd_ch1'].values - input_ds['PkStart_ch1'].values
-    peak_width[peak_width < 0] = 0.
-    accepted_incand = np.logical_and(accepted_incand, peak_width >= Globals.IncanMinWidth)
-    Ch1BaseWidthRejects = np.sum(~accepted_incand) - numMinCh2reject
-    already_rejected += Ch1BaseWidthRejects
-    accepted_incand = np.logical_and.reduce(
-        (accepted_incand, ~np.logical_and(input_ds['PkHt_ch1'].values > Globals.IncanMaxPeakHt1,
-         np.logical_or(input_ds['IncanRatioch1ch2'].values < Globals.IncanMinPeakRatio,
-                       input_ds['IncanRatioch1ch2'].values > Globals.IncanMaxPeakRatio))))
-    TempRatioRejects = np.sum(~accepted_incand) - already_rejected
-    accepted_incand = np.logical_and.reduce(
-        (accepted_incand, ~np.logical_and.reduce((
-            input_ds['PkHt_ch1'].values > Globals.IncanMaxPeakHt1, input_ds['PkHt_ch5'].values < Globals.IncanMaxPeakHt1,
-            input_ds['IncanRatioch5ch6'].values >= Globals.IncanMinPeakRatio,
-            input_ds['IncanRatioch5ch6'].values <= Globals.IncanMaxPeakRatio))))
-
-    TempRatioRejects += np.sum(~accepted_incand) - already_rejected
-    already_rejected += TempRatioRejects
-    accepted_incand = np.logical_and.reduce(
-        (accepted_incand, ~np.logical_and(input_ds['PkHt_ch1'].values < Globals.IncanMaxPeakHt1,
-                                          np.abs(input_ds['IncanPkOffsetch1ch2'].values) > Globals.IncanMaxPeakOffset)))
-    IncanPeakDiffReject = np.sum(~accepted_incand) - already_rejected
-    accepted_incand = np.logical_and.reduce(
-        (accepted_incand, ~np.logical_and.reduce((
-            input_ds['PkHt_ch1'].values > Globals.IncanMaxPeakHt1, input_ds['PkHt_ch5'].values < Globals.IncanMaxPeakHt1,
-            np.abs(input_ds['IncanPkOffsetch5ch6'].values) > Globals.IncanMaxPeakOffset))))
-    IncanPeakDiffReject += np.sum(~accepted_incand) - already_rejected
-    already_rejected += IncanPeakDiffReject
-    peak_loc1_reject = np.logical_and.reduce((accepted_incand, input_ds['PkHt_ch1'].values < Globals.IncanMaxPeakHt1,
-                                      np.logical_or(input_ds['PkPos_ch1'].values < Globals.IncanMinPeakPos,
-                                      input_ds['PkPos_ch1'].values > Globals.IncanMaxPeakPos)))
-    peak_loc5_reject = np.logical_and.reduce(
-        (accepted_incand, input_ds['PkHt_ch1'].values > Globals.IncanMaxPeakHt1,
-         input_ds['PkHt_ch5'].values < Globals.IncanMaxPeakHt1,
-         np.logical_or(input_ds['PkPos_ch5'].values < Globals.IncanMinPeakPos,
-                       input_ds['PkPos_ch5'].values > Globals.IncanMaxPeakPos)))
-
-    accepted_incand = np.logical_and.reduce((accepted_incand, ~peak_loc1_reject, ~peak_loc5_reject))
-    PeakLoc1Rejects = np.sum(~accepted_incand) - already_rejected
-    if debug:
-        print("Number of incandescent particles accepted = %d" % np.sum(accepted_incand))
-        print('Number rejected due to min peak height = %d' % numMinCh2reject)
-        print("Number rejected due to ch1. base width = %d" % Ch1BaseWidthRejects)
-        print("Number rejected due to peak ratio = %d" % TempRatioRejects)
-        print("Number rejected due to peak difference = %d" % IncanPeakDiffReject)
-        print("Number rejected due to peak location = %d" % PeakLoc1Rejects)
-
+    accepted_incand = input_ds['IncanRejectKey'].values == 0 
     Scat_not_sat = 1e-18*(Globals.c0Scat1 + Globals.c1Scat1*PkHt_ch0 + Globals.c2Scat1*PkHt_ch0**2)
     Scat_sat = 1e-18*(Globals.c0Scat2 + Globals.c1Scat2*PkHt_ch4 + Globals.c2Scat2*PkHt_ch4**2)
     Scatter = np.where(PkHt_ch0 < Globals.ScatMaxPeakHt1, Scat_not_sat, Scat_sat)
@@ -155,8 +106,8 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
         The xarray Dataset containing the time-averaged particle statistics.
     """
     DMTGlobal = DMTGlobals()
-    time_bins = np.arange(round(particle_ds['DateTimeWave'].values[0], -1),
-                          round(particle_ds['DateTimeWave'].values[-1], -1), avg_interval)
+    time_bins = np.arange(round(particle_ds['DateTimeWaveUTC'].values[0], -1),
+                          round(particle_ds['DateTimeWaveUTC'].values[-1], -1), avg_interval)
     time_wave = particle_ds['DateTimeWave'].values
 
     flow = hk_ds['Sample Flow LFE'].values
@@ -180,6 +131,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
         OneOfEvery = int(config['Acquisition']['1 of Every'])
     except:
         OneOfEvery = 1
+    
     IncandPos = particle_ds['PkPos_ch1'].values
     incan_sat = IncandPos > DMTGlobal.IncanMaxPeakHt1
     IncandPos[incan_sat] = particle_ds['PkPos_ch5'].values[incan_sat]
@@ -204,11 +156,17 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     MassIncanSat = np.zeros_like(time_bins)
     MassScatSat = np.zeros_like(time_bins)
     for t in range(len(time_bins) - 1):
-        parts_time = np.logical_and(time_wave >= time_bins[t], time_wave < time_bins[t + 1])
+        parts_time = np.logical_and(
+            time_wave >= time_bins[t], time_wave < time_bins[t + 1])
+        
         if np.sum(parts_time) == 0:
             continue
         times_hk = np.logical_and(hk_ds['Timestamp'].values >= time_bins[t],
                                   hk_ds['Timestamp'].values < time_bins[t + 1])
+        
+        if len(np.argwhere(times_hk)) == 0:
+            continue
+
         for i in range(num_bins):
             the_particles = np.logical_and.reduce((parts_time,
                             ScatDiaBC50 >= SpecSizeBins[i] - deltaSize / 2,
@@ -231,13 +189,20 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
         ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
         ConcTotalCycle = OneOfEvery * (np.sum(incan_parts) + np.sum(scat_parts))
         ConcScatCycle = OneOfEvery * np.sum(scat_parts)
-        ConcScatSatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_sat))
-        ConcIncanScatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_parts))
-        ConcIncanSatCycle = OneOfEvery * np.sum(np.logical_and(incan_parts, incan_sat))
-        massAvgScatCycle = OneOfEvery * np.sum(ScatMassSO4[np.logical_and(scat_parts, ~scat_sat)])
-        massAvgScatSatCycle = OneOfEvery * np.sum(ScatMassSO4[np.logical_and(scat_parts, scat_sat)])
-        massAvgIncandCycle = OneOfEvery * np.sum(sootMass[np.logical_and(~incan_sat, incan_parts)])
-        massAvgIncandSatCycle = OneOfEvery * np.sum(sootMass[np.logical_and(incan_sat, incan_parts)])
+        ConcScatSatCycle = OneOfEvery * np.sum(
+            np.logical_and(scat_parts, incan_sat))
+        ConcIncanScatCycle = OneOfEvery * np.sum(
+            np.logical_and(scat_parts, incan_parts))
+        ConcIncanSatCycle = OneOfEvery * np.sum(
+            np.logical_and(incan_parts, incan_sat))
+        massAvgScatCycle = OneOfEvery * np.sum(
+            ScatMassSO4[np.logical_and(scat_parts, ~scat_sat)])
+        massAvgScatSatCycle = OneOfEvery * np.sum(
+            ScatMassSO4[np.logical_and(scat_parts, scat_sat)])
+        massAvgIncandCycle = OneOfEvery * np.sum(
+            sootMass[np.logical_and(~incan_sat, incan_parts)])
+        massAvgIncandSatCycle = OneOfEvery * np.sum(
+            sootMass[np.logical_and(incan_sat, incan_parts)])
         fracBCnum = ConcIncanCycle / ConcTotalCycle
         if ConcTotalCycle < 5:
             fracBCnum = 0
@@ -245,11 +210,13 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
         if ConcIncanCycle < 5:
             fracBCnumSat = 0
         HalfPeriod = np.ones_like(np.argwhere(times_hk))
-        HalfPeriod[0] = 0.5
-        HalfPeriod[-1] = 0.5
+        if len(HalfPeriod) > 1:
+            HalfPeriod[0] = 0.5        
+            HalfPeriod[-1] = 0.5
         FlowCycle = np.sum(HalfPeriod * flow[times_hk]
                            * (ChmPress[times_hk] / (273.15 + ChmTemp[times_hk])) *
                            (DMTGlobal.TempSTP/DMTGlobal.PressSTP))
+        
         if FlowCycle > 0:
             NumConcIncan2[t] = ConcIncanCycle / FlowCycle
             NumConcIncanSat[t] = ConcIncanSatCycle / FlowCycle
