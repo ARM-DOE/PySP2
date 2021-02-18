@@ -38,7 +38,7 @@ def process_day(my_day):
         out_mass = pysp2.util.process_psds(
             particles, my_hk, my_config, avg_interval=1)
         pysp2.io.write_dat_concs(out_mass, 
-            out_path + '/' + my_day + '/' + base + '.60s.dat')       
+            out_path + '/' + my_day + '/' + base + '.1s.dat')       
         
         fig, ax = plt.subplots(2, 1, figsize=(10, 7))
         out_mass.NumConcScat.plot(ax=ax[0], linewidth=2, color='r',
