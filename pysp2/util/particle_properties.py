@@ -66,7 +66,7 @@ def calc_diams_masses(input_ds, debug=True):
     output_ds['ScatDiaBC50'] = (('event_index'), 1000*(0.013416 + 25.066*(Scatter**0.18057)))
     sootMass_not_sat = 1e-3*(Globals.c0Mass1 + Globals.c1Mass1*input_ds['PkHt_ch1'] + Globals.c2Mass1*input_ds['PkHt_ch1']**2)
     sootDiam_not_sat = (sootMass_not_sat/(0.5236e-9*Globals.densityBC))**(1./3.)
-    sootMass_sat = 1e-3*(Globals.c0Mass2 + Globals.c1Mass2*input_ds['PkHt_ch5'] + Globals.c2Mass2*input_ds['PkHt_ch5']**2)
+    sootMass_sat = 1e-3 * (Globals.c0Mass2 + Globals.c1Mass2*input_ds['PkHt_ch5'] + Globals.c2Mass2*input_ds['PkHt_ch5']**2)
     sootDiam_sat = (sootMass_sat/(0.5236e-9*Globals.densityBC))**(1./3.)
 
     output_ds['sootMass'] = (('event_index'),
@@ -111,6 +111,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     time_wave = particle_ds['DateTimeWave'].values
 
     flow = hk_ds['Sample Flow LFE'].values
+    flow = np.where(flow == 0., 2, flow)
     ChmPress = hk_ds['Chamber Temp'].values
     ChmTemp = hk_ds['Chamber Pressure'].values
     ScatDiaBC50 = particle_ds['ScatDiaBC50'].values / 1000.
@@ -214,8 +215,8 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
             HalfPeriod[0] = 0.5        
             HalfPeriod[-1] = 0.5
         FlowCycle = np.sum(HalfPeriod * flow[times_hk]
-                           * (ChmPress[times_hk] / (273.15 + ChmTemp[times_hk])) *
-                           (DMTGlobal.TempSTP/DMTGlobal.PressSTP))
+                           * (ChmPress[times_hk] / (273.15 + ChmTemp[times_hk]))
+                           * (DMTGlobal.TempSTP / DMTGlobal.PressSTP))
         
         if FlowCycle > 0:
             NumConcIncan2[t] = ConcIncanCycle / FlowCycle

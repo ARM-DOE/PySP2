@@ -12,9 +12,9 @@ class DMTGlobals(object):
         self.ScatMinPeakPos = 20
         self.ScatMaxPeakPos = 90
         self.IncanMinPeakHt1 = 200
-        self.IncanMinPeakHt2 = 2000
+        self.IncanMinPeakHt2 = 200
         self.IncanMaxPeakHt1 = 60000
-        self.IncanMaxPeakHt2 = 62750
+        self.IncanMaxPeakHt2 = 60000
         self.IncanMinWidth = 5
         self.IncanMaxWidth = np.inf
         self.IncanMinPeakPos = 20
