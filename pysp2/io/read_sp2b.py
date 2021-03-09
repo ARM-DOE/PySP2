@@ -6,7 +6,7 @@ import dask.bag as db
 
 from datetime import datetime, timedelta, tzinfo
 
-def read_sp2(file_name, debug=False):
+def read_sp2(file_name, debug=False, arm_convention=True):
     """
     Loads a binary SP2 raw data file and returns all of the wave forms
     into an xarray Dataset.
@@ -23,7 +23,11 @@ def read_sp2(file_name, debug=False):
         split_file_name = file_name.split("\\")
     else:
         split_file_name = file_name.split("/")
-    dt = datetime.strptime(split_file_name[-1][0:8], "%Y%m%d")
+    if arm_convention:
+        next_split = split_file_name[-1].split(".")
+        dt = datetime.strptime(next_split[2], "%Y%m%d")
+    else:
+        dt = datetime.strptime(split_file_name[-1][0:8], "%Y%m%d")
 
     if len(my_data) > 0:
         bytepos = 0

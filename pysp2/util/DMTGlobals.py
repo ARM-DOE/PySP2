@@ -25,12 +25,12 @@ class DMTGlobals(object):
         # Default values are for Brookhaven SP2, unit  # 24 - 2010-11-17 - RS
         #  mass(fg) = c0Mass1 + c1Mass1 * PkHt_ch1 + c2Mass1 * PkHt_ch1 ^ 2 + c3Mass1 * PkHt_ch1 ^ 3 - High - gain
         self.c0Mass1 = 0
-        self.c1Mass1 = 1.9268e-4
+        self.c1Mass1 = 0.0001896
         self.c2Mass1 = 0
         self.c3Mass1 = 0
         #mass(fg) = c0Mass2 + c1Mass2 * PkHt_ch5 + c2Mass2 * PkHt_ch5 ^ 2 - Low - gain
         self.c0Mass2 = 0
-        self.c1Mass2 = 1.6345e-3
+        self.c1Mass2 = 0.0016815
         self.c2Mass2 = 0
         self.c3Mass2 = 0
         #    // Scattering(1e18
@@ -38,12 +38,12 @@ class DMTGlobals(object):
         #    scattering
         #    Variable / g
         self.c0Scat1 = 0
-        self.c1Scat1 = 77.317
+        self.c1Scat1 = 78.141
         self.c2Scat1 = 0
         #    // Scattering(1e18
         #    cm2) = c0Scat2 + c1Scat2 * PkHt_ch4 + c2Scat2 * PkHt_ch4 ^ 2 - Low - gain
         self.c0Scat2 = 0
-        self.c1Scat2 = 773.09
+        self.c1Scat2 = 752.53
         self.c2Scat2 = 0
         self.densitySO4 = 1.8
         self.densityBC = 1.8
