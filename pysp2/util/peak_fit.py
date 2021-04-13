@@ -64,12 +64,19 @@ def _calc_incan_ratio(my_ds, ch1, ch2):
     Base_ch2 = my_ds['Base_ch%d' % ch2].values
     Base_ch1_tile = np.tile(Base_ch1, (data_ch1.shape[1], 1)).T
     Base_ch2_tile = np.tile(Base_ch2, (data_ch1.shape[1], 1)).T
-    finite_mask = np.logical_and(np.isfinite(PeakPos_ch1_tile), halfDecay_ch1_tile)
+    finite_mask = np.logical_and(
+        np.isfinite(PeakPos_ch1_tile), halfDecay_ch1_tile)
+    finite_mask = np.logical_and(finite_mask, data_ch1 - Base_ch1_tile > 0)
+    finite_mask = np.logical_and(finite_mask, data_ch2 - Base_ch2_tile > 0)
     counting_up = np.tile(np.arange(data_ch1.shape[1]), (data_ch1.shape[0], 1))
-    range_mask = np.logical_and(counting_up >= PeakPos_ch1_tile, counting_up <= halfDecay_ch1_tile)
-    data_ch2 = np.where(np.logical_and(finite_mask, range_mask), data_ch2, np.nan)
-    data_ch1 = np.where(np.logical_and(finite_mask, range_mask), data_ch1, np.nan)
-    ratio = np.nanmean((data_ch1 - Base_ch1_tile)/(data_ch2 - Base_ch2_tile), axis=1)
+    range_mask = np.logical_and(
+        counting_up >= PeakPos_ch1_tile, counting_up <= halfDecay_ch1_tile)
+    data_ch2 = np.where(
+        np.logical_and(finite_mask, range_mask), data_ch2, np.nan)
+    data_ch1 = np.where(
+        np.logical_and(finite_mask, range_mask), data_ch1, np.nan)
+    ratio = np.nanmean(
+        (data_ch1 - Base_ch1_tile)/(data_ch2 - Base_ch2_tile), axis=1)
     return ratio
 
 @jit(nopython=True)

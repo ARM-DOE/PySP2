@@ -5,7 +5,8 @@ import datetime
 
 from .DMTGlobals import DMTGlobals
 
-def calc_diams_masses(input_ds, debug=True, factor=1.0):
+def calc_diams_masses(input_ds, debug=True, factor=1.0,
+                      Globals=None):
     """
     Calculates the scattering and incadescence diameters/BC masses for each particle.
 
@@ -18,6 +19,9 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0):
     factor: float
         Multiply soot masses by this factor for AquaDag calibation. Use
         1.3 for NSA.
+    Globals: DMTGlobals structure or None
+        DMTGlobals structure containing calibration coefficients. Set to
+        None to use default values for MOSAiC.
     Returns
     -------
     output_ds: ACT Dataset
@@ -27,7 +31,9 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0):
     rejectWidthTotal = 0
     rejectFatPeakTotal = 0
     rejectFtPosTotal = 0
-    Globals = DMTGlobals()
+    if Globals is None:
+        Globals = DMTGlobals()
+
     PkHt_ch0 = np.nanmax(np.stack([input_ds['PkHt_ch0'].values, input_ds['FtAmp_ch0'].values]), axis=0)
     PkHt_ch4 = np.nanmax(np.stack([input_ds['PkHt_ch4'].values, input_ds['FtAmp_ch4'].values]), axis=0)
     #accepted = np.logical_and.reduce((PkHt_ch0 > Globals.ScatMinPeakHt1,
@@ -36,7 +42,12 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0):
     #                                  input_ds['FtPos_ch0'].values < Globals.ScatMaxPeakPos,
     #                                  input_ds['FtPos_ch0'].values >= Globals.ScatMinPeakPos,
     #                                  np.greater(input_ds['FtAmp_ch0'].values, input_ds['PkFWHM_ch0'].values)))
-    accepted = input_ds['ScatRejectKey'].values == 0
+    accepted = np.logical_and.reduce((
+        input_ds['PkFWHM_ch0'].values > Globals.ScatMinWidth,
+        input_ds['PkFWHM_ch0'].values < Globals.ScatMaxWidth,
+        input_ds['PkHt_ch0'].values > Globals.ScatMinPeakHt1,
+        input_ds['FtPos_ch0'].values < Globals.ScatMaxPeakPos,
+        input_ds['FtPos_ch0'].values > Globals.ScatMinPeakPos))
     numScatFlag = np.sum(accepted)
 
     rejectMinScatTotal += np.sum(PkHt_ch0 < Globals.ScatMinPeakHt1)
@@ -63,7 +74,7 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0):
         input_ds['PkHt_ch2'].values > Globals.IncanMinPeakHt1)
     accepted_incand = np.logical_and(accepted_incand,
         input_ds['PkHt_ch1'].values > Globals.IncanMinPeakHt1)
-    sat_incand = PkHt_ch1 > Globals.IncanMinPeakHt1                          
+    sat_incand = PkHt_ch1 > Globals.IncanMaxPeakHt1                          
     accepted_incand = np.logical_and(accepted_incand, 
         ~np.logical_and(~sat_incand, 
             np.logical_or(
@@ -94,16 +105,17 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0):
 
     Scat_not_sat = 1e-18*(Globals.c0Scat1 + Globals.c1Scat1*PkHt_ch0 + Globals.c2Scat1*PkHt_ch0**2)
     Scat_sat = 1e-18*(Globals.c0Scat2 + Globals.c1Scat2*PkHt_ch4 + Globals.c2Scat2*PkHt_ch4**2)
-    Scatter = np.where(PkHt_ch0 < Globals.ScatMaxPeakHt1, Scat_not_sat, Scat_sat)
-    Scatter = Scat_not_sat
+    Scatter = np.where(PkHt_ch0 < Globals.ScatMaxPeakHt1,
+                       Scat_not_sat, Scat_sat)
+    
     Scatter = np.where(accepted, Scatter, np.nan)
 
     output_ds = input_ds.copy()
-    output_ds['Scatter'] = (('event_index'), Scatter)
-    output_ds['logScatter'] = (('event_index'), np.log10(Scatter))
-    output_ds['ScatDiaSO4'] = (('event_index'), 1000*(-0.015256 + 16.835*Scatter**0.15502))
-    output_ds['ScatMassSO4'] = (('event_index'), 0.5236e-9*Globals.densitySO4*output_ds['ScatDiaSO4']**3)
-    output_ds['ScatDiaBC50'] = (('event_index'), 1000*(0.013416 + 25.066*(Scatter**0.18057)))
+    output_ds['Scatter'] = (('index'), Scatter)
+    output_ds['logScatter'] = (('index'), np.log10(Scatter))
+    output_ds['ScatDiaSO4'] = (('index'), 1000*(-0.015256 + 16.835*Scatter**0.15502))
+    output_ds['ScatMassSO4'] = (('index'), 0.5236e-9*Globals.densitySO4*output_ds['ScatDiaSO4']**3)
+    output_ds['ScatDiaBC50'] = (('index'), 1000*(0.013416 + 25.066*(Scatter**0.18057)))
 
     sootMass_not_sat = factor * 1e-3*(
         Globals.c0Mass1 + Globals.c1Mass1*PkHt_ch1 + Globals.c2Mass1*PkHt_ch1**2)
@@ -113,12 +125,12 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0):
     sootDiam_sat = (sootMass_sat/(0.5236e-9*Globals.densityBC))**(1./3.)
     sootMass_not_sat[~accepted_incand] = np.nan
     sootMass_sat[~accepted_incand] = np.nan
-    output_ds['sootMass'] = (('event_index'),
+    output_ds['sootMass'] = (('index'),
                              np.where(sat_incand, sootMass_sat, sootMass_not_sat))
-    output_ds['sootDiam'] = (('event_index'),
+    output_ds['sootDiam'] = (('index'),
                              np.where(sat_incand, sootDiam_sat, sootDiam_not_sat))
-    output_ds['ScatDiaSO4'] = (('event_index'), output_ds['ScatDiaSO4'].where(accepted))
-    output_ds['ScatMassSO4'] = (('event_index'), output_ds['ScatMassSO4'].where(accepted))
+    output_ds['ScatDiaSO4'] = (('index'), output_ds['ScatDiaSO4'].where(accepted))
+    output_ds['ScatMassSO4'] = (('index'), output_ds['ScatMassSO4'].where(accepted))
     output_ds['sootMass'] = output_ds['sootMass'].where(accepted_incand)
     output_ds['sootDiam'] = output_ds['sootDiam'].where(accepted_incand)
 
@@ -150,10 +162,14 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
         The xarray Dataset containing the time-averaged particle statistics.
     """
     DMTGlobal = DMTGlobals()
-    time_bins = np.arange(particle_ds['DateTimeWaveUTC'].values[0],
-                          particle_ds['DateTimeWaveUTC'].values[-1],
+    time_bins = np.arange(hk_ds['Timestamp'].values[0],
+                          hk_ds['Timestamp'].values[-1],
                           avg_interval)
     time_wave = particle_ds['DateTimeWaveUTC'].values
+    if len(time_bins) == 0:
+        time_bins = np.array([
+            particle_ds['DateTimeWaveUTC'].values[0],
+            particle_ds['DateTimeWaveUTC'].values[0]+avg_interval])
 
     flow = hk_ds['Sample Flow LFE'].values
     dcycle = hk_ds['Duty Cycle'].values
@@ -170,11 +186,11 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     sootMass = particle_ds['sootMass'].values
     SizeIncandOnly = particle_ds['sootDiam'].values / 1000.
     SpecSizeBins = 0.01 + np.arange(0, num_bins, 1) * deltaSize
-    ScatNumEnsembleBC = np.zeros((len(time_bins), num_bins))
+    ScatNumEnsembleBC = np.zeros((len(time_bins[:-1]), num_bins))
     ScatMassEnsembleBC = np.zeros_like(ScatNumEnsembleBC)
-    IncanNumEnsemble = np.zeros((len(time_bins), num_bins))
+    IncanNumEnsemble = np.zeros((len(time_bins[:-1]), num_bins))
     IncanMassEnsemble = np.zeros_like(ScatNumEnsembleBC)
-    ScatNumEnsemble = np.zeros((len(time_bins), num_bins))
+    ScatNumEnsemble = np.zeros((len(time_bins[:-1]), num_bins))
     ScatMassEnsemble = np.zeros_like(ScatNumEnsembleBC)
     ScatFlag = particle_ds['ScatRejectKey'].values
     IncanFlag = particle_ds['IncanRejectKey'].values
@@ -192,20 +208,20 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     ScatPos[scat_sat] = particle_ds['PkPos_ch4'].values[scat_sat]
 
     PkDif = 0.4 * (IncandPos - ScatPos)
-    NumFracBC = np.zeros_like(time_bins)
-    NumFracBCSat = np.zeros_like(time_bins)
-    NumConcScat1 = np.zeros_like(time_bins)
-    NumConcIncan2 = np.zeros_like(time_bins)
-    NumConcIncanScat = np.zeros_like(time_bins)
-    NumConcIncanSat = np.zeros_like(time_bins)
-    NumConcScatSat = np.zeros_like(time_bins)
-    NumConcTotal = np.zeros_like(time_bins)
-    MassScat2 = np.zeros_like(time_bins)
-    MassScat2total = np.zeros_like(time_bins)
-    MassIncand2 = np.zeros_like(time_bins)
-    MassIncand2Sat = np.zeros_like(time_bins)
-    MassIncanSat = np.zeros_like(time_bins)
-    MassScatSat = np.zeros_like(time_bins)
+    NumFracBC = np.zeros_like(time_bins[:-1])
+    NumFracBCSat = np.zeros_like(time_bins[:-1])
+    NumConcScat1 = np.zeros_like(time_bins[:-1])
+    NumConcIncan2 = np.zeros_like(time_bins[:-1])
+    NumConcIncanScat = np.zeros_like(time_bins[:-1])
+    NumConcIncanSat = np.zeros_like(time_bins[:-1])
+    NumConcScatSat = np.zeros_like(time_bins[:-1])
+    NumConcTotal = np.zeros_like(time_bins[:-1])
+    MassScat2 = np.zeros_like(time_bins[:-1])
+    MassScat2total = np.zeros_like(time_bins[:-1])
+    MassIncand2 = np.zeros_like(time_bins[:-1])
+    MassIncand2Sat = np.zeros_like(time_bins[:-1])
+    MassIncanSat = np.zeros_like(time_bins[:-1])
+    MassScatSat = np.zeros_like(time_bins[:-1])
     for t in range(len(time_bins) - 1):
         parts_time = np.logical_and(
             time_wave >= time_bins[t], time_wave < time_bins[t + 1])
@@ -222,21 +238,21 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
         for i in range(num_bins):
             the_particles = np.logical_and.reduce((parts_time,
                             ScatDiaBC50 >= SpecSizeBins[i] - deltaSize / 2,
-                            ScatDiaBC50 < SpecSizeBins[i] + deltaSize / 2, ScatFlag == 0))
+                            ScatDiaBC50 < SpecSizeBins[i] + deltaSize / 2))
             ScatNumEnsembleBC[t, i] = np.sum(the_particles)
 
             the_particles = np.logical_and.reduce((parts_time,
                             ScatDiaSO4 >= SpecSizeBins[i] - deltaSize / 2,
-                            ScatDiaSO4 < SpecSizeBins[i] + deltaSize / 2, ScatFlag == 0))
+                            ScatDiaSO4 < SpecSizeBins[i] + deltaSize / 2))
             ScatNumEnsemble[t, i] = np.sum(the_particles)
             ScatMassEnsemble[t, i] = np.sum(ScatMassSO4[the_particles])
             the_particles = np.logical_and.reduce((parts_time,
                             SizeIncandOnly >= SpecSizeBins[i] - deltaSize / 2,
-                            SizeIncandOnly < SpecSizeBins[i] + deltaSize / 2, IncanFlag == 0))
+                            SizeIncandOnly < SpecSizeBins[i] + deltaSize / 2))
             IncanNumEnsemble[t, i] = np.sum(the_particles)
             IncanMassEnsemble[t, i] = np.sum(sootMass[the_particles])
 
-        scat_parts = np.logical_and(parts_time, ScatFlag == 0)
+        scat_parts = parts_time
         incan_parts = parts_time
         ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
         ConcTotalCycle = OneOfEvery * (np.sum(incan_parts) + np.sum(scat_parts))
@@ -294,9 +310,9 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     MassIncand2total.attrs["standard_name"] = "mass_concentration"
     MassIncand2total.attrs["units"] = "ng m-3"
     base_time = datetime.datetime(1904, 1, 1).timestamp()
-    time = np.array([datetime.datetime.fromtimestamp(x + base_time) for x in time_bins])
+    time = np.array([datetime.datetime.fromtimestamp(x + base_time) for x in time_bins[:-1]])
     time = xr.DataArray(time, dims=('time'))
-    time_wave = xr.DataArray(time_bins, dims=('time'))
+    time_wave = xr.DataArray(time_bins[:-1], dims=('time'))
     time_wave.attrs["long_name"] = "Time"
     time_wave.attrs["units"] = "seconds since 01-01-1904 00:00:00 UTC"
 

@@ -49,6 +49,47 @@ def read_dat(file_name, type):
         return xr.concat(ds_list, dim='index').sortby('Start DateTime')
 
 
+def read_arm_dat(file_name, num_bins=199):
+    """
+    This reads mass and number distribution data that has been stored in the format
+    used in the ARM Archive.
+
+    Parameters
+    ----------
+    file_name: str
+       File name or directory with .dat files.
+    num_bins: int or None
+       Number of size distribution bins in the file. Set to None to
+       have PySP2 attempt to automatically detect this.
+    """
+    
+    fname = sorted(glob(file_name, recursive=True))
+    ds_list = []
+    i = 0
+    for f in fname:
+        try:
+            ds = pd.read_csv(f, sep="\t", skiprows=32)  
+            ds_list.append(ds)
+        except (pd.errors.EmptyDataError, IndexError):
+            continue
+    
+    ds = pd.concat(ds_list)
+    SP2_Dmin = ds['SP2_Dmin'].values
+    SP2_Dgeo = ds['SP2_Dgeo'].values
+    SP2_Dmax = ds['SP2_Dmax'].values
+    if num_bins is None:
+        num_bins = int(np.argwhere(np.isnan(SP2_Dmin))[0])
+    ds['SP2_date'].replace('', np.nan, inplace=True)
+    ds.dropna(subset=['SP2_date'], inplace=True)
+    ds['SP2_Dmin'][0:num_bins] = SP2_Dmin[0:num_bins]
+    ds['SP2_Dgeo'][0:num_bins] = SP2_Dgeo[0:num_bins]
+    ds['SP2_Dmax'][0:num_bins] = SP2_Dmax[0:num_bins]
+    ds['SP2_Dmin'][num_bins:] = np.nan
+    ds['SP2_Dgeo'][num_bins:] = np.nan
+    ds['SP2_Dmax'][num_bins:] = np.nan
+    
+    return ds
+
 def read_calibration(directory):
     """
     This reads data from a bead calibration from the SP2. Each dataset is stored
@@ -59,8 +100,8 @@ def read_calibration(directory):
     ----------
     directory: str
         The path to the calibration data. The directory must contain processed .dat
-    files for each segment as well as .txt files that describe what diameter each
-    .dat file corresponds to.
+        files for each segment as well as .txt files that describe what diameter each
+        .dat file corresponds to.
 
     Returns
     -------
