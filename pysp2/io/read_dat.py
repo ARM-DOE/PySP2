@@ -57,7 +57,8 @@ def read_arm_dat(file_name, num_bins=199):
     Parameters
     ----------
     file_name: str
-       File name or directory with .dat files.
+       File name or directory with .dat files. All .dat files must have
+       same time indices.
     num_bins: int or None
        Number of size distribution bins in the file. Set to None to
        have PySP2 attempt to automatically detect this.
@@ -68,25 +69,29 @@ def read_arm_dat(file_name, num_bins=199):
     i = 0
     for f in fname:
         try:
-            ds = pd.read_csv(f, sep="\t", skiprows=32)  
+            ds = pd.read_csv(f, sep="\t", skiprows=32,
+                             index_col="SP2_datetime_in_sec")  
             ds_list.append(ds)
         except (pd.errors.EmptyDataError, IndexError):
             continue
     
-    ds = pd.concat(ds_list)
+    ds = ds_list[0]
     SP2_Dmin = ds['SP2_Dmin'].values
     SP2_Dgeo = ds['SP2_Dgeo'].values
     SP2_Dmax = ds['SP2_Dmax'].values
+    SP2_date = ds['SP2_date'].values
+    SP2_time = ds['SP2_time'].values
+    for i in range(1, len(ds_list)):
+        ds = ds + ds_list[i]
     if num_bins is None:
         num_bins = int(np.argwhere(np.isnan(SP2_Dmin))[0])
     ds['SP2_date'].replace('', np.nan, inplace=True)
     ds.dropna(subset=['SP2_date'], inplace=True)
-    ds['SP2_Dmin'][0:num_bins] = SP2_Dmin[0:num_bins]
-    ds['SP2_Dgeo'][0:num_bins] = SP2_Dgeo[0:num_bins]
-    ds['SP2_Dmax'][0:num_bins] = SP2_Dmax[0:num_bins]
-    ds['SP2_Dmin'][num_bins:] = np.nan
-    ds['SP2_Dgeo'][num_bins:] = np.nan
-    ds['SP2_Dmax'][num_bins:] = np.nan
+    ds['SP2_Dmin'] = SP2_Dmin
+    ds['SP2_Dgeo'] = SP2_Dgeo
+    ds['SP2_Dmax'] = SP2_Dmax
+    ds['SP2_date'] = SP2_date
+    ds['SP2_time'] = SP2_time
     
     return ds
 
