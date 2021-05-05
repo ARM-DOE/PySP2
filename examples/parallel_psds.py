@@ -10,12 +10,12 @@ from dask_jobqueue import PBSCluster
 from distributed import Client, wait
 from datetime import datetime, timedelta
 
-sp2b_path = '/lustre/or-hydra/cades-arm/rjackson/mosaossp2M1.00/'
-sp2baux_path = '/lustre/or-hydra/cades-arm/rjackson/mosaossp2auxM1.00/'
+sp2b_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2X2.00/'
+sp2baux_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2auxX2.00/'
 
-dat_path = '/lustre/or-hydra/cades-arm/rjackson/mosaossp2M1.a1/'
-out_path = '/lustre/or-hydra/cades-arm/rjackson/mosaossp2M1.b1/psd/'
-quicklook_path = '/lustre/or-hydra/cades-arm/rjackson/mosaossp2M1.b1/quicklooks/'
+dat_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2X2.a1/'
+out_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2X2.b1/psd/'
+quicklook_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2X2.b1/quicklooks/'
 cal_path = '/home/rjackson/PySP2/examples/Unit25CAL_20201016_PostDMT_AQ_FullereneEquiv.txt'
 
 
@@ -36,13 +36,12 @@ def process_file(fname, hk_file, ini_file, my_day):
     return particles
     
 def process_day(my_day):
-    print(my_day)
     all_files = sorted(glob(dat_path + '*.raw.' + my_day + 'x*.dat'))
-    ini_file = sorted(glob(sp2b_path + '*' + my_day + '*.ini'))[0]
+    ini_file = sorted(glob(sp2baux_path + '*' + my_day + '*.ini'))[0]
     
     my_day_plus_one = datetime.strptime(my_day, '%Y%m%d') + timedelta(days=1)
     my_day_plus_one = my_day_plus_one.strftime('%Y%m%d')
-    hk_files = sorted(glob(sp2baux_path + '*' + my_day + '*.hk'))
+    hk_files = sorted(glob(sp2baux_path + '*raw.' + my_day + '*.hk'))
     if len(hk_files) == 0:
         return
     try:
@@ -99,7 +98,6 @@ if __name__ == '__main__':
     sp2_date_list = [x.split(".")[3] for x in all_sp2_files]
     sp2_date_list = sorted(list(set(sp2_date_list)))
     
-     
     cluster = PBSCluster(processes=9, cores=36, walltime='4:00:00',
                          memory='270GB', name='dask-worker',
                          queue='arm_high_mem',
@@ -110,13 +108,13 @@ if __name__ == '__main__':
 
     client = Client(cluster)
 
-    #print("Waiting for workers before starting processing...")
+    print("Waiting for workers before starting processing...")
     client.wait_for_workers(9)
     #for day in sp2_date_list:
     #    print("Processing %s" % day)
     #    process_day(day)
     #print(sp2_date_list)
-    #process_day('20190120')
+    #process_day('20200218')
     results = client.map(process_day, sp2_date_list)
     wait(results)
     del client

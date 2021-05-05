@@ -175,7 +175,7 @@ def write_dat_concs_arm(ds, file_name, location, lat_lon_string, deltaSize=0.005
                   " Sedlacek (sedlacek@bnl.gov)\n")
     out_df = {}
     def time_round(x):
-        return "%11.1f" % x
+        return "%12.2f" % x
     out_df["SP2_datetime_in_sec"] = ds.TimeWave.values
     out_df["SP2_date"] = ds.time.dt.strftime("%Y/%m/%d")
     out_df["SP2_time"] = ds.time.dt.strftime("%H:%M:%S")
@@ -190,7 +190,7 @@ def write_dat_concs_arm(ds, file_name, location, lat_lon_string, deltaSize=0.005
     out_df["SP2_Dgeo"] = np.sqrt(SpecSizeBins[:-1] * SpecSizeBins[1:])
     out_df["SP2_Dmax"] = SpecSizeBins[1:]
     for i in range(num_bins):
-        out_df["SP2_cnts_%d" % i] = ds.ScatNumEnsembleBC.values[:, i] / dlogDp[i]
+        out_df["SP2_cnts_%d" % i] = ds.IncanNumEnsemble.values[:, i] / dlogDp[i]
     
     if num_times > num_bins:
         out_df["SP2_Dmin"] = np.pad(

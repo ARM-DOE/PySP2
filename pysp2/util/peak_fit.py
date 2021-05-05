@@ -66,7 +66,7 @@ def _calc_incan_ratio(my_ds, ch1, ch2):
     Base_ch2_tile = np.tile(Base_ch2, (data_ch1.shape[1], 1)).T
     finite_mask = np.logical_and(
         np.isfinite(PeakPos_ch1_tile), halfDecay_ch1_tile)
-    finite_mask = np.logical_and(finite_mask, data_ch1 - Base_ch1_tile > 0)
+    #finite_mask = np.logical_and(finite_mask, data_ch1 - Base_ch1_tile > 0)
     finite_mask = np.logical_and(finite_mask, data_ch2 - Base_ch2_tile > 0)
     counting_up = np.tile(np.arange(data_ch1.shape[1]), (data_ch1.shape[0], 1))
     range_mask = np.logical_and(
