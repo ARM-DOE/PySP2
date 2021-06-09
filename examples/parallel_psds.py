@@ -10,12 +10,12 @@ from dask_jobqueue import PBSCluster
 from distributed import Client, wait
 from datetime import datetime, timedelta
 
-sp2b_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2X2.00/'
-sp2baux_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2auxX2.00/'
+sp2b_path = '/lustre/or-hydra/cades-arm/rjackson/mosaossp2M1.00/'
+sp2baux_path = '/lustre/or-hydra/cades-arm/rjackson/mosaossp2auxM1.00/'
 
-dat_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2X2.a1/'
-out_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2X2.b1/psd/'
-quicklook_path = '/lustre/or-hydra/cades-arm/rjackson/nsaaossp2X2.b1/quicklooks/'
+dat_path = '/lustre/or-hydra/cades-arm/rjackson/mosaossp2M1.a1/'
+out_path = '/lustre/or-scratch/cades-arm/rjackson/mosaossp2M1.b1/psd/'
+quicklook_path = '/lustre/or-scratch/cades-arm/rjackson/mosaossp2M1.b1/quicklooks/'
 cal_path = '/home/rjackson/PySP2/examples/Unit25CAL_20201016_PostDMT_AQ_FullereneEquiv.txt'
 
 
@@ -30,18 +30,20 @@ def process_file(fname, hk_file, ini_file, my_day):
         os.makedirs(quicklook_path + '/' + my_day)
     print("Processing %s" % fname)
     my_binary = pysp2.io.read_dat(fname, type='particle')
-    Globals = pysp2.util.DMTGlobals(cal_path)
+    Globals = pysp2.util.DMTGlobals()
     particles = pysp2.util.calc_diams_masses(
-        my_binary, factor=1.3, Globals=Globals)
+        my_binary, factor=1, Globals=Globals)
     return particles
     
 def process_day(my_day):
     all_files = sorted(glob(dat_path + '*.raw.' + my_day + 'x*.dat'))
-    ini_file = sorted(glob(sp2baux_path + '*' + my_day + '*.ini'))[0]
+    ini_file = sorted(glob(sp2b_path + '*' + my_day + '*.ini'))[0]
     
     my_day_plus_one = datetime.strptime(my_day, '%Y%m%d') + timedelta(days=1)
     my_day_plus_one = my_day_plus_one.strftime('%Y%m%d')
     hk_files = sorted(glob(sp2baux_path + '*raw.' + my_day + '*.hk'))
+
+    print(hk_files)
     if len(hk_files) == 0:
         return
     try:
