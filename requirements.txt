@@ -5,3 +5,4 @@ xarray
 act-atmos
 xlrd
 numba
+pytest
