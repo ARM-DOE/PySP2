@@ -106,7 +106,10 @@ def read_sp2(file_name, debug=False, arm_convention=True):
                     struck.unpack(spareFmt, my_data[dataStartPoint:dataStartPoint+4*num_spare_cols]))
 
         UTCtime = TimeDiv10000 * 10000 + TimeRemainder
-        UTCdatetime = np.array([datetime.fromtimestamp(x) for x in UTCtime])
+        diff_epoch_1904 = (
+            datetime(1970, 1, 1) - datetime(1904, 1, 1)).total_seconds()
+        UTCdatetime = np.array([
+            datetime.fromtimestamp(x - diff_epoch_1904) for x in UTCtime])
         DateTimeWaveUTC = UTCtime
 
         DateTimeWave = (dt - datetime(1904, 1, 1)).total_seconds() + TimeWave
