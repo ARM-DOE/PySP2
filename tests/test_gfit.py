@@ -7,9 +7,9 @@ def test_gaussian_fit():
     my_binary = pysp2.util.gaussian_fit(my_sp2b, my_ini, parallel=False)
     assert my_binary.PkHt_ch1.max() == 62666.6
     np.testing.assert_almost_equal(
-        np.nanmax(my_binary.PkHt_ch0.values), 98708.92915295)
+        np.nanmax(my_binary.PkHt_ch0.values), 98708.92915295, decimal=1)
     np.testing.assert_almost_equal(
-        np.nanmax(my_binary.PkHt_ch4.values), 54734.05714286)
+        np.nanmax(my_binary.PkHt_ch4.values), 54734.05714286, decimal=1)
 
 def test_psds():
     my_sp2b = pysp2.io.read_sp2(pysp2.testing.EXAMPLE_SP2B)
