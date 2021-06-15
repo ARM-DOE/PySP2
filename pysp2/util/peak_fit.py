@@ -455,15 +455,8 @@ def _fit_record_incan_ave_base(my_ds, channel, num_trig_pts):
     denominator = np.sum(data2[:, 20:81], axis=1)
     peak2area = np.max(data2, axis=1)/denominator
 
-    if channel in [1, 5]:
-        upperbound = 100000.
-        lowerbound = 0.063
-    else:
-        upperbound = 1000000.
-        lowerbound = -1000000.
-
     conditions = np.logical_and.reduce(
-        (V_max - base > 1, V_maxloc > 0, V_maxloc < data.shape[1], peak2area > lowerbound, peak2area < upperbound))
+        (V_max - base > 1, V_maxloc > 0, V_maxloc < data.shape[1]))
     height = np.where(conditions, V_max - base, np.nan)
     pos = np.where(conditions, V_maxloc, np.nan)
     base = np.where(conditions, base, np.nan)
