@@ -111,12 +111,12 @@ if __name__ == '__main__':
     client = Client(cluster)
 
     print("Waiting for workers before starting processing...")
-    client.wait_for_workers(9)
+    #client.wait_for_workers(9)
     #for day in sp2_date_list:
     #    print("Processing %s" % day)
     #    process_day(day)
     #print(sp2_date_list)
-    #process_day('20200218')
-    results = client.map(process_day, sp2_date_list)
-    wait(results)
+    process_day('20191216')
+    #results = client.map(process_day, sp2_date_list)
+    #wait(results)
     del client
