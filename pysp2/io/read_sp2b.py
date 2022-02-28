@@ -2,9 +2,8 @@ import xarray as xr
 import struct
 import numpy as np
 import platform
-import dask.bag as db
 
-from datetime import datetime, timedelta, tzinfo
+from datetime import datetime
 
 def read_sp2(file_name, debug=False, arm_convention=True):
     """
@@ -13,8 +12,18 @@ def read_sp2(file_name, debug=False, arm_convention=True):
 
     Parameters
     ----------
-     file_name:
-    :return:
+    file_name: str
+        The name of the .sp2b file to read.
+    debug: bool
+        Set to true for verbose output.
+    arm_convention: bool
+        If True, then the file name will follow ARM standard naming conventions.
+        If False, then the file name follows the SP2 default naming convention.
+
+    Returns
+    -------
+    dataset: xarray.Dataset
+        The xarray Dataset containing the raw SP2 waveforms for each particle.
     """
 
     my_data = open(file_name, "rb").read()
@@ -110,7 +119,6 @@ def read_sp2(file_name, debug=False, arm_convention=True):
             datetime(1970, 1, 1) - datetime(1904, 1, 1)).total_seconds()
         UTCdatetime = np.array([
             datetime.fromtimestamp(x - diff_epoch_1904) for x in UTCtime])
-        DateTimeWaveUTC = UTCtime
 
         DateTimeWave = (dt - datetime(1904, 1, 1)).total_seconds() + TimeWave
 
@@ -127,10 +135,9 @@ def read_sp2(file_name, debug=False, arm_convention=True):
         DateTimeWave = xr.DataArray(DateTimeWave, dims={'event_index': EventIndex})
         TimeWave = xr.DataArray(TimeWave, dims={'event_index': EventIndex})
         my_ds = xr.Dataset({'time': Time, 'Flag': Flag, 'Res1': Res1, 'Res5': Res5,
-                                'Res6': Res6, 'Res7': Res7, 'Res8': Res8, 'EventIndex': EventInd,
+                            'Res6': Res6, 'Res7': Res7, 'Res8': Res8, 'EventIndex': EventInd,
                             'DateTimeWaveUTC': DateTimeWaveUTC, 'TimeWave': TimeWave,
                             'DateTimeWave': DateTimeWave})
-
 
         for i in range(numChannels):
             temp_array = np.zeros((numRecords, numCols), dtype='int')

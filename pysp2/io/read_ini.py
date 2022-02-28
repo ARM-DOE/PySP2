@@ -13,7 +13,7 @@ def read_config(file):
 
     Returns
     -------
-    config: ConfigParser() object
+    config: configparser.ConfigParser
         The ConfigParser object containing the structure of the INI file
     """
 
