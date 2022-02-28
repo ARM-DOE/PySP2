@@ -22,7 +22,7 @@ def read_sp2(file_name, debug=False, arm_convention=True):
 
     Returns
     -------
-    dataset: xarray Dataset
+    dataset: xarray.Dataset
         The xarray Dataset containing the raw SP2 waveforms for each particle.
     """
 

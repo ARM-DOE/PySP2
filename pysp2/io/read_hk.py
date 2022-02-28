@@ -22,7 +22,7 @@ def read_hk_file(file_name):
 
     Returns
     -------
-    hk_df: pandas DataFrame
+    hk_df: pandas.DataFrame
         The housekeeping information in a pandas DataFrame
     """
 
@@ -54,7 +54,7 @@ def get_hk_variable_names(my_df):
 
     Parameters
     ----------
-    my_df: ACT Dataset
+    my_df: xarray.Dataset
         The dataframe to get the variable names from
 
     Returns
@@ -77,8 +77,8 @@ def read_multi_hk_file(file_path):
 
     Returns
     -------
-    my_df: ACT dataset
-        The pandas DataFrame containing the data loaded.
+    my_df: xarray.Dataset
+        The xarray Dataset containing the data loaded.
     """
 
     the_list = []

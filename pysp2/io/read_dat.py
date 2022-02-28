@@ -25,7 +25,7 @@ def read_dat(file_name, type):
             'conc': Load timeseries of concentrations.
     Returns
     -------
-    ds: xarray Dataset
+    ds: xarray.Dataset
         The xarray dataset to store the parameters in.
     """
 
@@ -62,6 +62,11 @@ def read_arm_dat(file_name, num_bins=199):
     num_bins: int or None
        Number of size distribution bins in the file. Set to None to
        have PySP2 attempt to automatically detect this.
+
+    Returns
+    -------
+    ds: pandas.DataFrame
+        The pandas dataframe containing the data.
     """
     
     fname = sorted(glob(file_name, recursive=True))

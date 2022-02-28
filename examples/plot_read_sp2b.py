@@ -1,3 +1,8 @@
+"""
+Example for plotting a wave in a .sp2b file
+-------------------------------------------------------------
+
+"""
 import pysp2
 import matplotlib.pyplot as plt
 
