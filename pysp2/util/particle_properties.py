@@ -1,4 +1,3 @@
-import act
 import numpy as np
 import xarray as xr
 import datetime
@@ -8,7 +7,7 @@ from .DMTGlobals import DMTGlobals
 def calc_diams_masses(input_ds, debug=True, factor=1.0,
                       Globals=None):
     """
-    Calculates the scattering and incadescence diameters/BC masses for each particle.
+    Calculates the scattering and incandescence diameters/BC masses for each particle.
 
     Parameters
     ----------
@@ -22,6 +21,7 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0,
     Globals: DMTGlobals structure or None
         DMTGlobals structure containing calibration coefficients. Set to
         None to use default values for MOSAiC.
+
     Returns
     -------
     output_ds: ACT Dataset
@@ -36,12 +36,6 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0,
 
     PkHt_ch0 = np.nanmax(np.stack([input_ds['PkHt_ch0'].values, input_ds['FtAmp_ch0'].values]), axis=0)
     PkHt_ch4 = np.nanmax(np.stack([input_ds['PkHt_ch4'].values, input_ds['FtAmp_ch4'].values]), axis=0)
-    #accepted = np.logical_and.reduce((PkHt_ch0 > Globals.ScatMinPeakHt1,
-    #                                  input_ds['PkFWHM_ch0'].values > Globals.ScatMinWidth,
-    #                                  input_ds['PkFWHM_ch0'].values < Globals.ScatMaxWidth,
-    #                                  input_ds['FtPos_ch0'].values < Globals.ScatMaxPeakPos,
-    #                                  input_ds['FtPos_ch0'].values >= Globals.ScatMinPeakPos,
-    #                                  np.greater(input_ds['FtAmp_ch0'].values, input_ds['PkFWHM_ch0'].values)))
     accepted = np.logical_and.reduce((
         input_ds['PkFWHM_ch0'].values > Globals.ScatMinWidth,
         input_ds['PkFWHM_ch0'].values < Globals.ScatMaxWidth,
@@ -63,11 +57,11 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0,
         print("Number of scattering particles rejected for peak width = %d" % rejectWidthTotal)
         print("Number of scattering particles rejected for fat peak = %d" % rejectFatPeakTotal)
         print("Number of scattering particles rejected for peak pos. = %d" % rejectFtPosTotal)
+
     PkHt_ch1 = input_ds['PkHt_ch1'].values
     PkHt_ch5 = input_ds['PkHt_ch5'].values
     width = input_ds['PkEnd_ch1'].values - input_ds['PkStart_ch1'].values 
     accepted_incand = width >= Globals.IncanMinWidth
-    #accepted_incand = width > -9999
     accepted_incand = np.logical_and(accepted_incand,
         input_ds['PkHt_ch2'].values >= Globals.IncanMinPeakHt1)
     accepted_incand = np.logical_and(accepted_incand,
@@ -102,9 +96,12 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0,
     output_ds = input_ds.copy()
     output_ds['Scatter'] = (('index'), Scatter)
     output_ds['logScatter'] = (('index'), np.log10(Scatter))
-    output_ds['ScatDiaSO4'] = (('index'), 1000*(-0.015256 + 16.835*Scatter**0.15502))
-    output_ds['ScatMassSO4'] = (('index'), 0.5236e-9*Globals.densitySO4*output_ds['ScatDiaSO4']**3)
-    output_ds['ScatDiaBC50'] = (('index'), 1000*(0.013416 + 25.066*(Scatter**0.18057)))
+    output_ds['ScatDiaSO4'] = xr.DataArray(1000*(-0.015256 + 16.835*Scatter**0.15502),
+                                           dims=['index'])
+    output_ds['ScatMassSO4'] = xr.DataArray(0.5236e-9 * Globals.densitySO4 * output_ds['ScatDiaSO4'].data ** 3,
+                                            dims=['index'])
+    output_ds['ScatDiaBC50'] = xr.DataArray(1000*(0.013416 + 25.066*(Scatter**0.18057)),
+                                            dims=['index'])
 
     sootMass_not_sat = factor * 1e-3 * (
         Globals.c0Mass1 + Globals.c1Mass1*PkHt_ch1 + Globals.c2Mass1*PkHt_ch1**2)
@@ -121,8 +118,8 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0,
 
     output_ds['sootMass'] = (('index'), sootMass)
     output_ds['sootDiam'] = (('index'), sootDiam)
-    output_ds['ScatDiaSO4'] = (('index'), output_ds['ScatDiaSO4'].where(accepted))
-    output_ds['ScatMassSO4'] = (('index'), output_ds['ScatMassSO4'].where(accepted))
+    output_ds['ScatDiaSO4'] = output_ds['ScatDiaSO4'].where(accepted)
+    output_ds['ScatMassSO4'] = output_ds['ScatMassSO4'].where(accepted)
 
     return output_ds
 
@@ -184,10 +181,8 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     IncanMassEnsemble = np.zeros_like(ScatNumEnsembleBC)
     ScatNumEnsemble = np.zeros((len(time_bins[:-1]), num_bins))
     ScatMassEnsemble = np.zeros_like(ScatNumEnsembleBC)
-    ScatFlag = particle_ds['ScatRejectKey'].values
     scatter_accept = ~np.isnan(particle_ds['Scatter'].values)
     incand_accept = ~np.isnan(sootMass)
-    IncanFlag = particle_ds['IncanRejectKey'].values
     try:
         OneOfEvery = int(config['Acquisition']['1 of Every'])
     except:
@@ -203,7 +198,6 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     scat_sat = PkHt_ch0 > DMTGlobal.ScatMaxPeakHt1
     ScatPos[scat_sat] = particle_ds['PkPos_ch4'].values[scat_sat]
 
-    PkDif = 0.4 * (IncandPos - ScatPos)
     NumFracBC = np.zeros_like(time_bins[:-1])
     NumFracBCSat = np.zeros_like(time_bins[:-1])
     NumConcScat1 = np.zeros_like(time_bins[:-1])
@@ -216,8 +210,6 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     MassScat2total = np.zeros_like(time_bins[:-1])
     MassIncand2 = np.zeros_like(time_bins[:-1])
     MassIncand2Sat = np.zeros_like(time_bins[:-1])
-    MassIncanSat = np.zeros_like(time_bins[:-1])
-    MassScatSat = np.zeros_like(time_bins[:-1])
     for t in range(len(time_bins) - 1):
         parts_time = np.logical_and(
             time_wave >= time_bins[t], time_wave <= time_bins[t + 1])

@@ -43,10 +43,10 @@ def plot_wave(ds, record_no, chn, plot_fit=True, init_kwargs=None, **kwargs):
         pos = spectra['FtPos_ch' + str(chn)].values
         base = spectra['Base_ch' + str(chn)].values
         width = spectra['PkFWHM_ch' + str(chn)].values # (2.35482/np.sqrt(2))
-        Y = _gaus(xspace, amplitude, pos, width, base)
+        Y = _gaus(xspace, amplitude, pos, width/2., base)
         ax.plot(xspace, Y)
         ax.text(0.7, 0.5, 'Fit Pos = %3.2f' % pos, transform=ax.transAxes)
-        ax.text(0.7, 0.6, 'Fit Width = %3.2f' % width, transform=ax.transAxes)
+        ax.text(0.7, 0.6, 'Fit Half Width = %3.2f' % width, transform=ax.transAxes)
         ax.text(0.7, 0.7, 'Fit Baseline = %3.2f' % base, transform=ax.transAxes)
         ax.text(0.7, 0.8, 'Fit Amplitude = %3.2f' % amplitude, transform=ax.transAxes)
 

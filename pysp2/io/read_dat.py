@@ -8,7 +8,7 @@ import platform
 import os
 
 from glob import glob
-from datetime import datetime, timedelta
+from datetime import datetime
 
 def read_dat(file_name, type):
     """
@@ -127,7 +127,6 @@ def read_calibration(directory):
             dt = datetime.strptime(date_str, '%Y%m%d')
             break
 
-    # First load the dataset scattering and incadesence diameters
     scat_ds = pd.read_csv(os.path.join(directory, '%sExptDetail_Scat.txt' % date_str), sep='\t')
     in_ds = pd.read_csv(os.path.join(directory, '%sExptDetail_Aq.txt' % date_str), sep='\t')
 
