@@ -1,4 +1,0 @@
-recursive-include pysp2 *.xls
-recursive-include pysp2 *.dat
-recursive-include pysp2 *.sp2b
-recursive-include pysp2 *.ini *.hk

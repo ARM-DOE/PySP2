@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example for plotting number of particles in housekeeping data &mdash; PySP2 1.0.0 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Example on plotting particle concentration data timeseries" href="plot_psd.html" />
+    <link rel="prev" title="Example for plotting a wave in a .sp2b file" href="plot_read_sp2b.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> PySP2
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../contributors_guide/index.html">Contributor’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_guide/index.html">User’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_read_sp2b.html">Example for plotting a wave in a .sp2b file</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example for plotting number of particles in housekeeping data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_psd.html">Example on plotting particle concentration data timeseries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers_guide/index.html">Developer Reference Manual</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PySP2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">&lt;no title&gt;</a> &raquo;</li>
+      <li>Example for plotting number of particles in housekeeping data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/auto_examples/plot_hk.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-source-auto-examples-plot-hk-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="example-for-plotting-number-of-particles-in-housekeeping-data">
+<span id="sphx-glr-source-auto-examples-plot-hk-py"></span><h1>Example for plotting number of particles in housekeeping data<a class="headerlink" href="#example-for-plotting-number-of-particles-in-housekeeping-data" title="Permalink to this headline">¶</a></h1>
+<img src="../../_images/sphx_glr_plot_hk_001.png" srcset="../../_images/sphx_glr_plot_hk_001.png" alt="plot hk" class = "sphx-glr-single-img"/><p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;xarray.Dataset&gt;
+Dimensions:                    (time: 86400)
+Coordinates:
+  * time                       (time) datetime64[ns] 2019-12-16T00:00:00.6000...
+Data variables: (12/45)
+    Sample Flow LFE            (time) float64 119.7 120.3 118.7 ... 119.2 121.0
+    YAG Power                  (time) float64 5.15 5.279 5.299 ... 5.166 5.214
+    Incand. Conc.              (time) float64 6.449 4.512 3.99 ... 7.94 10.06
+    Sheath Flow Read           (time) float64 1.006e+03 1.006e+03 ... 1e+03
+    YAG Crystal Temp           (time) float64 28.59 28.66 28.68 ... 28.69 28.52
+    YAG Heat Sink Temp         (time) float64 -68.5 -68.77 ... -69.45 -70.14
+    ...                         ...
+    Num of Particles           (time) int64 73 56 53 56 86 ... 223 203 241 214
+    Num Written to File        (time) int64 73 56 53 56 86 ... 223 203 241 214
+    Num in File                (time) int64 40 96 149 205 ... 23167 23408 23622
+    Laser Power Switch         (time) int64 1 1 1 1 1 1 1 1 ... 1 1 1 1 1 1 1 1
+    Sample Pump Power Switch   (time) int64 1 1 1 1 1 1 1 1 ... 1 1 1 1 1 1 1 1
+    Laser Temp                 (time) float64 0.9572 0.9572 ... 0.9572 0.9572
+Attributes:
+    _datastream:          mosaossp2auxM1.00
+    _site:                mos
+    _arm_standards_flag:  0
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pysp2</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">my_hk</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_hk_file</span><span class="p">(</span><span class="n">pysp2</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">EXAMPLE_HK</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_hk</span><span class="p">)</span>
+<span class="c1"># my_hk is a standard xarray dataset, so one can use xarray&#39;s plotting</span>
+<span class="c1"># capabilities in order to make the plot</span>
+<span class="n">my_hk</span><span class="p">[</span><span class="s1">&#39;Num of Particles&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.755 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-source-auto-examples-plot-hk-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/04e741b031df68aea85088cb421ee899/plot_hk.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_hk.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/9ca1f6082f15dd49b45cf20b49cb1cce/plot_hk.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_hk.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plot_read_sp2b.html" class="btn btn-neutral float-left" title="Example for plotting a wave in a .sp2b file" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plot_psd.html" class="btn btn-neutral float-right" title="Example on plotting particle concentration data timeseries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Robert Jackson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

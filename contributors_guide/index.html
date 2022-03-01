@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contributor’s Guide &mdash; PySP2 1.0.0 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="User’s Guide" href="../users_guide/index.html" />
+    <link rel="prev" title="PySP2 documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> PySP2
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributor’s Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contributor-covenant-code-of-conduct">Contributor Covenant Code of Conduct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-style">Code Style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-file-setup">Python File Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#github">GitHub</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">User’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_read_sp2b.html">Example for plotting a wave in a .sp2b file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_hk.html">Example for plotting number of particles in housekeeping data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_psd.html">Example on plotting particle concentration data timeseries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers_guide/index.html">Developer Reference Manual</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PySP2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Contributor’s Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/contributors_guide/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="contributor-s-guide">
+<h1>Contributor’s Guide<a class="headerlink" href="#contributor-s-guide" title="Permalink to this headline">¶</a></h1>
+<p>One pesky thing about Impostor’s Syndrome is that it tells you that you are
+not good enough to make a contribution. Let us assure you that that is very
+much false. We welcome contributions from anyone no matter what their skill
+level is. Contributions can be as easy as improving the documentation to as
+complex as adding new functionality for differing instruments and models.
+We are even open to speeding up the optimization code if you’re a mathematical
+genius.</p>
+<p>There are just some things that we ask of you. One is that your code be able
+to be distributed under the BSD 3-clause license, which is available in LICENSE
+in the main directory.</p>
+<p>One, we ask, that when on the GitHub forum or making contributions to PySP2
+that all developers and users follow the PyDDA code of conduct.</p>
+<div class="section" id="contributor-covenant-code-of-conduct">
+<h2>Contributor Covenant Code of Conduct<a class="headerlink" href="#contributor-covenant-code-of-conduct" title="Permalink to this headline">¶</a></h2>
+<p><strong>Our Pledge</strong></p>
+<p>In the interest of fostering an open and welcoming environment, we as
+contributors and maintainers pledge to making participation in our project
+and our community a harassment-free experience for everyone, regardless of
+age, body size, disability, ethnicity, gender identity and expression,
+level of experience, nationality, personal appearance, race, religion,
+or sexual identity and orientation.</p>
+<p><strong>Our Standards</strong></p>
+<p>Examples of behavior that contributes to creating a positive environment include:</p>
+<blockquote>
+<div><p>Using welcoming and inclusive language</p>
+<p>Being respectful of differing viewpoints and experiences</p>
+<p>Gracefully accepting constructive criticism</p>
+<p>Focusing on what is best for the community</p>
+<p>Showing empathy towards other community members</p>
+</div></blockquote>
+<p>Examples of unacceptable behavior by participants include:</p>
+<blockquote>
+<div><p>The use of sexualized language or imagery and unwelcome sexual attention or
+advances</p>
+<p>Trolling, insulting/derogatory comments, and personal or political attacks
+Public or private harassment</p>
+<p>Publishing others’ private information, such as a physical or electronic
+address, without explicit permission</p>
+<p>Other conduct which could reasonably be considered inappropriate in a
+professional setting</p>
+</div></blockquote>
+<p><em>Our Responsibilities</em></p>
+<p>Project maintainers are responsible for clarifying the standards of acceptable
+behavior and are expected to take appropriate and fair corrective action in
+response to any instances of unacceptable behavior.</p>
+<p>Project maintainers have the right and responsibility to remove, edit, or
+reject comments, commits, code, wiki edits, issues, and other contributions
+that are not aligned to this Code of Conduct, or to ban temporarily or
+permanently any contributor for other behaviors that they deem inappropriate,
+threatening, offensive, or harmful.</p>
+<p><strong>Scope</strong></p>
+<p>This Code of Conduct applies both within project spaces and in public spaces
+when an individual is representing the project or its community. Examples of
+representing a project or community include using an official project e-mail
+address, posting via an official social media account, or acting as an
+appointed representative at an online or offline event. Representation of a
+project may be further defined and clarified by project maintainers.</p>
+<p><strong>Enforcement</strong></p>
+<p>Instances of abusive, harassing, or otherwise unacceptable behavior may be
+reported by contacting the project team at
+<a class="reference external" href="mailto:rjackson&#37;&#52;&#48;anl&#46;gov">rjackson<span>&#64;</span>anl<span>&#46;</span>gov</a>. The project team will review
+and investigate all complaints, and will respond in a way that it deems
+appropriate to the circumstances. The project team is obligated to maintain
+confidentiality with regard to the reporter of an incident. Further details
+of specific enforcement policies may be posted separately.</p>
+<p>Project maintainers who do not follow or enforce the Code of Conduct in
+good faith may face temporary or permanent repercussions as determined
+by other members of the project’s leadership.</p>
+<p><strong>Attribution</strong></p>
+<p>This Code of Conduct is adapted from the Contributor Covenant, version 1.4,
+available at <a class="reference external" href="http://contributor-covenant.org/version/1/4">http://contributor-covenant.org/version/1/4</a></p>
+</div>
+<div class="section" id="code-style">
+<h2>Code Style<a class="headerlink" href="#code-style" title="Permalink to this headline">¶</a></h2>
+<p>PySP2 follows the PEP8 code standards. To make sure the code follows the PEP8
+style, there are checkers available out there such as pylint and pycodestyle.</p>
+<dl class="simple">
+<dt>For more on PEP8 style:</dt><dd><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0008/">https://www.python.org/dev/peps/pep-0008/</a></p>
+</dd>
+</dl>
+<p>To install pycode style:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">pycodestyle</span>
+</pre></div>
+</div>
+<p>To install pylint:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">pylint</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="python-file-setup">
+<h2>Python File Setup<a class="headerlink" href="#python-file-setup" title="Permalink to this headline">¶</a></h2>
+<p>In a new .py file, the top of the code should have the function, sphinx comments
+and the public and private functions within the .py file. Public fuunctions are
+listed first and then private functions and classes. Private functions should
+have an underscore in front of the name. A space is needed between the last
+function and the closing docstring quotation marks.</p>
+<p>Following the introduction code, modules are then added. To follow PEP8
+standards, modules should be added in the following order:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Standard library imports</p></li>
+<li><p>Related third party imports</p></li>
+<li><p>Local application imports</p></li>
+</ol>
+</div></blockquote>
+<p>Following the main function def line, but before the code within it, a docstring is
+needed to explain all arguments, returns, references, and other information. Please
+follow the NumPy documentation style:</p>
+<p><a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt</a></p>
+<p>For an example format of the documentation, see this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_dat</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This reads the .dat files that generate the intermediate parameters used</span>
+<span class="sd">    by the Igor processing. Wildcards are supported.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_name: str</span>
+<span class="sd">        The name of the file to save to. Use a wildcard to open multiple files at once.</span>
+<span class="sd">    type: str</span>
+<span class="sd">        This parameter must be one of:</span>
+<span class="sd">            &#39;particle&#39;: Load individual particle timeseries from .dat file</span>
+<span class="sd">            &#39;conc&#39;: Load timeseries of concentrations.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ds: xarray Dataset</span>
+<span class="sd">        The xarray dataset to store the parameters in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="p">(</span><span class="n">your</span> <span class="n">code</span> <span class="ow">is</span> <span class="n">here</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>When adding a new function to PySP2 it is important to add it to the __init__.py
+under the corresponding folder.</p>
+<p>Create a test function and use assert to test the calculated values against known
+values. For an example, see:</p>
+<p><a class="reference external" href="https://github.com/ARM-DOE/PySP2/tests/test_gfit.py">https://github.com/ARM-DOE/PySP2/tests/test_gfit.py</a></p>
+<p>Pytest will run this test whenever a pull request is made to the master branch
+of the ARM-DOE/PySP2 repository. This will then allow the maintainers to
+determine how the pull request will affect the functionality of PySP2.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_gaussian_fit</span><span class="p">():</span>
+    <span class="n">my_sp2b</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_sp2</span><span class="p">(</span><span class="n">pysp2</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">EXAMPLE_SP2B</span><span class="p">)</span>
+    <span class="n">my_ini</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_config</span><span class="p">(</span><span class="n">pysp2</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">EXAMPLE_INI</span><span class="p">)</span>
+    <span class="n">my_binary</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">gaussian_fit</span><span class="p">(</span><span class="n">my_sp2b</span><span class="p">,</span> <span class="n">my_ini</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">my_binary</span><span class="o">.</span><span class="n">PkHt_ch1</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">==</span> <span class="mf">62669.4</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_almost_equal</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">my_binary</span><span class="o">.</span><span class="n">PkHt_ch0</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="mf">98708.92915295</span><span class="p">,</span> <span class="n">decimal</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_almost_equal</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">my_binary</span><span class="o">.</span><span class="n">PkHt_ch4</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="mf">54734.05714286</span><span class="p">,</span> <span class="n">decimal</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="github">
+<h2>GitHub<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
+<p>When you make contributions to PySP2, we ask that you make your own fork
+of ARM-DOE/PySP2 and create your own branch from within that fork. After
+forking the repository on GitHub, create your own branch by doing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">this_branch</span>
+<span class="n">git</span> <span class="n">branch</span> <span class="n">this_branch</span>
+</pre></div>
+</div>
+<p>Make your changes, commit, and then to push to that branch do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="n">this_branch</span>
+</pre></div>
+</div>
+<p>After that is done, make a pull request from that branch to the master branch
+on ARM-DOE/PySP2 where the maintainers will review your pull request.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="PySP2 documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../users_guide/index.html" class="btn btn-neutral float-right" title="User’s Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Robert Jackson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

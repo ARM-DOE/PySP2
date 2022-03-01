@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Processing timeseries data &mdash; PySP2 1.0.0 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="../source/auto_examples/index.html" />
+    <link rel="prev" title="Viewing housekeeping data" href="view_hk_data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> PySP2
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide/index.html">Contributor’s Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User’s Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="processing_raw_file.html">Processing raw SP2 files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="particle_information.html">Information contained in particle wave files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="view_hk_data.html">Viewing housekeeping data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Processing timeseries data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_read_sp2b.html">Example for plotting a wave in a .sp2b file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_hk.html">Example for plotting number of particles in housekeeping data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_psd.html">Example on plotting particle concentration data timeseries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers_guide/index.html">Developer Reference Manual</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PySP2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">User’s Guide</a> &raquo;</li>
+      <li>Processing timeseries data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/users_guide/processing_time_series.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="processing-timeseries-data">
+<h1>Processing timeseries data<a class="headerlink" href="#processing-timeseries-data" title="Permalink to this headline">¶</a></h1>
+<p>In order to process the particle data into mass and size distributions, the
+data must be both filtered of artifacts that can be caused by particle
+coincidence in the beam as well as noise. In order to do this, the particles
+are filtered out using criteria related to the particle waveform properties.
+These settings are a part of the <code class="xref py py-func docutils literal notranslate"><span class="pre">pysp2.util.DMTGlobals()</span></code> class.</p>
+<p>Using the DMTGlobals class, one can customize the criteria used to
+filter out artifacts in the data. The <code class="xref py py-func docutils literal notranslate"><span class="pre">pysp2.util.DMTGlobals()</span></code> structure
+is initialized with a default set of values with criteria that are commonly
+used for processing. The filtering criteria that you can specify are listed
+in the table below.</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">List of filtering criteria in DMTGlobals</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable name</p></th>
+<th class="head"><p>Variable description</p></th>
+<th class="head"><p>Default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ScatMaxPeakHt1</p></td>
+<td><p>Maximum peak height for scattering channel 0</p></td>
+<td><p>60000</p></td>
+</tr>
+<tr class="row-odd"><td><p>ScatMaxPeakHt2</p></td>
+<td><p>Maximum peak height for scattering channel 4</p></td>
+<td><p>60000</p></td>
+</tr>
+<tr class="row-even"><td><p>ScatMinPeakHt1</p></td>
+<td><p>Minimum peak height for scattering channel 0</p></td>
+<td><p>250</p></td>
+</tr>
+<tr class="row-odd"><td><p>ScatMinPeakHt2</p></td>
+<td><p>Minimum peak height for scattering channel 4</p></td>
+<td><p>250</p></td>
+</tr>
+<tr class="row-even"><td><p>ScatMinWidth</p></td>
+<td><p>Minimum scattering width</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>ScatMaxWidth</p></td>
+<td><p>Maximum scattering width</p></td>
+<td><p>90</p></td>
+</tr>
+<tr class="row-even"><td><p>ScatMinPeakPos</p></td>
+<td><p>Scattering minimum peak position</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-odd"><td><p>ScatMaxPeakPos</p></td>
+<td><p>Scattering maximum peak position</p></td>
+<td><p>90</p></td>
+</tr>
+<tr class="row-even"><td><p>IncanMinPeakHt1</p></td>
+<td><p>Incandescence minimum peak position ch 1</p></td>
+<td><p>200</p></td>
+</tr>
+<tr class="row-odd"><td><p>IncanMinPeakHt1</p></td>
+<td><p>Incandescence minimum peak position ch 5</p></td>
+<td><p>200</p></td>
+</tr>
+<tr class="row-even"><td><p>IncanMaxPeakHt1</p></td>
+<td><p>Incandescence minimum peak position ch 1</p></td>
+<td><p>60000</p></td>
+</tr>
+<tr class="row-odd"><td><p>IncanMaxPeakHt1</p></td>
+<td><p>Incandescence minimum peak position ch 5</p></td>
+<td><p>60000</p></td>
+</tr>
+<tr class="row-even"><td><p>IncanMinWidth</p></td>
+<td><p>Incandescence minimum peak width</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>IncanMaxWidth</p></td>
+<td><p>Incandescence maximum peak with</p></td>
+<td><p>np.inf</p></td>
+</tr>
+<tr class="row-even"><td><p>IncanMinPeakPos</p></td>
+<td><p>Incandescence minimum peak position</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-odd"><td><p>IncanMaxPeakPos</p></td>
+<td><p>Incandescence maximum peak position</p></td>
+<td><p>90</p></td>
+</tr>
+<tr class="row-even"><td><p>IncanMinPeakRatio</p></td>
+<td><p>The minimum peak ratio between ch5 and 6 and ch1 and 2</p></td>
+<td><p>0.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>IncanMaxPeakRatio</p></td>
+<td><p>The minimum peak ratio between ch5 and 6 and ch1 and 2</p></td>
+<td><p>25</p></td>
+</tr>
+<tr class="row-even"><td><p>IncanMaxPeakOffset</p></td>
+<td><p>The maximum offset between the peaks of ch5/6 or ch1/2</p></td>
+<td><p>11</p></td>
+</tr>
+</tbody>
+</table>
+<p>In addition, in order to provide the most accurate estimate of particle
+masses and sizes, a calibration is typically performed on the SP2 prior to
+a field experiment. These calibrations will output coefficients used to
+calculate particle sizes and masses in a .cal file. In order to use the
+specified calibration in the mass calculations, you simply enter the
+.cal file as the parameter to DMTGlobals when initializing your
+structure:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">global_settings</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">DMTGlobals</span><span class="p">(</span><span class="s1">&#39;my_calibration.cal&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="code docutils literal notranslate"><span class="pre">global_settings</span></code> are then used as an input to the particle size
+and mass calculations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">particles</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">calc_diams_masses</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="nb">globals</span><span class="o">=</span><span class="nb">globals</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After the particle sizes are calculated, you need to combine both the
+housekeeping and configuration data with these particle masses in order to
+calculate the particle size distributions. An example snippet that
+demonstrates the entire process is below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_psds</span><span class="p">():</span>
+    <span class="n">my_sp2b</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_sp2</span><span class="p">(</span><span class="n">pysp2</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">EXAMPLE_SP2B</span><span class="p">)</span>
+    <span class="n">my_ini</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_config</span><span class="p">(</span><span class="n">pysp2</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">EXAMPLE_INI</span><span class="p">)</span>
+    <span class="n">my_binary</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">gaussian_fit</span><span class="p">(</span><span class="n">my_sp2b</span><span class="p">,</span> <span class="n">my_ini</span><span class="p">)</span>
+    <span class="n">my_hk</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_hk_file</span><span class="p">(</span><span class="n">pysp2</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">EXAMPLE_HK</span><span class="p">)</span>
+    <span class="n">my_binary</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">calc_diams_masses</span><span class="p">(</span><span class="n">my_binary</span><span class="p">)</span>
+    <span class="n">my_psds</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">process_psds</span><span class="p">(</span><span class="n">my_binary</span><span class="p">,</span> <span class="n">my_hk</span><span class="p">,</span> <span class="n">my_ini</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The my_psds structure contains an xarray dataset with the following
+timeseries values:</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Particle number and mass size distributions</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>time</p></th>
+<th class="head"><p>Time in seconds since the epoch</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>TimeWave</p></td>
+<td><p>Time in seconds since Jan 1, 1904 at midnight</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumConcIncan</p></td>
+<td><p>Number concentration of incandescence particles [cm-3]</p></td>
+</tr>
+<tr class="row-even"><td><p>NumConcIncanScat</p></td>
+<td><p>Number concentration of incandescence particles also detected by scattering channel [cm-3]</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumConcTotal</p></td>
+<td><p>Total number concentration of all particles [cm-3]</p></td>
+</tr>
+<tr class="row-even"><td><p>NumConcScatSat</p></td>
+<td><p>Number concentration of scattering particles that saturate the channel [cm-3]</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumConcScat</p></td>
+<td><p>Number concentration of scattering particles excluding saturated signals [cm-3]</p></td>
+</tr>
+<tr class="row-even"><td><p>MassIncand2</p></td>
+<td><p>Mass concentration of incandescence particles [ng cm-3]</p></td>
+</tr>
+<tr class="row-odd"><td><p>MassIncand2Sat</p></td>
+<td><p>Mass concentration of particles detected by both incandescence and scattering channels [nm cm-3]</p></td>
+</tr>
+<tr class="row-even"><td><p>MassIncand2total</p></td>
+<td><p>Total mass concentration of particles [ng cm-3]</p></td>
+</tr>
+<tr class="row-odd"><td><p>MassScat2</p></td>
+<td><p>Mass concentration of particles detected by scattering channel</p></td>
+</tr>
+<tr class="row-even"><td><p>ScatNumEnsemble</p></td>
+<td><p>Particle size distribution of scattering particles [cm-3 per bin]</p></td>
+</tr>
+<tr class="row-odd"><td><p>ScatMassEnsemble</p></td>
+<td><p>Particle mass size distribution of scattering particles [ng cm-3 per bin]</p></td>
+</tr>
+<tr class="row-even"><td><p>IncanNumEnsemble</p></td>
+<td><p>Incandescence particle size distribution [cm-3 per bin]</p></td>
+</tr>
+<tr class="row-odd"><td><p>IncanMassEnsemble</p></td>
+<td><p>Incandescence particle mass distribution [ng cm-3 per bin]</p></td>
+</tr>
+<tr class="row-even"><td><p>ScatNumEnsembleBC</p></td>
+<td><p>Scattering particle size distribution assuming black carbon [ng cm-3 per bin]</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumFracBC</p></td>
+<td><p>Number fraction of black carbon particles</p></td>
+</tr>
+</tbody>
+</table>
+<p>These data can then be either save to netCDF by using the .to_netcdf()
+directive from xarray, or to a .dat file using <code class="xref py py-func docutils literal notranslate"><span class="pre">pysp2.io.write_dat_concs()</span></code>.</p>
+<p>PySP2 also supports the loading of .dat files generated by the IGOR code
+using the <code class="xref py py-func docutils literal notranslate"><span class="pre">pysp2.io.read_dat()</span></code> function.</p>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="view_hk_data.html" class="btn btn-neutral float-left" title="Viewing housekeeping data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../source/auto_examples/index.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Robert Jackson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

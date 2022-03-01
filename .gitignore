@@ -1,7 +1,0 @@
-build/*
-build
-__pycache__
-*.xml
-.idea
-*.pyc
-*.pyx

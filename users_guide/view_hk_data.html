@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viewing housekeeping data &mdash; PySP2 1.0.0 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Processing timeseries data" href="processing_time_series.html" />
+    <link rel="prev" title="Information contained in particle wave files" href="particle_information.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> PySP2
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributors_guide/index.html">Contributor’s Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User’s Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="processing_raw_file.html">Processing raw SP2 files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="particle_information.html">Information contained in particle wave files</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Viewing housekeeping data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processing_time_series.html">Processing timeseries data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_read_sp2b.html">Example for plotting a wave in a .sp2b file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_hk.html">Example for plotting number of particles in housekeeping data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_psd.html">Example on plotting particle concentration data timeseries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers_guide/index.html">Developer Reference Manual</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PySP2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">User’s Guide</a> &raquo;</li>
+      <li>Viewing housekeeping data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/users_guide/view_hk_data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="viewing-housekeeping-data">
+<h1>Viewing housekeeping data<a class="headerlink" href="#viewing-housekeeping-data" title="Permalink to this headline">¶</a></h1>
+<p>PySP2 contains built-in modules for loading and viewing SP2 housekeeping files with
+a .hk extension. These housekeeping files are then converted into xarray Datasets so that they
+can be easily analyzed and plotted.
+In order to load a housekeeping file, one simply does the following command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_hk</span> <span class="o">=</span> <span class="n">pysp2</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_hk_file</span><span class="p">(</span><span class="n">pysp2</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">EXAMPLE_HK</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">pysp2.io.read_hk_file()</span></code> function returns a standard xarray dataset. All of the variables
+are 1 Hz timeseries. Therefore, each one of the variables in the xarray dataset can be visualized
+using the standard xarray routines like this:</p>
+<blockquote>
+<div><p>my_hk[‘Num of Particles’].plot()
+plt.show()</p>
+</div></blockquote>
+<img alt="../_images/num_of_particles.png" src="../_images/num_of_particles.png" />
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="particle_information.html" class="btn btn-neutral float-left" title="Information contained in particle wave files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="processing_time_series.html" class="btn btn-neutral float-right" title="Processing timeseries data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Robert Jackson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
