@@ -3,4 +3,5 @@ sphinx_rtd_theme
 sphinx_gallery
 xarray
 act-atmos
+matplotlib
 -e .
