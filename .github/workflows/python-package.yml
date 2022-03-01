@@ -39,3 +39,7 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+    - name: Bulld sphinx docs
+       uses: ammaraskar/sphinx-action@0.4
+       with:
+        docs-folder: "docs/"
