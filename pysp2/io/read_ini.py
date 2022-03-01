@@ -1,5 +1,6 @@
 import configparser
 
+
 def read_config(file):
     """
     This loads the INI file into an easy to use ConfigParser() object.

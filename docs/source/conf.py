@@ -13,9 +13,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-import sphinx
-import sphinx_gallery
-
+import pysp2
 
 # -- Project information -----------------------------------------------------
 
@@ -24,7 +22,7 @@ copyright = '2022, Robert Jackson'
 author = 'Robert Jackson'
 
 # The full version, including alpha/beta/rc tags
-import pysp2
+
 version = pysp2.__version__
 release = pysp2.__version__
 

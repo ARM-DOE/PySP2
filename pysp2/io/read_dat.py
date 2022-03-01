@@ -10,6 +10,7 @@ import os
 from glob import glob
 from datetime import datetime
 
+
 def read_dat(file_name, type):
     """
     This reads the .dat files that generate the intermediate parameters used
@@ -68,18 +69,18 @@ def read_arm_dat(file_name, num_bins=199):
     ds: pandas.DataFrame
         The pandas dataframe containing the data.
     """
-    
+
     fname = sorted(glob(file_name, recursive=True))
     ds_list = []
     i = 0
     for f in fname:
         try:
             ds = pd.read_csv(f, sep="\t", skiprows=32,
-                             index_col="SP2_datetime_in_sec")  
+                             index_col="SP2_datetime_in_sec")
             ds_list.append(ds)
         except (pd.errors.EmptyDataError, IndexError):
             continue
-    
+
     ds = ds_list[0]
     SP2_Dmin = ds['SP2_Dmin'].values
     SP2_Dgeo = ds['SP2_Dgeo'].values
@@ -97,8 +98,9 @@ def read_arm_dat(file_name, num_bins=199):
     ds['SP2_Dmax'] = SP2_Dmax
     ds['SP2_date'] = SP2_date
     ds['SP2_time'] = SP2_time
-    
+
     return ds
+
 
 def read_calibration(directory):
     """
@@ -126,7 +128,6 @@ def read_calibration(directory):
             file_name = f.split("\\")[-1]
         else:
             file_name = f.split("/")[-1]
-
         date_str = file_name[0:8]
         if date_str.isnumeric():
             dt = datetime.strptime(date_str, '%Y%m%d')

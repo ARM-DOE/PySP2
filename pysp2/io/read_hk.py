@@ -10,6 +10,7 @@ import numpy as np
 
 from glob import glob
 
+
 def read_hk_file(file_name):
     """
     This procedure will read in an SP2 housekeeping file and then
@@ -28,7 +29,6 @@ def read_hk_file(file_name):
 
     my_df = act.io.csvfiles.read_csv(file_name, sep="\t")
     # Parse time from filename
-    the_file = os.path.split(file_name)[1]
     start_time = datetime.datetime(1904, 1, 1)
     my_df = my_df.set_index({'index': 'Time (sec)'})
     my_df = my_df.rename({'index': 'time'})
@@ -47,6 +47,7 @@ def read_hk_file(file_name):
 
     return my_df
 
+
 def get_hk_variable_names(my_df):
     """
     This procedure will return al ist of variables in the
@@ -63,6 +64,7 @@ def get_hk_variable_names(my_df):
         The names of each variable in the file.
     """
     return [my_str for my_str in my_df.variables.keys()]
+
 
 def read_multi_hk_file(file_path):
     """

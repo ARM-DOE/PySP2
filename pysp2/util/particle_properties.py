@@ -4,8 +4,7 @@ import datetime
 
 from .DMTGlobals import DMTGlobals
 
-def calc_diams_masses(input_ds, debug=True, factor=1.0,
-                      Globals=None):
+def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
     """
     Calculates the scattering and incandescence diameters/BC masses for each particle.
 
@@ -60,43 +59,38 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0,
 
     PkHt_ch1 = input_ds['PkHt_ch1'].values
     PkHt_ch5 = input_ds['PkHt_ch5'].values
-    width = input_ds['PkEnd_ch1'].values - input_ds['PkStart_ch1'].values 
+    width = input_ds['PkEnd_ch1'].values - input_ds['PkStart_ch1'].values
     accepted_incand = width >= Globals.IncanMinWidth
     accepted_incand = np.logical_and(accepted_incand,
-        input_ds['PkHt_ch2'].values >= Globals.IncanMinPeakHt1)
+                                     input_ds['PkHt_ch2'].values >= Globals.IncanMinPeakHt1)
     accepted_incand = np.logical_and(accepted_incand,
-        input_ds['PkHt_ch1'].values >= Globals.IncanMinPeakHt1)
+                                     input_ds['PkHt_ch1'].values >= Globals.IncanMinPeakHt1)
     sat_incand = np.logical_and(
         PkHt_ch1 >= Globals.IncanMaxPeakHt1, accepted_incand)
-    unsat_incand = np.logical_and(accepted_incand, 
-        PkHt_ch1 < Globals.IncanMaxPeakHt1)                          
+    unsat_incand = np.logical_and(accepted_incand, PkHt_ch1 < Globals.IncanMaxPeakHt1)
     unsat_incand = np.logical_and.reduce((unsat_incand,
-                input_ds['IncanRatioch1ch2'].values > Globals.IncanMinPeakRatio,
-                input_ds['IncanRatioch1ch2'].values < Globals.IncanMaxPeakRatio,
-                np.abs(input_ds['IncanPkOffsetch1ch2'].values) < Globals.IncanMaxPeakOffset,
-                input_ds['PkPos_ch1'].values > Globals.IncanMinPeakPos,
-                input_ds['PkPos_ch1'].values < Globals.IncanMaxPeakPos
-                ))
+                                          input_ds['IncanRatioch1ch2'].values > Globals.IncanMinPeakRatio,
+                                          input_ds['IncanRatioch1ch2'].values < Globals.IncanMaxPeakRatio,
+                                          np.abs(input_ds['IncanPkOffsetch1ch2'].values) < Globals.IncanMaxPeakOffset,
+                                          input_ds['PkPos_ch1'].values > Globals.IncanMinPeakPos,
+                                          input_ds['PkPos_ch1'].values < Globals.IncanMaxPeakPos))
     sat_incand = np.logical_and.reduce((sat_incand, PkHt_ch5 <= Globals.IncanMaxPeakHt1,
-                input_ds['IncanRatioch5ch6'].values > Globals.IncanMinPeakRatio,
-                input_ds['IncanRatioch5ch6'].values < Globals.IncanMaxPeakRatio, 
-                np.abs(input_ds['IncanPkOffsetch5ch6'].values) < Globals.IncanMaxPeakOffset,
-                input_ds['PkPos_ch5'].values > Globals.IncanMinPeakPos,
-                input_ds['PkPos_ch5'].values < Globals.IncanMaxPeakPos
-                ))
+                                        input_ds['IncanRatioch5ch6'].values > Globals.IncanMinPeakRatio,
+                                        input_ds['IncanRatioch5ch6'].values < Globals.IncanMaxPeakRatio,
+                                        np.abs(input_ds['IncanPkOffsetch5ch6'].values) < Globals.IncanMaxPeakOffset,
+                                        input_ds['PkPos_ch5'].values > Globals.IncanMinPeakPos,
+                                        input_ds['PkPos_ch5'].values < Globals.IncanMaxPeakPos))
     accepted_incand = np.logical_or(unsat_incand, sat_incand)
 
-    Scat_not_sat = 1e-18*(Globals.c0Scat1 + Globals.c1Scat1*PkHt_ch0 + Globals.c2Scat1*PkHt_ch0**2)
-    Scat_sat = 1e-18*(Globals.c0Scat2 + Globals.c1Scat2*PkHt_ch4 + Globals.c2Scat2*PkHt_ch4**2)
-    Scatter = np.where(PkHt_ch0 < Globals.ScatMaxPeakHt1,
-                       Scat_not_sat, Scat_sat)
-    
+    Scat_not_sat = 1e-18 * (Globals.c0Scat1 + Globals.c1Scat1*PkHt_ch0 + Globals.c2Scat1*PkHt_ch0**2)
+    Scat_sat = 1e-18 * (Globals.c0Scat2 + Globals.c1Scat2*PkHt_ch4 + Globals.c2Scat2*PkHt_ch4**2)
+    Scatter = np.where(PkHt_ch0 < Globals.ScatMaxPeakHt1, Scat_not_sat, Scat_sat)
     Scatter = np.where(accepted, Scatter, np.nan)
 
     output_ds = input_ds.copy()
     output_ds['Scatter'] = (('index'), Scatter)
     output_ds['logScatter'] = (('index'), np.log10(Scatter))
-    output_ds['ScatDiaSO4'] = xr.DataArray(1000*(-0.015256 + 16.835*Scatter**0.15502),
+    output_ds['ScatDiaSO4'] = xr.DataArray(1000 * (-0.015256 + 16.835 * Scatter ** 0.15502),
                                            dims=['index'])
     output_ds['ScatMassSO4'] = xr.DataArray(0.5236e-9 * Globals.densitySO4 * output_ds['ScatDiaSO4'].data ** 3,
                                             dims=['index'])
@@ -123,8 +117,8 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0,
 
     return output_ds
 
-def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
-                 avg_interval=10):
+
+def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_interval=10):
     """
     Processes the Scattering and BC mass size distributions:
 
@@ -149,7 +143,6 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
         The xarray Dataset containing the time-averaged particle statistics.
     """
     DMTGlobal = DMTGlobals()
-    
     time_bins = np.arange(hk_ds['Timestamp'].values[0],
                           hk_ds['Timestamp'].values[-1],
                           avg_interval)
@@ -162,10 +155,10 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     flow = hk_ds['Sample Flow LFE'].values
     dcycle = hk_ds['Duty Cycle'].values
     for i in range(1, len(flow)):
-       if flow[i] == 0:
-           flow[i] = flow[i - 1]
-    
-    flow = flow / 60. * (dcycle / 100.) 
+        if flow[i] == 0:
+            flow[i] = flow[i - 1]
+
+    flow = flow / 60. * (dcycle / 100.)
     flow = np.where(flow == 0, 2, flow)
     ChmPress = hk_ds['Chamber Pressure'].values
     ChmTemp = hk_ds['Chamber Temp'].values
@@ -213,13 +206,11 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
     for t in range(len(time_bins) - 1):
         parts_time = np.logical_and(
             time_wave >= time_bins[t], time_wave <= time_bins[t + 1])
-        
         if np.sum(parts_time) == 0:
             continue
         times_hk = np.argwhere(np.logical_and(
                        hk_ds['Timestamp'].values >= time_bins[t],
                        hk_ds['Timestamp'].values <= time_bins[t + 1]))
-        
         if len(times_hk) == 0:
             continue
 
@@ -228,7 +219,6 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
                             ScatDiaBC50 >= SpecSizeBins[i] - deltaSize / 2,
                             ScatDiaBC50 < SpecSizeBins[i] + deltaSize / 2))
             ScatNumEnsembleBC[t, i] = OneOfEvery * np.sum(the_particles)
-
             the_particles = np.logical_and.reduce((parts_time, scatter_accept,
                             ScatDiaSO4 >= SpecSizeBins[i] - deltaSize / 2,
                             ScatDiaSO4 < SpecSizeBins[i] + deltaSize / 2))
@@ -245,12 +235,9 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
         ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
         ConcTotalCycle = OneOfEvery * (np.sum(incan_parts) + np.sum(scat_parts))
         ConcScatCycle = OneOfEvery * np.sum(scat_parts)
-        ConcScatSatCycle = OneOfEvery * np.sum(
-            np.logical_and(scat_parts, incan_sat))
-        ConcIncanScatCycle = OneOfEvery * np.sum(
-            np.logical_and(scat_parts, incan_parts))
-        ConcIncanSatCycle = OneOfEvery * np.sum(
-            np.logical_and(incan_parts, incan_sat))
+        ConcScatSatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_sat))
+        ConcIncanScatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_parts))
+        ConcIncanSatCycle = OneOfEvery * np.sum(np.logical_and(incan_parts, incan_sat))
         massAvgScatCycle = OneOfEvery * np.sum(
             ScatMassSO4[np.argwhere(np.logical_and(scat_parts, ~scat_sat))])
         massAvgScatSatCycle = OneOfEvery * np.sum(
@@ -270,8 +257,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
             HalfPeriod[0] = 0.5        
             HalfPeriod[-1] = 0.5
         
-        sum_flow = np.sum(HalfPeriod * flow[times_hk] * 
-            ChmPress[times_hk] / (273.15 + ChmTemp[times_hk]))
+        sum_flow = np.sum(HalfPeriod * flow[times_hk] * ChmPress[times_hk] / (273.15 + ChmTemp[times_hk]))
         FlowCycle = sum_flow * (DMTGlobal.TempSTP / DMTGlobal.PressSTP)
         
         if FlowCycle > 0:
