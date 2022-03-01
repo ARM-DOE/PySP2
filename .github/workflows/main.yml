@@ -7,15 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install -e .
     - name: Build HTML
-      uses: ammaraskar/sphinx-action@0.4
+      uses: ammaraskar/sphinx-action@master
+      with:
+         pre-build-command: pip install -e .
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
-      with:
         name: html-docs
         path: docs/build/html/
     - name: Deploy
