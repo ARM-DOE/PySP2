@@ -1,8 +1,8 @@
 import act
-import xarray as xr
 import numpy as np
 
 from ..util import _gaus
+
 
 def plot_wave(ds, record_no, chn, plot_fit=True, init_kwargs=None, **kwargs):
     """
@@ -42,7 +42,7 @@ def plot_wave(ds, record_no, chn, plot_fit=True, init_kwargs=None, **kwargs):
         amplitude = spectra['FtAmp_ch' + str(chn)].values
         pos = spectra['FtPos_ch' + str(chn)].values
         base = spectra['Base_ch' + str(chn)].values
-        width = spectra['PkFWHM_ch' + str(chn)].values # (2.35482/np.sqrt(2))
+        width = spectra['PkFWHM_ch' + str(chn)].values
         Y = _gaus(xspace, amplitude, pos, width/2., base)
         ax.plot(xspace, Y)
         ax.text(0.7, 0.5, 'Fit Pos = %3.2f' % pos, transform=ax.transAxes)
@@ -51,4 +51,3 @@ def plot_wave(ds, record_no, chn, plot_fit=True, init_kwargs=None, **kwargs):
         ax.text(0.7, 0.8, 'Fit Amplitude = %3.2f' % amplitude, transform=ax.transAxes)
 
     return display
-

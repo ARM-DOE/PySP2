@@ -66,7 +66,6 @@ def _calc_incan_ratio(my_ds, ch1, ch2):
     Base_ch2_tile = np.tile(Base_ch2, (data_ch1.shape[1], 1)).T
     finite_mask = np.logical_and(
         np.isfinite(PeakPos_ch1_tile), halfDecay_ch1_tile)
-    #finite_mask = np.logical_and(finite_mask, data_ch1 - Base_ch1_tile > 0)
     finite_mask = np.logical_and(finite_mask, data_ch2 - Base_ch2_tile > 0)
     counting_up = np.tile(np.arange(data_ch1.shape[1]), (data_ch1.shape[0], 1))
     range_mask = np.logical_and(
@@ -79,9 +78,11 @@ def _calc_incan_ratio(my_ds, ch1, ch2):
         (data_ch1 - Base_ch1_tile)/(data_ch2 - Base_ch2_tile), axis=1)
     return ratio
 
+
 @jit(nopython=True)
 def chisquare(obs, f_exp):
     return np.sum((obs - f_exp)**2)
+
 
 def gaussian_fit(my_ds, config, parallel=False, num_records=None):
     """
@@ -129,7 +130,6 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
         my_ds['PkPos_ch' + str(i)] = (('event_index'), PeakPos2)
         my_ds['PkPos_ch' + str(i)].attrs["long_name"] = "Peak split position for channel %d" % i
         my_ds['PkPos_ch' + str(i)].attrs["_FillValue"] = np.nan
-
 
     for i in [1, 2, 5, 6]:
         coeffs = _fit_record_incan_ave_base(my_ds, i, num_trig_pts)
@@ -345,9 +345,11 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
     print(str(num_records) + ' records processed in ' + str(time.time()-start_time) + ' s')
     return my_ds
 
+
 @jit(nopython=True)
 def _gaus(x, a, x0, sigma, base):
     return a * np.exp(-((x - x0)**2/(2 * sigma**2))) + base
+
 
 def _fit_record_gaussian(my_ds, record_number):
     """ Only used for channel 0."""
@@ -360,7 +362,6 @@ def _fit_record_gaussian(my_ds, record_number):
     start = np.nan
     error = np.nan
     try:
-        #valid_inds = np.where(data < 327)
         data_fit = data
         bins_fit = bins
         p0 = np.array([data_fit.max()-data_fit.min(), np.argmax(data_fit), 20., np.nanmin(data_fit)]).astype(float)
@@ -379,7 +380,7 @@ def _fit_record_gaussian(my_ds, record_number):
             peakpos = np.nan
             base = np.nan
             chi2 = np.nan
-    except RuntimeError as e:
+    except RuntimeError:
         amplitude = np.nan
         width = np.nan
         peakpos = np.nan
@@ -387,7 +388,6 @@ def _fit_record_gaussian(my_ds, record_number):
         chi2 = np.nan
         error = 1
     except MemoryError:
-        print(e)
         amplitude = np.nan
         width = np.nan
         peakpos = np.nan
@@ -441,8 +441,7 @@ def _fit_record_incan_ave_base(my_ds, channel, num_trig_pts):
     if num_trig_pts != -1:
         num_base_pts_2_avg = round(0.8*num_trig_pts)
         if((not np.isfinite(num_base_pts_2_avg)) or
-                num_base_pts_2_avg <= 0 or
-            num_base_pts_2_avg >= num_pts):
+            num_base_pts_2_avg <= 0 or num_base_pts_2_avg >= num_pts):
             num_base_pts_2_avg = num_base_pts_2_avg_backup
     else:
         num_base_pts_2_avg = num_base_pts_2_avg_backup
@@ -515,6 +514,7 @@ def _split_scatter_fit(my_ds, channel):
 
     return fit_coeffs
 
+
 def _gaussian_sat_fit(my_ds, record_number):
     channel = 4
     base = np.nan
@@ -563,7 +563,7 @@ def _gaussian_sat_fit(my_ds, record_number):
             width = np.nan
             chi2 = np.nan
             base = np.nan
-    except RuntimeError as e:
+    except RuntimeError:
         error = 1
         error_thrown = True
     except MemoryError:

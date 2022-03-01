@@ -13,4 +13,3 @@ This module contains links to test files for PySP2
 """
 
 from .sample_files import *
-      
