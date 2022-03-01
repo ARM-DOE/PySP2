@@ -1,5 +1,5 @@
 pandas
-numpy
+numpy==1.2.1
 scipy
 xarray
 act-atmos
