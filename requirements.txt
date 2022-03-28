@@ -1,7 +1,8 @@
 pandas
-numpy
+numpy==1.21
 scipy
 xarray
 act-atmos
 xlrd
 numba
+matplotlib==3.5.1
