@@ -12,6 +12,7 @@ def test_gaussian_fit():
     np.testing.assert_almost_equal(
         np.nanmax(my_binary.PkHt_ch4.values), 54734.05714286, decimal=1)
 
+
 def test_psds():
     my_sp2b = pysp2.io.read_sp2(pysp2.testing.EXAMPLE_SP2B)
     my_ini = pysp2.io.read_config(pysp2.testing.EXAMPLE_INI)
@@ -20,6 +21,6 @@ def test_psds():
     my_binary = pysp2.util.calc_diams_masses(my_binary)
     ScatRejectKey = my_binary['ScatRejectKey'].values
     assert np.nanmax(
-        my_binary['ScatDiaBC50'].values[ScatRejectKey == 0]) < 1000. 
+        my_binary['ScatDiaBC50'].values[ScatRejectKey == 0]) < 1000.
     my_psds = pysp2.util.process_psds(my_binary, my_hk, my_ini)
     np.testing.assert_almost_equal(my_psds['NumConcIncan'].max(), 0.95805343)

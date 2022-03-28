@@ -1,3 +1,6 @@
+"""
+These are the sample files used for testing PySP2.
+"""
 import os
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')

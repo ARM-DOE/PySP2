@@ -5,7 +5,7 @@ import pandas as pd
 
 class DMTGlobals(object):
     """
-    This class stores the default parameters used for particle processing. 
+    This class stores the default parameters used for particle processing.
 
     Attributes
     ----------
@@ -33,7 +33,7 @@ class DMTGlobals(object):
         The minimum peak position for the incadescence channels.
     IncanMaxPeakPos: int
         The maximum peak position for the incadescence channels.
-    IncanMinPeakRatio: float 
+    IncanMinPeakRatio: float
         The minimum peak ch5/ch6 peak ratio.
     IncanMaxPeakRatio: float
         The maximum peak ch5/ch6 peak ratio.
@@ -50,7 +50,7 @@ class DMTGlobals(object):
     tempSTP, presSTP: float
         Temperature [Kelvin] and pressure [hPa] at STP.
     """
- 
+
     def __init__(self, cal_file_name=None):
         self.ScatMaxPeakHt1 = 60000
         self.ScatMinPeakHt1 = 250
@@ -77,7 +77,6 @@ class DMTGlobals(object):
         self.c1Mass1 = 0.0001896
         self.c2Mass1 = 0
         self.c3Mass1 = 0
-        #mass(fg) = c0Mass2 + c1Mass2 * PkHt_ch5 + c2Mass2 * PkHt_ch5 ^ 2 - Low - gain
         self.c0Mass2 = 0
         self.c1Mass2 = 0.0016815
         self.c2Mass2 = 0
@@ -96,4 +95,4 @@ class DMTGlobals(object):
             df = pd.read_csv(cal_file_name, sep='\t')
             for i in range(len(df["CalName"].values)):
                 setattr(self, df["CalName"].values[i], df["CalValue"].values[i])
-            del df     
+            del df

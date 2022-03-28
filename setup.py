@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 
-"""Py-DDA
+"""Py-SP2
 
-A package for the multi-Doppler analysis of radar radial velocity data. 
+A package for analyzing Single Particle Soot Photometer data
 
 """
 

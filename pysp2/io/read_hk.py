@@ -10,6 +10,7 @@ import numpy as np
 
 from glob import glob
 
+
 def read_hk_file(file_name):
     """
     This procedure will read in an SP2 housekeeping file and then
@@ -22,13 +23,12 @@ def read_hk_file(file_name):
 
     Returns
     -------
-    hk_df: pandas DataFrame
+    hk_df: pandas.DataFrame
         The housekeeping information in a pandas DataFrame
     """
 
     my_df = act.io.csvfiles.read_csv(file_name, sep="\t")
     # Parse time from filename
-    the_file = os.path.split(file_name)[1]
     start_time = datetime.datetime(1904, 1, 1)
     my_df = my_df.set_index({'index': 'Time (sec)'})
     my_df = my_df.rename({'index': 'time'})
@@ -47,6 +47,7 @@ def read_hk_file(file_name):
 
     return my_df
 
+
 def get_hk_variable_names(my_df):
     """
     This procedure will return al ist of variables in the
@@ -54,7 +55,7 @@ def get_hk_variable_names(my_df):
 
     Parameters
     ----------
-    my_df: ACT Dataset
+    my_df: xarray.Dataset
         The dataframe to get the variable names from
 
     Returns
@@ -63,6 +64,7 @@ def get_hk_variable_names(my_df):
         The names of each variable in the file.
     """
     return [my_str for my_str in my_df.variables.keys()]
+
 
 def read_multi_hk_file(file_path):
     """
@@ -77,8 +79,8 @@ def read_multi_hk_file(file_path):
 
     Returns
     -------
-    my_df: ACT dataset
-        The pandas DataFrame containing the data loaded.
+    my_df: xarray.Dataset
+        The xarray Dataset containing the data loaded.
     """
 
     the_list = []

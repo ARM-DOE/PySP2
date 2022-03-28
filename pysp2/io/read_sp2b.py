@@ -5,6 +5,7 @@ import platform
 
 from datetime import datetime
 
+
 def read_sp2(file_name, debug=False, arm_convention=True):
     """
     Loads a binary SP2 raw data file and returns all of the wave forms
@@ -22,7 +23,7 @@ def read_sp2(file_name, debug=False, arm_convention=True):
 
     Returns
     -------
-    dataset: xarray Dataset
+    dataset: xarray.Dataset
         The xarray Dataset containing the raw SP2 waveforms for each particle.
     """
 
@@ -112,7 +113,7 @@ def read_sp2(file_name, debug=False, arm_convention=True):
                     spareFmt += "f"
 
                 SpareDataArray[record] = np.array(
-                    struck.unpack(spareFmt, my_data[dataStartPoint:dataStartPoint+4*num_spare_cols]))
+                    struct.unpack(spareFmt, my_data[dataStartPoint:dataStartPoint+4*num_spare_cols]))
 
         UTCtime = TimeDiv10000 * 10000 + TimeRemainder
         diff_epoch_1904 = (
@@ -144,8 +145,8 @@ def read_sp2(file_name, debug=False, arm_convention=True):
             for j in range(numRecords):
                 k = i + j*numChannels
                 temp_array[j] = DataWave[k]
-            my_ds['Data_ch' + str(i)] = xr.DataArray(temp_array,
-                dims={'event_index': EventIndex, 'columns': np.arange(0, 100, 1)})
+            my_ds['Data_ch' + str(i)] = xr.DataArray(
+                temp_array, dims={'event_index': EventIndex, 'columns': np.arange(0, 100, 1)})
         del my_data
         del DataWave
         return my_ds

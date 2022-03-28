@@ -18,7 +18,8 @@ data.
 
    contributors_guide/index
    users_guide/index
-
+   source/auto_examples/index
+   developers_guide/index
 
 
 Indices and tables
