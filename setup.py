@@ -41,12 +41,18 @@ LICENSE = 'BSD'
 PLATFORMS = "Linux, Windows, OSX"
 MAJOR = 1
 MINOR = 0
-MICRO = 3
+MICRO = 5
 
 #SCRIPTS = glob.glob('scripts/*')
 #TEST_SUITE = 'nose.collector'
 #TESTS_REQUIRE = ['nose']
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
+
+with open(path.join(here, 'requirements.txt')) as requirements_file:
+    # Parse requirements.txt, ignoring any commented-out lines.
+    requirements = [
+        line for line in requirements_file.read().splitlines() if not line.startswith('#')
+    ]
 
 def setup_package():
     """ Setup of PySP2  package. """
@@ -62,7 +68,7 @@ def setup_package():
         license=LICENSE,
         platforms=PLATFORMS,
         include_package_data=True,
-        install_requires=['matplotlib', 'pandas', 'numpy', 'scipy'],
+        install_requires=requirements,
         packages=find_packages(exclude=['contrib', 'docs', 
                                         'tests', 'examples']),
         project_urls={
