@@ -39,6 +39,9 @@ jobs:
           name: Install package
           command: pip install .
       - run:
+          name: Install pytest
+          command: pip install pytest
+      - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
           command: pytest
