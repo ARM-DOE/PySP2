@@ -10,7 +10,7 @@ provided by the [Atmospheric Community Toolkit](https://arm-doe.github.io/ACT) w
 PySP2 is currently used by the Department of Energy Atmospheric Radiation Measurment (ARM) Facility in order to process SP2 observations during field deployments such
 as TRACER and SAIL.
 
-[![Plot of a waveform](https://arm-doe.github.io/PySP2/_images/sphx_glr_plot_read_sp2b_001.png)]
+![Plot of a waveform](https://arm-doe.github.io/PySP2/_images/sphx_glr_plot_read_sp2b_001.png)
 
 # Important links
 
