@@ -3,4 +3,5 @@ recursive-include pysp2 *.dat
 recursive-include pysp2 *.sp2b
 recursive-include pysp2 *.ini *.hk
 recursive-include pysp2 *.py
+recursive-include tests *.py
 include *.txt
