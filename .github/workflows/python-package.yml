@@ -36,7 +36,9 @@ jobs:
             mamba-version: '*'
             use-mamba: true
             miniforge-variant: Mambaforge
-
+      - name: Install PySP2
+        run: |
+            pip install -e .
       - name: Lint with flake8
         run: |
             # stop the build if there are Python syntax errors or undefined names
