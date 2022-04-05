@@ -3,7 +3,6 @@ import time
 import dask.bag as db
 
 from scipy.optimize import curve_fit
-from numba import jit
 from .DMTGlobals import DMTGlobals
 
 
@@ -79,7 +78,6 @@ def _calc_incan_ratio(my_ds, ch1, ch2):
     return ratio
 
 
-@jit(nopython=True)
 def chisquare(obs, f_exp):
     return np.sum((obs - f_exp)**2)
 
@@ -346,7 +344,6 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
     return my_ds
 
 
-@jit(nopython=True)
 def _gaus(x, a, x0, sigma, base):
     return a * np.exp(-((x - x0)**2/(2 * sigma**2))) + base
 
