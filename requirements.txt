@@ -4,5 +4,4 @@ scipy
 xarray
 act-atmos
 xlrd
-numba
 matplotlib
