@@ -286,7 +286,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     MassIncand2total.attrs["standard_name"] = "mass_concentration"
     MassIncand2total.attrs["units"] = "ng m-3"
     base_time = pd.Timestamp('1904-01-01')
-    time = np.array([datetime.datetime.fromtimestamp(x + base_time) for x in time_bins[:-1]])
+    time = np.array([(base_time + datetime.timedelta(seconds=x)).to_datetime64() for x in time_bins[:-1]])
     time = xr.DataArray(time, dims=('time'))
     time_wave = xr.DataArray(time_bins[:-1], dims=('time'))
     time_wave.attrs["long_name"] = "Time"
