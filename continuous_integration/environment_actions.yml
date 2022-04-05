@@ -9,5 +9,5 @@ dependencies:
         - pandas
         - xlrd
         - numba
-        - matpltlib
+        - matplotlib
         - python>=3.7
