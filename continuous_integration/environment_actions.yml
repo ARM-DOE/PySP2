@@ -11,3 +11,6 @@ dependencies:
         - numba
         - matplotlib
         - python>=3.7
+        - pytest
+        - flake8
+        
