@@ -11,7 +11,6 @@ import pandas as pd
 
 from glob import glob
 
-
 def read_hk_file(file_name):
     """
     This procedure will read in an SP2 housekeeping file and then
@@ -85,7 +84,7 @@ def read_multi_hk_file(file_path):
     """
 
     the_list = []
-    file_list = glob.glob(file_path)
+    file_list = glob(file_path)
 
     for f in file_list:
         df = read_hk_file(f)
