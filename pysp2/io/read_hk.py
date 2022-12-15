@@ -30,8 +30,7 @@ def read_hk_file(file_name):
     my_df = act.io.csvfiles.read_csv(file_name, sep="\t")
     # Parse time from filename
     start_time = pd.Timestamp('1904-01-01')
-    my_df = my_df.set_index({'index': 'Time (sec)'})
-    my_df = my_df.rename({'index': 'time'})
+    my_df = my_df.rename({'index': 'time'}) 
     my_df['time'] = np.array([start_time + datetime.timedelta(seconds=x) for x in my_df['Timestamp'].values])
     my_df['time'].attrs['units'] = "datetime"
     my_df['time'].attrs['long_name'] = "Time [SP2 time]"
