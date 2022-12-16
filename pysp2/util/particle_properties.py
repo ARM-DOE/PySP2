@@ -321,6 +321,11 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     MassIncand.attrs["long_name"] = "Incandescence mass concentration"
     MassIncand.attrs["standard_name"] = "mass_concentration"
     MassIncand.attrs["units"] = "ng m-3"
+    
+    MassIncand2 = xr.DataArray(MassIncand2, dims=('time'))
+    MassIncand2.attrs["long_name"] = "Incandescence mass concentration"
+    MassIncand2.attrs["standard_name"] = "mass_concentration"
+    MassIncand2.attrs["units"] = "ng m-3"
 
     MassIncand2Sat = xr.DataArray(MassIncand2Sat, dims=('time'))
     MassIncand2Sat.attrs["long_name"] = "Incandescence mass concentration (saturated)"
