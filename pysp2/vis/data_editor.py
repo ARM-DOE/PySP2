@@ -12,18 +12,18 @@ class DataEditor:
     When the selected range is highlighted, press [y]es to delet or [n]o to discard.
     
     """
-    def __init__(self,my_psds,key,fig,axs,line):
+    def __init__(self,my_psds,fig,axs,line):
             self.click_buffer=[]
             self.x_range_highlighted=False
             self.data_edits={'x_range':[],'y_range':[]}
-            self.key=key
             self.my_psds=my_psds
             self.fig=fig
             self.axs=axs
             self.line=line
-            #print('__init__',key)
+            self.fig.canvas.mpl_connect('key_press_event', self.on_press)
 
     def on_press(self, event):
+        print('on_press invoked')
         if event.key not in ('d','y','n'):
             print('?')
             return
@@ -93,27 +93,3 @@ class DataEditor:
             self.click_buffer=[]
             print('buffer reset')
 
-def edit_variable(my_psds,variable):
-    '''
-    
-
-    Parameters
-    ----------
-    my_psds : TYPE
-        DESCRIPTION.
-    variable : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    edits : TYPE
-        DESCRIPTION.
-
-    '''
-    fig, axs = plt.subplots(ncols=1)
-    line,=my_psds[variable].plot(ax=axs)
-    axs.set_yscale('log')
-    browser = DataEditor(my_psds,variable,fig,axs,line)
-    fig.canvas.mpl_connect('key_press_event', browser.on_press)
-    edits=browser.data_edits
-    return edits
