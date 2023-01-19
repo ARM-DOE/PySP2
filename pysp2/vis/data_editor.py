@@ -3,24 +3,53 @@ from matplotlib import dates
 import numpy as np
 from matplotlib.backend_bases import MouseButton
 
-class DataEditor:
+class DataEditor(object):
+
     """
-    Visually edit bad data from the time series data.
-    Start editing a variable by providing a particle size distribution series like this:
-    edits=pysp2.vis.edit_variable(my_psds,'NumConcIncan')
-    After the plot has opened, press d to delete a range using the mouse (left button). 
-    When the selected range is highlighted, press [y]es to delet or [n]o to discard.
+    This class lets you remove data in a visual way. You can zoom and pan using
+    the normal matplotlib functions.
+    To delete data, press [d] and select (using the left button on the mouse) 
+    the edges of the data that you want to remove. After two point the data to 
+    be deleted will be marked. Press [y]es to accept removing that data.
     
+    use the class like this:
+    #make the plot
+    fig, axs = plt.subplots(ncols=1)
+    #plot the data
+    line,=my_psds['NumConcScat'].plot(ax=axs)
+    #edit the data
+    browser=DataEditor(fig,axs,line)
+    
+    
+    Parameters
+    ----------
+    fig: matplotlib.pyplot.figure
+    axs: matplotlib.pyplot.figure.axes
+    axs: matplotlib.pyplot.figure.axes
+    line: matplotlib.lines.Line2D
+
+    Returns
+    -------
+    DataEditor.edits['x_range']: list of numpy.arrays with boundaries in numpy.datetime64 
+        format that should be deleted. E.g. 
+        [[date1,date2],
+         [date3,date4],
+         ...]
+    indicates that data should be deleted from date1 to date2 and from date3 to date4.
+    The dates are in numpy.datetime64[us] format
+        
+        
     """
-    def __init__(self,my_psds,fig,axs,line):
+    def __init__(self,fig,axs,line):
             self.click_buffer=[]
             self.x_range_highlighted=False
             self.data_edits={'x_range':[],'y_range':[]}
-            self.my_psds=my_psds
             self.fig=fig
             self.axs=axs
             self.line=line
             self.fig.canvas.mpl_connect('key_press_event', self.on_press)
+            self.axs.set_title('press [d] to delete x-range')
+            self.fig.canvas.draw()
 
     def on_press(self, event):
         print('on_press invoked')
@@ -28,7 +57,8 @@ class DataEditor:
             print('?')
             return
         if event.key == 'd':
-            print('pick x range to delete (left click)')
+            self.axs.set_title('pick x range to delete (left click)')
+            self.fig.canvas.draw()
             self.binding_id=self.fig.canvas.mpl_connect('button_press_event', self.pick_x_range)
             #print('pick two points (left click)')
         elif event.key == 'y':
@@ -56,7 +86,6 @@ class DataEditor:
                 #that made the plot in the first place.
                 self.line.set_ydata(lny)
                 self.fig.canvas.draw()
-                
             else:
                 print('pick your points first by pressing [d]')
         elif event.key == 'n':
