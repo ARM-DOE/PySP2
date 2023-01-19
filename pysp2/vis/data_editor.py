@@ -12,11 +12,12 @@ class DataEditor(object):
     the edges of the data that you want to remove. After two point the data to 
     be deleted will be marked. Press [y]es to accept removing that data.
     
-    use the class like this:
+    Use like this:
     #make the plot
+    import matplotlib.pyplot as plt
     fig, axs = plt.subplots(ncols=1)
     #plot the data
-    line,=my_psds['NumConcScat'].plot(ax=axs)
+    line,=my_psds['NumConcIncan'].plot(ax=axs)
     #edit the data
     browser=DataEditor(fig,axs,line)
     
@@ -30,15 +31,13 @@ class DataEditor(object):
 
     Returns
     -------
-    DataEditor.edits['x_range']: list of numpy.arrays with boundaries in numpy.datetime64 
+    browser.data_edits['x_range']: list of numpy.arrays with boundaries in numpy.datetime64 
         format that should be deleted. E.g. 
         [[date1,date2],
          [date3,date4],
          ...]
     indicates that data should be deleted from date1 to date2 and from date3 to date4.
     The dates are in numpy.datetime64[us] format
-        
-        
     """
     def __init__(self,fig,axs,line):
             self.click_buffer=[]
