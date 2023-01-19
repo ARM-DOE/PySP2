@@ -60,7 +60,6 @@ class DataEditor(object):
             self.axs.set_title('pick x range to delete (left click)')
             self.fig.canvas.draw()
             self.binding_id=self.fig.canvas.mpl_connect('button_press_event', self.pick_x_range)
-            #print('pick two points (left click)')
         elif event.key == 'y':
             if self.x_range_highlighted==True:
                 x1,y1=self.click_buffer[0]
@@ -70,14 +69,11 @@ class DataEditor(object):
                 self.axs.set_title('')
                 self.fig.canvas.draw()
                 self.x_range_highlighted=False
-                #ToDo: remove tzinfo here!
                 x_range=dates.num2date([min([x1,x2]),max([x1,x2])])
                 #remove tzinfo and convert to numpy.datetime64 since psds 
                 #xarray index is in numpy.datetime64
                 x_range=[np.datetime64(d.replace(tzinfo=None)) for d in x_range]
                 self.data_edits['x_range'].append(x_range)
-                print(self.data_edits['x_range'])
-                #update the original line with removed points set to nan
                 lnx=dates.date2num(self.line.get_xdata())
                 lny=self.line.get_ydata()
                 bl=np.logical_and(lnx>(min(x1,x2)),lnx<(max(x1,x2)))
@@ -91,7 +87,7 @@ class DataEditor(object):
         elif event.key == 'n':
             print('not saving')
             self.remove_x_range_points[0].remove()
-            self.axs.set_title('')
+            self.axs.set_title('press [d] to delete x-range')
             self.fig.canvas.draw()
             self.x_range_highlighted=False
             self.click_buffer=[]
@@ -102,11 +98,9 @@ class DataEditor(object):
             y = event.ydata
             if len(self.click_buffer)==1:
                 self.click_buffer.append((x,y))
-                #print('Got 2nd point')
                 self.fig.canvas.mpl_disconnect(self.binding_id)
                 x1,y1=self.click_buffer[0]
-                x2,y2=self.click_buffer[1]
-                
+                x2,y2=self.click_buffer[1]              
                 lnx=dates.date2num(self.line.get_xdata())
                 lny=self.line.get_ydata()
                 bl=np.logical_and(lnx>(min(x1,x2)),lnx<(max(x1,x2)))
@@ -115,7 +109,6 @@ class DataEditor(object):
                 self.axs.set_title('remove %i points [y/n]'%(np.sum(bl)))
                 self.fig.canvas.draw()
                 self.x_range_highlighted=True
-                #self.click_buffer=[]
             else:
                 self.click_buffer=[(x,y)]
         if event.button is MouseButton.RIGHT:
