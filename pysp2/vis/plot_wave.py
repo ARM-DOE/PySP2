@@ -1,5 +1,6 @@
 import act
 import numpy as np
+import xarray as xr
 
 from ..util import _gaus
 
@@ -30,12 +31,23 @@ def plot_wave(ds, record_no, chn, plot_fit=True, init_kwargs=None, **kwargs):
         Returns the ACT
     """
     spectra = ds.isel(event_index=record_no)
+    time = spectra['time'].values
+    inp_data = {}
+    inp_data['time'] = xr.DataArray(np.array(time[np.newaxis]),
+                                    dims=['time'])
+    inp_data['Data_ch' + str(chn)] = xr.DataArray(
+        spectra['Data_ch' + str(chn)].values[np.newaxis, :],
+        dims=['time', 'bins'])
+    inp_data = xr.Dataset(inp_data)
     bins = np.linspace(0, 100, 100)
     if init_kwargs is None:
-        display = act.plotting.HistogramDisplay(spectra)
+        display = act.plotting.HistogramDisplay(inp_data)
     else:
-        display = act.plotting.HistogramDisplay(spectra, **init_kwargs)
-    ax = display.plot_size_distribution('Data_ch' + str(chn), bins, set_title='Channel %d record %d' % (chn, record_no))
+        display = act.plotting.HistogramDisplay(inp_data, **init_kwargs)
+    ax = display.plot_size_distribution(
+        'Data_ch' + str(chn), bins,
+        set_title='Channel %d record %d' % (chn, record_no),
+        time=inp_data.time[0])
 
     if plot_fit and chn in [0, 4]:
         xspace = np.linspace(0, 100, 1000)
