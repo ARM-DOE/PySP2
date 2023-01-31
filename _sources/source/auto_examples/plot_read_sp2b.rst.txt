@@ -21,7 +21,7 @@
 Example for plotting a wave in a .sp2b file
 -------------------------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-14
+.. GENERATED FROM PYTHON SOURCE LINES 6-15
 
 
 
@@ -33,29 +33,44 @@ Example for plotting a wave in a .sp2b file
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    /github/workspace/pysp2/util/peak_fit.py:452: RuntimeWarning: divide by zero encountered in true_divide
+    /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:452: RuntimeWarning: divide by zero encountered in divide
       peak2area = np.max(data2, axis=1)/denominator
     Processing record 0
-    /usr/local/lib/python3.8/site-packages/scipy/optimize/_minpack_py.py:833: OptimizeWarning: Covariance of the parameters could not be estimated
+    /usr/share/miniconda3/envs/pysp2-docs/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:906: OptimizeWarning: Covariance of the parameters could not be estimated
       warnings.warn('Covariance of the parameters could not be estimated',
-    /github/workspace/pysp2/util/peak_fit.py:348: RuntimeWarning: divide by zero encountered in true_divide
+    /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:348: RuntimeWarning: divide by zero encountered in divide
       return a * np.exp(-((x - x0)**2/(2 * sigma**2))) + base
-    /github/workspace/pysp2/util/peak_fit.py:348: RuntimeWarning: invalid value encountered in true_divide
+    /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:348: RuntimeWarning: invalid value encountered in divide
       return a * np.exp(-((x - x0)**2/(2 * sigma**2))) + base
     Processing record 1000
     Processing record 2000
     Processing record 3000
     Processing record 4000
     Processing record 5000
-    /github/workspace/pysp2/util/peak_fit.py:76: RuntimeWarning: Mean of empty slice
+    /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:76: RuntimeWarning: Mean of empty slice
       ratio = np.nanmean(
-    5877 records processed in 9.850651025772095 s
-    /usr/local/lib/python3.8/site-packages/act/plotting/plot.py:79: UserWarning: Could not discern datastreamname and dict or tuple were not provided. Using defaultname of act_datastream!
-      warnings.warn(("Could not discern datastream" +
+    5877 records processed in 8.710571765899658 s
+    <xarray.Dataset>
+    Dimensions:              (event_index: 5877, columns: 100)
+    Dimensions without coordinates: event_index, columns
+    Data variables: (12/81)
+        time                 (event_index) datetime64[ns] 2019-12-16T12:42:50.671...
+        Flag                 (event_index) int16 16 16 23 16 16 ... 2073 16 16 2329
+        Res1                 (event_index) float32 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0
+        Res5                 (event_index) float32 1.0 1.0 1.0 1.0 ... 1.0 1.0 1.0
+        Res6                 (event_index) float32 1.0 1.0 1.0 1.0 ... 1.0 1.0 1.0
+        Res7                 (event_index) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0
+        ...                   ...
+        IncanPkOffsetch1ch2  (event_index) float64 32.0 -80.0 1.0 ... 5.0 -8.0 -15.0
+        IncanPkOffsetch5ch6  (event_index) float64 -9.0 -6.0 0.0 ... 2.0 23.0 -16.0
+        IncanRatioch1ch2     (event_index) float64 1.261 nan ... -1.36 -0.1407
+        IncanRatioch5ch6     (event_index) float64 nan nan 1.021 ... 0.7619 17.5
+        ScatRejectKey        (event_index) int64 0 0 3 0 0 3 0 0 ... 1 0 3 0 3 0 1 1
+        IncanRejectKey       (event_index) int64 2 2 3 2 2 2 2 2 ... 9 0 2 2 2 2 2 2
+    /usr/share/miniconda3/envs/pysp2-docs/lib/python3.11/site-packages/act/plotting/plot.py:80: UserWarning: Could not discern datastreamname and dict or tuple were not provided. Using defaultname of act_datastream!
+      warnings.warn(
 
 
 
@@ -72,34 +87,30 @@ Example for plotting a wave in a .sp2b file
     my_sp2 = pysp2.io.read_sp2(pysp2.testing.EXAMPLE_SP2B)
     my_config = pysp2.io.read_config(pysp2.testing.EXAMPLE_INI)
     my_sp2 = pysp2.util.gaussian_fit(my_sp2, my_config)
+    print(my_sp2)
     pysp2.vis.plot_wave(my_sp2, 1100, 0)
     plt.show()
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  10.480 seconds)
+   **Total running time of the script:** ( 0 minutes  9.328 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_read_sp2b.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_read_sp2b.py <plot_read_sp2b.py>`
 
-     :download:`Download Python source code: plot_read_sp2b.py <plot_read_sp2b.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_read_sp2b.ipynb <plot_read_sp2b.ipynb>`
+      :download:`Download Jupyter notebook: plot_read_sp2b.ipynb <plot_read_sp2b.ipynb>`
 
 
 .. only:: html

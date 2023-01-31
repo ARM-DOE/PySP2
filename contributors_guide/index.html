@@ -1,90 +1,232 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contributor’s Guide &mdash; PySP2 1.1.0 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-    <script src="../_static/js/theme.js"></script>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Contributor’s Guide &#8212; PySP2 1.2.0 documentation</title>
+    
+    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+</style>
+    
+      
+  
+    
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css" />
+    
+    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script src="../_static/doc_shared.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="User’s Guide" href="../users_guide/index.html" />
-    <link rel="prev" title="PySP2 documentation" href="../index.html" /> 
-</head>
+    <link rel="prev" title="PySP2 documentation" href="../index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> PySP2
-          </a>
-              <div class="version">
-                1.1.0
-              </div>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributor’s Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#contributor-covenant-code-of-conduct">Contributor Covenant Code of Conduct</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#code-style">Code Style</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#python-file-setup">Python File Setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#github">GitHub</a></li>
-</ul>
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+  <nav class="navbar navbar-dark navbar-expand-lg bg-arm fixed-top bd-navbar shadow" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">PySP2</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Contributor’s Guide
+ </a>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">User’s Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_read_sp2b.html">Example for plotting a wave in a .sp2b file</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_hk.html">Example for plotting number of particles in housekeeping data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../source/auto_examples/plot_psd.html">Example on plotting particle concentration data timeseries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers_guide/index.html">Developer Reference Manual</a></li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../users_guide/index.html">
+  User’s Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../source/auto_examples/plot_hk.html">
+  Example for plotting number of particles in housekeeping data
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../source/auto_examples/plot_read_sp2b.html">
+  Example for plotting a wave in a .sp2b file
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../source/auto_examples/plot_psd.html">
+  Example on plotting particle concentration data timeseries
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../developers_guide/index.html">
+  Developer Reference Manual
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+  </nav>
+
+
+    <div class="container-fluid" id="banner"></div>
+
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#contributor-covenant-code-of-conduct">
+   Contributor Covenant Code of Conduct
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#code-style">
+   Code Style
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#python-file-setup">
+   Python File Setup
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#testing">
+   Testing
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#github">
+   GitHub
+  </a>
+ </li>
 </ul>
 
-        </div>
-      </div>
-    </nav>
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">PySP2</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Contributor’s Guide</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/contributors_guide/index.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <div class="section" id="contributor-s-guide">
-<h1>Contributor’s Guide<a class="headerlink" href="#contributor-s-guide" title="Permalink to this headline">¶</a></h1>
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="contributor-s-guide">
+<h1>Contributor’s Guide<a class="headerlink" href="#contributor-s-guide" title="Permalink to this heading">¶</a></h1>
 <p>One pesky thing about Impostor’s Syndrome is that it tells you that you are
 not good enough to make a contribution. Let us assure you that that is very
 much false. We welcome contributions from anyone no matter what their skill
@@ -97,8 +239,8 @@ to be distributed under the BSD 3-clause license, which is available in LICENSE
 in the main directory.</p>
 <p>One, we ask, that when on the GitHub forum or making contributions to PySP2
 that all developers and users follow the PyDDA code of conduct.</p>
-<div class="section" id="contributor-covenant-code-of-conduct">
-<h2>Contributor Covenant Code of Conduct<a class="headerlink" href="#contributor-covenant-code-of-conduct" title="Permalink to this headline">¶</a></h2>
+<section id="contributor-covenant-code-of-conduct">
+<h2>Contributor Covenant Code of Conduct<a class="headerlink" href="#contributor-covenant-code-of-conduct" title="Permalink to this heading">¶</a></h2>
 <p><strong>Our Pledge</strong></p>
 <p>In the interest of fostering an open and welcoming environment, we as
 contributors and maintainers pledge to making participation in our project
@@ -156,9 +298,9 @@ by other members of the project’s leadership.</p>
 <p><strong>Attribution</strong></p>
 <p>This Code of Conduct is adapted from the Contributor Covenant, version 1.4,
 available at <a class="reference external" href="http://contributor-covenant.org/version/1/4">http://contributor-covenant.org/version/1/4</a></p>
-</div>
-<div class="section" id="code-style">
-<h2>Code Style<a class="headerlink" href="#code-style" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="code-style">
+<h2>Code Style<a class="headerlink" href="#code-style" title="Permalink to this heading">¶</a></h2>
 <p>PySP2 follows the PEP8 code standards. To make sure the code follows the PEP8
 style, there are checkers available out there such as pylint and pycodestyle.</p>
 <dl class="simple">
@@ -173,9 +315,9 @@ style, there are checkers available out there such as pylint and pycodestyle.</p
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">pylint</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="python-file-setup">
-<h2>Python File Setup<a class="headerlink" href="#python-file-setup" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="python-file-setup">
+<h2>Python File Setup<a class="headerlink" href="#python-file-setup" title="Permalink to this heading">¶</a></h2>
 <p>In a new .py file, the top of the code should have the function, sphinx comments
 and the public and private functions within the .py file. Public fuunctions are
 listed first and then private functions and classes. Private functions should
@@ -196,7 +338,7 @@ follow the NumPy documentation style:</p>
 <p><a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt</a></p>
 <p>For an example format of the documentation, see this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">read_dat</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This reads the .dat files that generate the intermediate parameters used</span>
 <span class="sd">    by the Igor processing. Wildcards are supported.</span>
 
@@ -217,9 +359,9 @@ follow the NumPy documentation style:</p>
     <span class="p">(</span><span class="n">your</span> <span class="n">code</span> <span class="ow">is</span> <span class="n">here</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">¶</a></h2>
 <p>When adding a new function to PySP2 it is important to add it to the __init__.py
 under the corresponding folder.</p>
 <p>Create a test function and use assert to test the calculated values against known
@@ -239,9 +381,9 @@ determine how the pull request will affect the functionality of PySP2.</p>
         <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">my_binary</span><span class="o">.</span><span class="n">PkHt_ch4</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="mf">54734.05714286</span><span class="p">,</span> <span class="n">decimal</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="github">
-<h2>GitHub<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="github">
+<h2>GitHub<a class="headerlink" href="#github" title="Permalink to this heading">¶</a></h2>
 <p>When you make contributions to PySP2, we ask that you make your own fork
 of ARM-DOE/PySP2 and create your own branch from within that fork. After
 forking the repository on GitHub, create your own branch by doing:</p>
@@ -255,38 +397,54 @@ forking the repository on GitHub, create your own branch by doing:</p>
 </div>
 <p>After that is done, make a pull request from that branch to the master branch
 on ARM-DOE/PySP2 where the maintainers will review your pull request.</p>
-</div>
-</div>
+</section>
+</section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="PySP2 documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../users_guide/index.html" class="btn btn-neutral float-right" title="User’s Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2022, Robert Jackson.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="../index.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">PySP2 documentation</p>
         </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class='right-next' id="next-link" href="../users_guide/index.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">User’s Guide</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
 
-</body>
+      </div>
+    </div>
+  
+    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, Robert Jackson.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
 </html>

@@ -1,0 +1,6 @@
+﻿pysp2.util.gaussian\_fit
+========================
+
+.. currentmodule:: pysp2.util
+
+.. autofunction:: gaussian_fit

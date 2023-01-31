@@ -1,0 +1,6 @@
+﻿pysp2.util.calc\_diams\_masses
+==============================
+
+.. currentmodule:: pysp2.util
+
+.. autofunction:: calc_diams_masses

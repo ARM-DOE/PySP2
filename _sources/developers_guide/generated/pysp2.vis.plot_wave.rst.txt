@@ -1,0 +1,6 @@
+﻿pysp2.vis.plot\_wave
+====================
+
+.. currentmodule:: pysp2.vis
+
+.. autofunction:: plot_wave

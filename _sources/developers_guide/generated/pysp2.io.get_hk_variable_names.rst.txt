@@ -1,0 +1,6 @@
+﻿pysp2.io.get\_hk\_variable\_names
+=================================
+
+.. currentmodule:: pysp2.io
+
+.. autofunction:: get_hk_variable_names

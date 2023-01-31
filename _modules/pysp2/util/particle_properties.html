@@ -1,0 +1,608 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pysp2.util.particle_properties &#8212; PySP2 1.2.0 documentation</title>
+    
+    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+</style>
+    
+      
+  
+    
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/default.css" />
+    
+    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script src="../../../_static/doc_shared.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+  <nav class="navbar navbar-dark navbar-expand-lg bg-arm fixed-top bd-navbar shadow" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../../../index.html">
+<p class="title">PySP2</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../contributors_guide/index.html">
+  Contributor’s Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../users_guide/index.html">
+  User’s Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../source/auto_examples/plot_hk.html">
+  Example for plotting number of particles in housekeeping data
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../source/auto_examples/plot_read_sp2b.html">
+  Example for plotting a wave in a .sp2b file
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../source/auto_examples/plot_psd.html">
+  Example on plotting particle concentration data timeseries
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../developers_guide/index.html">
+  Developer Reference Manual
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+  </nav>
+
+
+    <div class="container-fluid" id="banner"></div>
+
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for pysp2.util.particle_properties</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">.DMTGlobals</span> <span class="kn">import</span> <span class="n">DMTGlobals</span>
+
+<div class="viewcode-block" id="calc_diams_masses"><a class="viewcode-back" href="../../../developers_guide/generated/pysp2.util.calc_diams_masses.html#pysp2.util.calc_diams_masses">[docs]</a><span class="k">def</span> <span class="nf">calc_diams_masses</span><span class="p">(</span><span class="n">input_ds</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">Globals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the scattering and incandescence diameters/BC masses for each particle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_ds: ACT Dataset</span>
+<span class="sd">        The ACT Dataset containing the processed SP2 data.</span>
+<span class="sd">    debug: boolean</span>
+<span class="sd">        If true, print out particle rejection statistics</span>
+<span class="sd">    factor: float</span>
+<span class="sd">        Multiply soot masses by this factor for AquaDag calibation. Use</span>
+<span class="sd">        1.3 for NSA.</span>
+<span class="sd">    Globals: DMTGlobals structure or None</span>
+<span class="sd">        DMTGlobals structure containing calibration coefficients. Set to</span>
+<span class="sd">        None to use default values for MOSAiC.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    output_ds: ACT Dataset</span>
+<span class="sd">        The ACT Dataset containing the scattering/incadescence diameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rejectMinScatTotal</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">rejectWidthTotal</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">rejectFatPeakTotal</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">rejectFtPosTotal</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">Globals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Globals</span> <span class="o">=</span> <span class="n">DMTGlobals</span><span class="p">()</span>
+
+    <span class="n">PkHt_ch0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkHt_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;FtAmp_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">PkHt_ch4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkHt_ch4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;FtAmp_ch4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">accepted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="o">.</span><span class="n">reduce</span><span class="p">((</span>
+        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkFWHM_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMinWidth</span><span class="p">,</span>
+        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkFWHM_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMaxWidth</span><span class="p">,</span>
+        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkHt_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMinPeakHt1</span><span class="p">,</span>
+        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;FtPos_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMaxPeakPos</span><span class="p">,</span>
+        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;FtPos_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMinPeakPos</span><span class="p">))</span>
+    <span class="n">numScatFlag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">accepted</span><span class="p">)</span>
+
+    <span class="n">rejectMinScatTotal</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">PkHt_ch0</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMinPeakHt1</span><span class="p">)</span>
+    <span class="n">rejectWidthTotal</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span>
+        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkFWHM_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMinWidth</span><span class="p">,</span> <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkFWHM_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMaxWidth</span><span class="p">))</span>
+    <span class="n">rejectFatPeakTotal</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;FtAmp_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkFWHM_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+    <span class="n">rejectFtPosTotal</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span>
+        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;FtPos_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMaxPeakPos</span><span class="p">,</span> <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;FtPos_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMinPeakPos</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of scattering particles accepted = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">numScatFlag</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of scattering particles rejected for min. peak height = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rejectMinScatTotal</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of scattering particles rejected for peak width = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rejectWidthTotal</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of scattering particles rejected for fat peak = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rejectFatPeakTotal</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of scattering particles rejected for peak pos. = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rejectFtPosTotal</span><span class="p">)</span>
+
+    <span class="n">PkHt_ch1</span> <span class="o">=</span> <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkHt_ch1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">PkHt_ch5</span> <span class="o">=</span> <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkHt_ch5&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkEnd_ch1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkStart_ch1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">accepted_incand</span> <span class="o">=</span> <span class="n">width</span> <span class="o">&gt;=</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMinWidth</span>
+    <span class="n">accepted_incand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">accepted_incand</span><span class="p">,</span>
+                                     <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkHt_ch2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;=</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMinPeakHt1</span><span class="p">)</span>
+    <span class="n">accepted_incand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">accepted_incand</span><span class="p">,</span>
+                                     <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkHt_ch1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;=</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMinPeakHt1</span><span class="p">)</span>
+    <span class="n">sat_incand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+        <span class="n">PkHt_ch1</span> <span class="o">&gt;=</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMaxPeakHt1</span><span class="p">,</span> <span class="n">accepted_incand</span><span class="p">)</span>
+    <span class="n">unsat_incand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">accepted_incand</span><span class="p">,</span> <span class="n">PkHt_ch1</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMaxPeakHt1</span><span class="p">)</span>
+    <span class="n">unsat_incand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="o">.</span><span class="n">reduce</span><span class="p">((</span><span class="n">unsat_incand</span><span class="p">,</span>
+                                          <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;IncanRatioch1ch2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMinPeakRatio</span><span class="p">,</span>
+                                          <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;IncanRatioch1ch2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMaxPeakRatio</span><span class="p">,</span>
+                                          <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;IncanPkOffsetch1ch2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMaxPeakOffset</span><span class="p">,</span>
+                                          <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkPos_ch1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMinPeakPos</span><span class="p">,</span>
+                                          <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkPos_ch1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMaxPeakPos</span><span class="p">))</span>
+    <span class="n">sat_incand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="o">.</span><span class="n">reduce</span><span class="p">((</span><span class="n">sat_incand</span><span class="p">,</span> <span class="n">PkHt_ch5</span> <span class="o">&lt;=</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMaxPeakHt1</span><span class="p">,</span>
+                                        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;IncanRatioch5ch6&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMinPeakRatio</span><span class="p">,</span>
+                                        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;IncanRatioch5ch6&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMaxPeakRatio</span><span class="p">,</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;IncanPkOffsetch5ch6&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMaxPeakOffset</span><span class="p">,</span>
+                                        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkPos_ch5&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMinPeakPos</span><span class="p">,</span>
+                                        <span class="n">input_ds</span><span class="p">[</span><span class="s1">&#39;PkPos_ch5&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">IncanMaxPeakPos</span><span class="p">))</span>
+    <span class="n">accepted_incand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">unsat_incand</span><span class="p">,</span> <span class="n">sat_incand</span><span class="p">)</span>
+
+    <span class="n">Scat_not_sat</span> <span class="o">=</span> <span class="mf">1e-18</span> <span class="o">*</span> <span class="p">(</span><span class="n">Globals</span><span class="o">.</span><span class="n">c0Scat1</span> <span class="o">+</span> <span class="n">Globals</span><span class="o">.</span><span class="n">c1Scat1</span><span class="o">*</span><span class="n">PkHt_ch0</span> <span class="o">+</span> <span class="n">Globals</span><span class="o">.</span><span class="n">c2Scat1</span><span class="o">*</span><span class="n">PkHt_ch0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Scat_sat</span> <span class="o">=</span> <span class="mf">1e-18</span> <span class="o">*</span> <span class="p">(</span><span class="n">Globals</span><span class="o">.</span><span class="n">c0Scat2</span> <span class="o">+</span> <span class="n">Globals</span><span class="o">.</span><span class="n">c1Scat2</span><span class="o">*</span><span class="n">PkHt_ch4</span> <span class="o">+</span> <span class="n">Globals</span><span class="o">.</span><span class="n">c2Scat2</span><span class="o">*</span><span class="n">PkHt_ch4</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Scatter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">PkHt_ch0</span> <span class="o">&lt;</span> <span class="n">Globals</span><span class="o">.</span><span class="n">ScatMaxPeakHt1</span><span class="p">,</span> <span class="n">Scat_not_sat</span><span class="p">,</span> <span class="n">Scat_sat</span><span class="p">)</span>
+    <span class="n">Scatter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">accepted</span><span class="p">,</span> <span class="n">Scatter</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+    <span class="n">output_ds</span> <span class="o">=</span> <span class="n">input_ds</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;Scatter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;index&#39;</span><span class="p">),</span> <span class="n">Scatter</span><span class="p">)</span>
+    <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;logScatter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;index&#39;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Scatter</span><span class="p">))</span>
+    <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;ScatDiaSO4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="mi">1000</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.015256</span> <span class="o">+</span> <span class="mf">16.835</span> <span class="o">*</span> <span class="n">Scatter</span> <span class="o">**</span> <span class="mf">0.15502</span><span class="p">),</span>
+                                           <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">])</span>
+    <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;ScatMassSO4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="mf">0.5236e-9</span> <span class="o">*</span> <span class="n">Globals</span><span class="o">.</span><span class="n">densitySO4</span> <span class="o">*</span> <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;ScatDiaSO4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">**</span> <span class="mi">3</span><span class="p">,</span>
+                                            <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">])</span>
+    <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;ScatDiaBC50&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="p">(</span><span class="mf">0.013416</span> <span class="o">+</span> <span class="mf">25.066</span><span class="o">*</span><span class="p">(</span><span class="n">Scatter</span><span class="o">**</span><span class="mf">0.18057</span><span class="p">)),</span>
+                                            <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">])</span>
+
+    <span class="n">sootMass_not_sat</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">Globals</span><span class="o">.</span><span class="n">c0Mass1</span> <span class="o">+</span> <span class="n">Globals</span><span class="o">.</span><span class="n">c1Mass1</span><span class="o">*</span><span class="n">PkHt_ch1</span> <span class="o">+</span> <span class="n">Globals</span><span class="o">.</span><span class="n">c2Mass1</span><span class="o">*</span><span class="n">PkHt_ch1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">sootDiam_not_sat</span> <span class="o">=</span> <span class="p">(</span><span class="n">sootMass_not_sat</span><span class="o">/</span><span class="p">(</span><span class="mf">0.5236e-9</span><span class="o">*</span><span class="n">Globals</span><span class="o">.</span><span class="n">densityBC</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="n">sootMass_sat</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">Globals</span><span class="o">.</span><span class="n">c0Mass2</span> <span class="o">+</span> <span class="n">Globals</span><span class="o">.</span><span class="n">c1Mass2</span><span class="o">*</span><span class="n">PkHt_ch5</span> <span class="o">+</span> <span class="n">Globals</span><span class="o">.</span><span class="n">c2Mass2</span><span class="o">*</span><span class="n">PkHt_ch5</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">sootDiam_sat</span> <span class="o">=</span> <span class="p">(</span><span class="n">sootMass_sat</span><span class="o">/</span><span class="p">(</span><span class="mf">0.5236e-9</span><span class="o">*</span><span class="n">Globals</span><span class="o">.</span><span class="n">densityBC</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+    <span class="n">sootMass_not_sat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">accepted_incand</span><span class="p">,</span> <span class="n">sootMass_not_sat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">sootMass_sat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">accepted_incand</span><span class="p">,</span> <span class="n">sootMass_sat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">sootMass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sat_incand</span><span class="p">,</span> <span class="n">sootMass_sat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">sootMass</span><span class="p">[</span><span class="n">unsat_incand</span><span class="p">]</span> <span class="o">=</span> <span class="n">sootMass_not_sat</span><span class="p">[</span><span class="n">unsat_incand</span><span class="p">]</span>
+    <span class="n">sootDiam</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sat_incand</span><span class="p">,</span> <span class="n">sootDiam_sat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">sootDiam</span><span class="p">[</span><span class="n">unsat_incand</span><span class="p">]</span> <span class="o">=</span> <span class="n">sootDiam_not_sat</span><span class="p">[</span><span class="n">unsat_incand</span><span class="p">]</span>
+
+    <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;sootMass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;index&#39;</span><span class="p">),</span> <span class="n">sootMass</span><span class="p">)</span>
+    <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;sootDiam&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;index&#39;</span><span class="p">),</span> <span class="n">sootDiam</span><span class="p">)</span>
+    <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;ScatDiaSO4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;ScatDiaSO4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">accepted</span><span class="p">)</span>
+    <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;ScatMassSO4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_ds</span><span class="p">[</span><span class="s1">&#39;ScatMassSO4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">accepted</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output_ds</span></div>
+
+
+<div class="viewcode-block" id="process_psds"><a class="viewcode-back" href="../../../developers_guide/generated/pysp2.util.process_psds.html#pysp2.util.process_psds">[docs]</a><span class="k">def</span> <span class="nf">process_psds</span><span class="p">(</span><span class="n">particle_ds</span><span class="p">,</span> <span class="n">hk_ds</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">deltaSize</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="mi">199</span><span class="p">,</span> <span class="n">avg_interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes the Scattering and BC mass size distributions:</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    particle_ds: xarrray Dataset</span>
+<span class="sd">        The xarray Dataset containing the particle statistics (.dat file information).</span>
+<span class="sd">    hk_ds: xarray Dataset</span>
+<span class="sd">        The xarray Dataset containing the housekeeping variables</span>
+<span class="sd">    config: dict</span>
+<span class="sd">        The .ini file loaded as a dict.</span>
+<span class="sd">    deltaSize: float</span>
+<span class="sd">        The size distribution bin width in microns.</span>
+<span class="sd">    num_bins: int</span>
+<span class="sd">        The number of size bins</span>
+<span class="sd">    avg_interval: int</span>
+<span class="sd">        The time in seconds to average the concentrations into.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    psd_ds: xarray Dataset</span>
+<span class="sd">        The xarray Dataset containing the time-averaged particle statistics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DMTGlobal</span> <span class="o">=</span> <span class="n">DMTGlobals</span><span class="p">()</span>
+    <span class="n">time_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="n">avg_interval</span><span class="p">)</span>
+    <span class="n">time_wave</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;DateTimeWaveUTC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_bins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">time_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;DateTimeWaveUTC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;DateTimeWaveUTC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">avg_interval</span><span class="p">])</span>
+
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Sample Flow LFE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">dcycle</span> <span class="o">=</span> <span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Duty Cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">flow</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">flow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">flow</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">flow</span> <span class="o">/</span> <span class="mf">60.</span> <span class="o">*</span> <span class="p">(</span><span class="n">dcycle</span> <span class="o">/</span> <span class="mf">100.</span><span class="p">)</span>
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flow</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">flow</span><span class="p">)</span>
+    <span class="n">ChmPress</span> <span class="o">=</span> <span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Chamber Pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">ChmTemp</span> <span class="o">=</span> <span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Chamber Temp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">ScatDiaBC50</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;ScatDiaBC50&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="mf">1000.</span>
+    <span class="n">ScatMassSO4</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;ScatMassSO4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">ScatDiaSO4</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;ScatDiaSO4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="mf">1000.</span>
+    <span class="n">sootMass</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;sootMass&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">SizeIncandOnly</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;sootDiam&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="mf">1000.</span>
+    <span class="n">SpecSizeBins</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_bins</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">deltaSize</span>
+    <span class="n">ScatNumEnsembleBC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">num_bins</span><span class="p">))</span>
+    <span class="n">ScatMassEnsembleBC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ScatNumEnsembleBC</span><span class="p">)</span>
+    <span class="n">IncanNumEnsemble</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">num_bins</span><span class="p">))</span>
+    <span class="n">IncanMassEnsemble</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ScatNumEnsembleBC</span><span class="p">)</span>
+    <span class="n">ScatNumEnsemble</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">num_bins</span><span class="p">))</span>
+    <span class="n">ScatMassEnsemble</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ScatNumEnsembleBC</span><span class="p">)</span>
+    <span class="n">scatter_accept</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;Scatter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">incand_accept</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">sootMass</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">OneOfEvery</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Acquisition&#39;</span><span class="p">][</span><span class="s1">&#39;1 of Every&#39;</span><span class="p">])</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">OneOfEvery</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="n">IncandPos</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;PkPos_ch1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">PkHt_ch1</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;PkHt_ch1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">incan_sat</span> <span class="o">=</span> <span class="n">PkHt_ch1</span> <span class="o">&gt;</span> <span class="n">DMTGlobal</span><span class="o">.</span><span class="n">IncanMaxPeakHt1</span>
+    <span class="n">IncandPos</span><span class="p">[</span><span class="n">incan_sat</span><span class="p">]</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;PkPos_ch5&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">incan_sat</span><span class="p">]</span>
+
+    <span class="n">ScatPos</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;PkPos_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">PkHt_ch0</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;PkHt_ch0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">scat_sat</span> <span class="o">=</span> <span class="n">PkHt_ch0</span> <span class="o">&gt;</span> <span class="n">DMTGlobal</span><span class="o">.</span><span class="n">ScatMaxPeakHt1</span>
+    <span class="n">ScatPos</span><span class="p">[</span><span class="n">scat_sat</span><span class="p">]</span> <span class="o">=</span> <span class="n">particle_ds</span><span class="p">[</span><span class="s1">&#39;PkPos_ch4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">scat_sat</span><span class="p">]</span>
+
+    <span class="n">NumFracBC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">NumFracBCSat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">NumConcScat1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">NumConcIncan2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">NumConcIncanScat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">NumConcIncanSat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">NumConcScatSat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">NumConcTotal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">MassScat2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">MassScat2total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">MassIncand2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">MassIncand2Sat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_bins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">parts_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+            <span class="n">time_wave</span> <span class="o">&gt;=</span> <span class="n">time_bins</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">time_wave</span> <span class="o">&lt;=</span> <span class="n">time_bins</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">parts_time</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">times_hk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                       <span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;=</span> <span class="n">time_bins</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
+                       <span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;=</span> <span class="n">time_bins</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">times_hk</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_bins</span><span class="p">):</span>
+            <span class="n">the_particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="o">.</span><span class="n">reduce</span><span class="p">((</span><span class="n">parts_time</span><span class="p">,</span> <span class="n">scatter_accept</span><span class="p">,</span>
+                            <span class="n">ScatDiaBC50</span> <span class="o">&gt;=</span> <span class="n">SpecSizeBins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">deltaSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">ScatDiaBC50</span> <span class="o">&lt;</span> <span class="n">SpecSizeBins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">deltaSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">ScatNumEnsembleBC</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">the_particles</span><span class="p">)</span>
+            <span class="n">the_particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="o">.</span><span class="n">reduce</span><span class="p">((</span><span class="n">parts_time</span><span class="p">,</span> <span class="n">scatter_accept</span><span class="p">,</span>
+                            <span class="n">ScatDiaSO4</span> <span class="o">&gt;=</span> <span class="n">SpecSizeBins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">deltaSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">ScatDiaSO4</span> <span class="o">&lt;</span> <span class="n">SpecSizeBins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">deltaSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">ScatNumEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">the_particles</span><span class="p">)</span>
+            <span class="n">ScatMassEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ScatMassSO4</span><span class="p">[</span><span class="n">the_particles</span><span class="p">])</span>
+            <span class="n">the_particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="o">.</span><span class="n">reduce</span><span class="p">((</span><span class="n">parts_time</span><span class="p">,</span> <span class="n">incand_accept</span><span class="p">,</span>
+                            <span class="n">SizeIncandOnly</span> <span class="o">&gt;=</span> <span class="n">SpecSizeBins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">deltaSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">SizeIncandOnly</span> <span class="o">&lt;</span> <span class="n">SpecSizeBins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">deltaSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">IncanNumEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">the_particles</span><span class="p">)</span>
+            <span class="n">IncanMassEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sootMass</span><span class="p">[</span><span class="n">the_particles</span><span class="p">])</span>
+
+        <span class="n">scat_parts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">scatter_accept</span><span class="p">,</span> <span class="n">parts_time</span><span class="p">)</span>
+        <span class="n">incan_parts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">incand_accept</span><span class="p">,</span> <span class="n">parts_time</span><span class="p">)</span>
+        <span class="n">ConcIncanCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">incan_parts</span><span class="p">)</span>
+        <span class="n">ConcTotalCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">incan_parts</span><span class="p">,</span><span class="n">scat_parts</span><span class="p">))</span>
+        <span class="n">ConcScatCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">scat_parts</span><span class="p">)</span>
+        <span class="n">ConcScatSatCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">scat_parts</span><span class="p">,</span> <span class="n">incan_sat</span><span class="p">))</span>
+        <span class="n">ConcIncanScatCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">scat_parts</span><span class="p">,</span> <span class="n">incan_parts</span><span class="p">))</span>
+        <span class="n">ConcIncanSatCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">incan_parts</span><span class="p">,</span> <span class="n">incan_sat</span><span class="p">))</span>
+        <span class="n">massAvgScatCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="n">ScatMassSO4</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">scat_parts</span><span class="p">,</span> <span class="o">~</span><span class="n">scat_sat</span><span class="p">))])</span>
+        <span class="n">massAvgScatSatCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="n">ScatMassSO4</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">scat_parts</span><span class="p">,</span> <span class="n">scat_sat</span><span class="p">))])</span>
+        <span class="n">massAvgIncandCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="n">sootMass</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="o">~</span><span class="n">incan_sat</span><span class="p">,</span> <span class="n">incan_parts</span><span class="p">))])</span>
+        <span class="n">massAvgIncandSatCycle</span> <span class="o">=</span> <span class="n">OneOfEvery</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="n">sootMass</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">incan_sat</span><span class="p">,</span> <span class="n">incan_parts</span><span class="p">))])</span>
+        <span class="n">fracBCnum</span> <span class="o">=</span> <span class="n">ConcIncanCycle</span> <span class="o">/</span> <span class="n">ConcTotalCycle</span>
+        <span class="k">if</span> <span class="n">ConcTotalCycle</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">fracBCnum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">fracBCnumSat</span> <span class="o">=</span> <span class="n">ConcIncanSatCycle</span> <span class="o">/</span> <span class="n">ConcTotalCycle</span>
+        <span class="k">if</span> <span class="n">ConcIncanCycle</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">fracBCnumSat</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">HalfPeriod</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">times_hk</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">HalfPeriod</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">HalfPeriod</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>        
+            <span class="n">HalfPeriod</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+        
+        <span class="n">sum_flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">HalfPeriod</span> <span class="o">*</span> <span class="n">flow</span><span class="p">[</span><span class="n">times_hk</span><span class="p">]</span> <span class="o">*</span> <span class="n">ChmPress</span><span class="p">[</span><span class="n">times_hk</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mf">273.15</span> <span class="o">+</span> <span class="n">ChmTemp</span><span class="p">[</span><span class="n">times_hk</span><span class="p">]))</span>
+        <span class="n">FlowCycle</span> <span class="o">=</span> <span class="n">sum_flow</span> <span class="o">*</span> <span class="p">(</span><span class="n">DMTGlobal</span><span class="o">.</span><span class="n">TempSTP</span> <span class="o">/</span> <span class="n">DMTGlobal</span><span class="o">.</span><span class="n">PressSTP</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">FlowCycle</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">NumConcIncan2</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConcIncanCycle</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">NumConcIncanSat</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConcIncanSatCycle</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">NumConcIncanScat</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConcIncanScatCycle</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">NumConcScatSat</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConcScatSatCycle</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">NumConcScat1</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConcScatCycle</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">NumConcTotal</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConcTotalCycle</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">MassIncand2</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">massAvgIncandCycle</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">MassIncand2Sat</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">massAvgIncandSatCycle</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">MassScat2</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">massAvgScatCycle</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">MassScat2total</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">*</span> <span class="p">(</span><span class="n">massAvgScatSatCycle</span> <span class="o">+</span> <span class="n">massAvgScatCycle</span><span class="p">)</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">NumFracBC</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">fracBCnum</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">NumFracBCSat</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">fracBCnumSat</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">IncanNumEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">IncanNumEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">IncanMassEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">IncanMassEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">ScatNumEnsembleBC</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">ScatNumEnsembleBC</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">ScatMassEnsembleBC</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">ScatMassEnsembleBC</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">ScatNumEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">ScatNumEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+            <span class="n">ScatMassEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">ScatMassEnsemble</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">FlowCycle</span>
+
+    <span class="n">MassIncand2total</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">MassIncand2Sat</span> <span class="o">+</span> <span class="n">MassIncand2</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">MassIncand2total</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Incandescence mass concentration (total)&quot;</span>
+    <span class="n">MassIncand2total</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mass_concentration&quot;</span>
+    <span class="n">MassIncand2total</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ng m-3&quot;</span>
+    <span class="n">base_time</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;1904-01-01&#39;</span><span class="p">)</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">base_time</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">to_datetime64</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">time_wave</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">time_bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">time_wave</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Time&quot;</span>
+    <span class="n">time_wave</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;seconds since 01-01-1904 00:00:00 UTC&quot;</span>
+
+    <span class="n">NumConcIncan</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">NumConcIncan2</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">NumConcIncan</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Total number concentration (incandescence)&quot;</span>
+    <span class="n">NumConcIncan</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;incandescence_number_concentration&quot;</span>
+    <span class="n">NumConcIncan</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cm-3&quot;</span>
+
+    <span class="n">NumConcIncanScat</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">NumConcIncanScat</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">NumConcIncanScat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Number concentration detected by both incadesence and scatering detectors&quot;</span>
+    <span class="n">NumConcIncanScat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;number_concentration_detected_by_both&quot;</span>
+    <span class="n">NumConcIncanScat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cm-3&quot;</span>
+
+    <span class="n">NumConcScat</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">NumConcScat1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">NumConcScat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Total number concentration (scattering)&quot;</span>
+    <span class="n">NumConcScat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;scatter_number_concentration&quot;</span>
+    <span class="n">NumConcScat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cm-3&quot;</span>
+
+    <span class="n">NumConcScatSat</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">NumConcScatSat</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">NumConcScatSat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Total number concentration (scattering, saturated)&quot;</span>
+    <span class="n">NumConcScatSat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;scatter_number_concentration&quot;</span>
+    <span class="n">NumConcScatSat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cm-3&quot;</span>
+
+    <span class="n">NumConcTotal</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">NumConcTotal</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">NumConcTotal</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Total number concentration&quot;</span>
+    <span class="n">NumConcTotal</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;number_concentration&quot;</span>
+    <span class="n">NumConcTotal</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cm-3&quot;</span>
+
+    <span class="n">MassIncand</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">MassIncand2total</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">MassIncand</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Incandescence mass concentration&quot;</span>
+    <span class="n">MassIncand</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mass_concentration&quot;</span>
+    <span class="n">MassIncand</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ng m-3&quot;</span>
+    
+    <span class="n">MassIncand2</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">MassIncand2</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">MassIncand2</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Incandescence mass concentration&quot;</span>
+    <span class="n">MassIncand2</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mass_concentration&quot;</span>
+    <span class="n">MassIncand2</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ng m-3&quot;</span>
+
+    <span class="n">MassIncand2Sat</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">MassIncand2Sat</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">MassIncand2Sat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Incandescence mass concentration (saturated)&quot;</span>
+    <span class="n">MassIncand2Sat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mass_concentration&quot;</span>
+    <span class="n">MassIncand2Sat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ng m-3&quot;</span>
+
+    <span class="n">MassScat2</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">MassScat2</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">MassScat2</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Scattering mass concentration (cm-3)&quot;</span>
+    <span class="n">MassScat2</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;scatter_mass_concentration&quot;</span>
+    <span class="n">MassScat2</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ng cm-3&quot;</span>
+
+    <span class="n">NumFracBC</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">NumFracBC</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">))</span>
+    <span class="n">NumFracBC</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Number fraction of black carbon&quot;</span>
+    <span class="n">NumFracBC</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;number_fraction_black_carbon&quot;</span>
+    <span class="n">NumFracBC</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+
+    <span class="n">ScatNumEnsemble</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">ScatNumEnsemble</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;num_bins&#39;</span><span class="p">))</span>
+    <span class="n">ScatNumEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Scattering number distribution&quot;</span>
+    <span class="n">ScatNumEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;scattering_number_distribution&quot;</span>
+    <span class="n">ScatNumEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cm-3 per bin&quot;</span>
+   
+    <span class="n">IncanNumEnsemble</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">IncanNumEnsemble</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;num_bins&#39;</span><span class="p">))</span>
+    <span class="n">IncanNumEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Incandescence number distribution&quot;</span>
+    <span class="n">IncanNumEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;incandescence_number_distribution&quot;</span>
+    <span class="n">IncanNumEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cm-3 per bin&quot;</span>
+
+    <span class="n">ScatMassEnsemble</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">ScatMassEnsemble</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;num_bins&#39;</span><span class="p">))</span>
+    <span class="n">ScatMassEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Scattering mass distribution&quot;</span>
+    <span class="n">ScatMassEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;scattering_mass_distribution&quot;</span>
+    <span class="n">ScatMassEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ng m-3 per bin&quot;</span>
+
+    <span class="n">IncanMassEnsemble</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">IncanMassEnsemble</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;num_bins&#39;</span><span class="p">))</span>
+    <span class="n">IncanMassEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Incandesence mass distribution&quot;</span>
+    <span class="n">IncanMassEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;incadesence_mass_distribution&quot;</span>
+    <span class="n">IncanMassEnsemble</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ng m-3 per bin&quot;</span>
+
+    <span class="n">ScatNumEnsembleBC</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">ScatNumEnsembleBC</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;num_bins&#39;</span><span class="p">))</span>
+    <span class="n">ScatNumEnsembleBC</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Scattering number distribution (black carbon)&quot;</span>
+    <span class="n">ScatNumEnsembleBC</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;scattering_number_distribution (black carbon)&quot;</span>
+    <span class="n">ScatNumEnsembleBC</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cm-3 per bin&quot;</span>
+
+    <span class="n">SpecSizeBins</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">SpecSizeBins</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;num_bins&#39;</span><span class="p">))</span>
+    <span class="n">SpecSizeBins</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Spectra size bin centers&quot;</span>
+    <span class="n">SpecSizeBins</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;standard_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;particle_diameter&quot;</span>
+    <span class="n">SpecSizeBins</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;nm&quot;</span>
+    <span class="n">psd_ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
+                         <span class="s1">&#39;TimeWave&#39;</span><span class="p">:</span> <span class="n">time_wave</span><span class="p">,</span>
+                         <span class="s1">&#39;NumConcIncan&#39;</span><span class="p">:</span> <span class="n">NumConcIncan</span><span class="p">,</span>
+                         <span class="s1">&#39;NumConcIncanScat&#39;</span><span class="p">:</span> <span class="n">NumConcIncanScat</span><span class="p">,</span>
+                         <span class="s1">&#39;NumConcTotal&#39;</span><span class="p">:</span> <span class="n">NumConcTotal</span><span class="p">,</span>
+                         <span class="s1">&#39;NumConcScatSat&#39;</span><span class="p">:</span> <span class="n">NumConcScatSat</span><span class="p">,</span>
+                         <span class="s1">&#39;NumConcScat&#39;</span><span class="p">:</span> <span class="n">NumConcScat</span><span class="p">,</span>
+                         <span class="s1">&#39;MassIncand2&#39;</span><span class="p">:</span> <span class="n">MassIncand2</span><span class="p">,</span>
+                         <span class="s1">&#39;MassIncand2Sat&#39;</span><span class="p">:</span> <span class="n">MassIncand2Sat</span><span class="p">,</span>
+                         <span class="s1">&#39;MassIncand2total&#39;</span><span class="p">:</span> <span class="n">MassIncand2total</span><span class="p">,</span>
+                         <span class="s1">&#39;MassScat2&#39;</span><span class="p">:</span> <span class="n">MassScat2</span><span class="p">,</span>
+                         <span class="s1">&#39;ScatNumEnsemble&#39;</span><span class="p">:</span> <span class="n">ScatNumEnsemble</span><span class="p">,</span>
+                         <span class="s1">&#39;ScatMassEnsemble&#39;</span><span class="p">:</span> <span class="n">ScatMassEnsemble</span><span class="p">,</span>
+                         <span class="s1">&#39;IncanNumEnsemble&#39;</span><span class="p">:</span> <span class="n">IncanNumEnsemble</span><span class="p">,</span>
+                         <span class="s1">&#39;IncanMassEnsemble&#39;</span><span class="p">:</span> <span class="n">IncanMassEnsemble</span><span class="p">,</span>
+                         <span class="s1">&#39;ScatNumEnsembleBC&#39;</span><span class="p">:</span> <span class="n">ScatNumEnsembleBC</span><span class="p">,</span>
+                         <span class="s1">&#39;NumFracBC&#39;</span><span class="p">:</span> <span class="n">NumFracBC</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">psd_ds</span></div>
+</pre></div>
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, Robert Jackson.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

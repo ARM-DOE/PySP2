@@ -1,0 +1,6 @@
+﻿pysp2.io.write\_dat\_concs
+==========================
+
+.. currentmodule:: pysp2.io
+
+.. autofunction:: write_dat_concs

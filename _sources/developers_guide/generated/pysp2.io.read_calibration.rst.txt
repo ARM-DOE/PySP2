@@ -1,0 +1,6 @@
+﻿pysp2.io.read\_calibration
+==========================
+
+.. currentmodule:: pysp2.io
+
+.. autofunction:: read_calibration

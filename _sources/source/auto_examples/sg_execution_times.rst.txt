@@ -5,12 +5,12 @@
 
 Computation times
 =================
-**00:31.678** total execution time for **source_auto_examples** files:
+**00:28.715** total execution time for **source_auto_examples** files:
 
 +--------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_source_auto_examples_plot_psd.py` (``plot_psd.py``)             | 00:17.299 | 0.0 MB |
+| :ref:`sphx_glr_source_auto_examples_plot_psd.py` (``plot_psd.py``)             | 00:15.497 | 0.0 MB |
 +--------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_source_auto_examples_plot_read_sp2b.py` (``plot_read_sp2b.py``) | 00:10.480 | 0.0 MB |
+| :ref:`sphx_glr_source_auto_examples_plot_read_sp2b.py` (``plot_read_sp2b.py``) | 00:09.328 | 0.0 MB |
 +--------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_source_auto_examples_plot_hk.py` (``plot_hk.py``)               | 00:03.899 | 0.0 MB |
+| :ref:`sphx_glr_source_auto_examples_plot_hk.py` (``plot_hk.py``)               | 00:03.891 | 0.0 MB |
 +--------------------------------------------------------------------------------+-----------+--------+
