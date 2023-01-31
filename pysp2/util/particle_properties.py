@@ -234,7 +234,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         scat_parts = np.logical_and(scatter_accept, parts_time)
         incan_parts = np.logical_and(incand_accept, parts_time)
         ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
-        ConcTotalCycle = OneOfEvery * (np.sum(incan_parts) + np.sum(scat_parts))
+        ConcTotalCycle = OneOfEvery * np.sum(np.logical_or(incan_parts,scat_parts))
         ConcScatCycle = OneOfEvery * np.sum(scat_parts)
         ConcScatSatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_sat))
         ConcIncanScatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_parts))
