@@ -42,8 +42,10 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'numpydoc',
+    'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
+    'sphinx_copybutton',
+    'sphinx_design',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -59,14 +61,40 @@ sphinx_gallery_conf = {
     'gallery_dirs': 'source/auto_examples'
 }
 
+# Generate the API documentation when building
+autoclass_content = 'both'
+autosummary_generate = True
+autosummary_imported_members = True
+
+# Otherwise, the Return parameter list looks different from the Parameter list
+napoleon_use_rtype = False
+napoleon_use_ivar = True
+napoleon_include_init_with_doc = False
+napoleon_use_param = False
+
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'pydata_sphinx_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_css_files = ['default.css']
+
+html_js_files = ['doc_shared.js']
+
+html_sidebars = {
+    'contributors_guide': ['searchbox.html', 'sidebar-nav-bs.html'],
+    'developers_guide': ['searchbox.html', 'sidebar-nav-bs.html'],
+    'users_guide': ['searchbox.html', 'sidebar-nav-bs.html'],
+    'examples': ['searchbox.html', 'sidebar-nav-bs.html'],
+    'notebook-gallery': ['searchbox.html', 'sidebar-nav-bs.html']}
+
