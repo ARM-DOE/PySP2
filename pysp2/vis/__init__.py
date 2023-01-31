@@ -10,4 +10,3 @@ This module contains visualization subroutines for SP2 data.
     plot_wave
 """
 from .plot_wave import plot_wave
-from .data_editor import DataEditor
