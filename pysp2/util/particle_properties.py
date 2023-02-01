@@ -370,8 +370,10 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     SpecSizeBins = xr.DataArray(SpecSizeBins, dims=('num_bins'))
     SpecSizeBins.attrs["long_name"] = "Spectra size bin centers"
     SpecSizeBins.attrs["standard_name"] = "particle_diameter"
-    SpecSizeBins.attrs["units"] = "nm"
+    SpecSizeBins.attrs["units"] = "um"
+    
     psd_ds = xr.Dataset({'time': time,
+                         'num_bins': SpecSizeBins,
                          'TimeWave': time_wave,
                          'NumConcIncan': NumConcIncan,
                          'NumConcIncanScat': NumConcIncanScat,
