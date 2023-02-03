@@ -170,6 +170,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     SizeIncandOnly = particle_ds['sootDiam'].values / 1000.
     SpecSizeBins = 0.01 + np.arange(0, num_bins, 1) * deltaSize
     ScatNumEnsembleBC = np.zeros((len(time_bins[:-1]), num_bins))
+    ScatNumEnsembleBC_ = np.zeros_like(ScatNumEnsembleBC) #JB
     ScatMassEnsembleBC = np.zeros_like(ScatNumEnsembleBC)
     IncanNumEnsemble = np.zeros((len(time_bins[:-1]), num_bins))
     IncanMassEnsemble = np.zeros_like(ScatNumEnsembleBC)
@@ -230,7 +231,6 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
                             SizeIncandOnly < SpecSizeBins[i] + deltaSize / 2))
             IncanNumEnsemble[t, i] = OneOfEvery * np.sum(the_particles)
             IncanMassEnsemble[t, i] = OneOfEvery * np.sum(sootMass[the_particles])
-
         scat_parts = np.logical_and(scatter_accept, parts_time)
         incan_parts = np.logical_and(incand_accept, parts_time)
         ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
@@ -277,6 +277,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
             IncanNumEnsemble[t, :] = IncanNumEnsemble[t, :] / FlowCycle
             IncanMassEnsemble[t, :] = IncanMassEnsemble[t, :] / FlowCycle
             ScatNumEnsembleBC[t, :] = ScatNumEnsembleBC[t, :] / FlowCycle
+            ScatNumEnsembleBC_[t, :] = ScatNumEnsembleBC_[t, :] / FlowCycle #JB
             ScatMassEnsembleBC[t, :] = ScatMassEnsembleBC[t, :] / FlowCycle
             ScatNumEnsemble[t, :] = ScatNumEnsemble[t, :] / FlowCycle
             ScatMassEnsemble[t, :] = ScatMassEnsemble[t, :] / FlowCycle
