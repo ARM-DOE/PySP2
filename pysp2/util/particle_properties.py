@@ -276,7 +276,6 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
             IncanNumEnsemble[t, :] = IncanNumEnsemble[t, :] / FlowCycle
             IncanMassEnsemble[t, :] = IncanMassEnsemble[t, :] / FlowCycle
             ScatNumEnsembleBC[t, :] = ScatNumEnsembleBC[t, :] / FlowCycle
-            ScatNumEnsembleBC_[t, :] = ScatNumEnsembleBC_[t, :] / FlowCycle #JB
             ScatMassEnsembleBC[t, :] = ScatMassEnsembleBC[t, :] / FlowCycle
             ScatNumEnsemble[t, :] = ScatNumEnsemble[t, :] / FlowCycle
             ScatMassEnsemble[t, :] = ScatMassEnsemble[t, :] / FlowCycle
