@@ -541,7 +541,7 @@ def _gaussian_sat_fit(my_ds, record_number):
         bins_fit = bins[np.isfinite(temp1)]
         temp1_fit = temp1[np.isfinite(temp1)]
         p0 = np.array([data.max()-data.min(), np.argmax(data), 20., np.nanmin(data)]).astype(float)
-        coeff, var_matrix = curve_fit(_gaus, bins_fit, temp1_fit, p0=p0, method='lm', maxfev=50, ftol=1e-5)
+        coeff, var_matrix = curve_fit(_gaus, bins_fit, temp1_fit, p0=p0, method='lm', maxfev=50, ftol=1e-3)
         if clipped_wave:
             p0[1] = coeff[1]
             bins_fit = bins[np.isfinite(temp1)]
