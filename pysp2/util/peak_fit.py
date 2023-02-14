@@ -432,7 +432,7 @@ def _fit_record_gaussian(my_ds, record_number):
 
 
 def _fit_record_incan_ave_base(my_ds, channel, num_trig_pts):
-    """ Channels 1, 2, 6, 7"""
+    """ Channels 1, 2, 5, 6"""
     num_base_pts_2_avg_backup = 20
     num_pts = my_ds['Data_ch' + str(channel)].values.shape[1]
     if num_trig_pts != -1:
@@ -528,7 +528,7 @@ def _gaussian_sat_fit(my_ds, record_number):
     global_vars = DMTGlobals()
     data = my_ds['Data_ch' + str(channel)].values[record_number]
 
-    if data.max() - data.min() >= global_vars.ScatMaxPeakHt1:
+    if data.max() - data.min() >= global_vars.ScatMaxPeakHt2:
         temp1 = data.astype(float)
         temp1[temp1 == data.max()] = np.nan
         clipped_wave = True
@@ -540,7 +540,7 @@ def _gaussian_sat_fit(my_ds, record_number):
     try:
         bins_fit = bins[np.isfinite(temp1)]
         temp1_fit = temp1[np.isfinite(temp1)]
-        p0 = np.array([data.max()-data.min(), 50., np.argmax(data), np.nanmin(data)]).astype(float)
+        p0 = np.array([data.max()-data.min(), np.argmax(data), 20., np.nanmin(data)]).astype(float)
         coeff, var_matrix = curve_fit(_gaus, bins_fit, temp1_fit, p0=p0, method='lm', maxfev=50, ftol=1e-5)
         if clipped_wave:
             p0[1] = coeff[1]
