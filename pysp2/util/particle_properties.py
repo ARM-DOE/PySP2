@@ -355,12 +355,12 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     ScatMassEnsemble = xr.DataArray(ScatMassEnsemble, dims=('time', 'num_bins'))
     ScatMassEnsemble.attrs["long_name"] = "Scattering mass distribution"
     ScatMassEnsemble.attrs["standard_name"] = "scattering_mass_distribution"
-    ScatMassEnsemble.attrs["units"] = "ng m-3 per bin"
+    ScatMassEnsemble.attrs["units"] = "ug m-3 per bin"
 
     IncanMassEnsemble = xr.DataArray(IncanMassEnsemble, dims=('time', 'num_bins'))
     IncanMassEnsemble.attrs["long_name"] = "Incandesence mass distribution"
     IncanMassEnsemble.attrs["standard_name"] = "incadesence_mass_distribution"
-    IncanMassEnsemble.attrs["units"] = "ng m-3 per bin"
+    IncanMassEnsemble.attrs["units"] = "ug m-3 per bin"
 
     ScatNumEnsembleBC = xr.DataArray(ScatNumEnsembleBC, dims=('time', 'num_bins'))
     ScatNumEnsembleBC.attrs["long_name"] = "Scattering number distribution (black carbon)"
