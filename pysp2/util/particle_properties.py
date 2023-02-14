@@ -318,7 +318,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     NumConcTotal.attrs["units"] = "cm-3"
 
     MassIncand = xr.DataArray(MassIncand2total, dims=('time'))
-    MassIncand.attrs["long_name"] = "Incandescence mass concentration"
+    MassIncand.attrs["long_name"] = "Incandescence mass concentration (total)"
     MassIncand.attrs["standard_name"] = "mass_concentration"
     MassIncand.attrs["units"] = "ng m-3"
     
@@ -333,9 +333,14 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     MassIncand2Sat.attrs["units"] = "ng m-3"
 
     MassScat2 = xr.DataArray(MassScat2, dims=('time'))
-    MassScat2.attrs["long_name"] = "Scattering mass concentration (cm-3)"
+    MassScat2.attrs["long_name"] = "Scattering mass concentration"
     MassScat2.attrs["standard_name"] = "scatter_mass_concentration"
     MassScat2.attrs["units"] = "ng cm-3"
+    
+    MassScat2total = xr.DataArray(MassScat2total, dims=('time'))
+    MassScat2total.attrs["long_name"] = "Scattering mass concentration (total)"
+    MassScat2total.attrs["standard_name"] = "scatter_mass_concentration"
+    MassScat2total.attrs["units"] = "ng cm-3"
 
     NumFracBC = xr.DataArray(NumFracBC, dims=('time'))
     NumFracBC.attrs["long_name"] = "Number fraction of black carbon"
@@ -384,6 +389,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
                          'MassIncand2Sat': MassIncand2Sat,
                          'MassIncand2total': MassIncand2total,
                          'MassScat2': MassScat2,
+                         'MassScat2total':MassScat2total,
                          'ScatNumEnsemble': ScatNumEnsemble,
                          'ScatMassEnsemble': ScatMassEnsemble,
                          'IncanNumEnsemble': IncanNumEnsemble,
