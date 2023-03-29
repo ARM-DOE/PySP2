@@ -144,7 +144,8 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         The xarray Dataset containing the time-averaged particle statistics.
     """
     DMTGlobal = DMTGlobals()
-    time_bins = np.arange(hk_ds['Timestamp'].values[0],
+    #Housekeeping 'Timestamp' is in seconds since 01-01-1904 00:00:00 UTC
+    time_bins = np.arange(hk_ds['Timestamp'].values[0], 
                           hk_ds['Timestamp'].values[-1],
                           avg_interval)
     time_wave = particle_ds['DateTimeWaveUTC'].values
@@ -170,16 +171,11 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     SizeIncandOnly = particle_ds['sootDiam'].values / 1000.
     SpecSizeBins = 0.01 + np.arange(0, num_bins, 1) * deltaSize
     ScatNumEnsembleBC = np.zeros((len(time_bins[:-1]), num_bins))
-    ScatNumEnsembleBC_ = np.zeros((len(time_bins[:-1]), num_bins)) #JB
     ScatMassEnsembleBC = np.zeros_like(ScatNumEnsembleBC)
     IncanNumEnsemble = np.zeros((len(time_bins[:-1]), num_bins))
-    IncanNumEnsemble_ = np.zeros((len(time_bins[:-1]), num_bins))
     IncanMassEnsemble = np.zeros_like(ScatNumEnsembleBC)
-    IncanMassEnsemble_ = np.zeros_like(ScatNumEnsembleBC) #JB
     ScatNumEnsemble = np.zeros((len(time_bins[:-1]), num_bins))
-    ScatNumEnsemble_ = np.zeros((len(time_bins[:-1]), num_bins))
     ScatMassEnsemble = np.zeros_like(ScatNumEnsembleBC)
-    ScatMassEnsemble_ = np.zeros_like(ScatNumEnsembleBC)
     scatter_accept = ~np.isnan(particle_ds['Scatter'].values)
     incand_accept = ~np.isnan(sootMass)
     try:
@@ -220,18 +216,18 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         if len(times_hk) == 0:
             continue
 
-        the_particles=np.logical_and.reduce((parts_time, scatter_accept)) #JB
-        ind=np.searchsorted(SpecSizeBins+deltaSize/2,ScatDiaBC50[the_particles],side='right') #JB
-        np.add.at(ScatNumEnsembleBC_[t,:],ind+1,OneOfEvery) #JB
+        the_particles=np.logical_and.reduce((parts_time, scatter_accept))
+        ind=np.searchsorted(SpecSizeBins+deltaSize/2,ScatDiaBC50[the_particles],side='right')
+        np.add.at(ScatNumEnsembleBC[t,:],ind+1,OneOfEvery)
         
-        ind=np.searchsorted(SpecSizeBins+deltaSize/2,ScatDiaSO4[the_particles],side='right') #JB
-        np.add.at(ScatNumEnsemble_[t,:],ind+1,OneOfEvery) #JB
-        np.add.at(ScatMassEnsemble_[t,:],ind+1,OneOfEvery * ScatMassSO4[the_particles]) #JB
+        ind=np.searchsorted(SpecSizeBins+deltaSize/2,ScatDiaSO4[the_particles],side='right')
+        np.add.at(ScatNumEnsemble[t,:],ind+1,OneOfEvery)
+        np.add.at(ScatMassEnsemble[t,:],ind+1,OneOfEvery * ScatMassSO4[the_particles])
         
-        the_particles=np.logical_and.reduce((parts_time, incand_accept)) #JB
-        ind=np.searchsorted(SpecSizeBins+deltaSize/2,SizeIncandOnly[the_particles],side='right') #JB
-        np.add.at(IncanNumEnsemble_[t,:],ind+1,OneOfEvery) #JB
-        np.add.at(IncanMassEnsemble_[t,:],ind+1,OneOfEvery * sootMass[the_particles]) #JB
+        the_particles=np.logical_and.reduce((parts_time, incand_accept))
+        ind=np.searchsorted(SpecSizeBins+deltaSize/2,SizeIncandOnly[the_particles],side='right')
+        np.add.at(IncanNumEnsemble[t,:],ind+1,OneOfEvery)
+        np.add.at(IncanMassEnsemble[t,:],ind+1,OneOfEvery * sootMass[the_particles])
         
         # for i in range(num_bins):
         #     the_particles = np.logical_and.reduce((parts_time, scatter_accept,
@@ -249,6 +245,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         #                     SizeIncandOnly < SpecSizeBins[i] + deltaSize / 2))
         #     IncanNumEnsemble[t, i] = OneOfEvery * np.sum(the_particles)
         #     IncanMassEnsemble[t, i] = OneOfEvery * np.sum(sootMass[the_particles])
+            
         scat_parts = np.logical_and(scatter_accept, parts_time)
         incan_parts = np.logical_and(incand_accept, parts_time)
         ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
@@ -293,16 +290,11 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
             NumFracBC[t] = fracBCnum / FlowCycle
             NumFracBCSat[t] = fracBCnumSat / FlowCycle
             IncanNumEnsemble[t, :] = IncanNumEnsemble[t, :] / FlowCycle
-            IncanNumEnsemble_[t, :] = IncanNumEnsemble_[t, :] / FlowCycle #JB
             IncanMassEnsemble[t, :] = IncanMassEnsemble[t, :] / FlowCycle
-            IncanMassEnsemble_[t, :] = IncanMassEnsemble_[t, :] / FlowCycle #JB
             ScatNumEnsembleBC[t, :] = ScatNumEnsembleBC[t, :] / FlowCycle
-            ScatNumEnsembleBC_[t, :] = ScatNumEnsembleBC_[t, :] / FlowCycle #JB
-            ScatMassEnsembleBC[t, :] = ScatMassEnsembleBC[t, :] / FlowCycle #THIS IS ALWAYS JUST ZEROS
+            ScatMassEnsembleBC[t, :] = ScatMassEnsembleBC[t, :] / FlowCycle #Not in use, always zero
             ScatNumEnsemble[t, :] = ScatNumEnsemble[t, :] / FlowCycle
-            ScatNumEnsemble_[t, :] = ScatNumEnsemble_[t, :] / FlowCycle #JB
             ScatMassEnsemble[t, :] = ScatMassEnsemble[t, :] / FlowCycle
-            ScatMassEnsemble_[t, :] = ScatMassEnsemble_[t, :] / FlowCycle #JB
 
     MassIncand2total = xr.DataArray(MassIncand2Sat + MassIncand2, dims=('time'))
     MassIncand2total.attrs["long_name"] = "Incandescence mass concentration (total)"
@@ -312,6 +304,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     base_time = pd.Timestamp('1904-01-01')
     time = np.array([(base_time + datetime.timedelta(seconds=x)).to_datetime64() for x in time_bins[:-1]])
     time = xr.DataArray(time, dims=('time'))
+    
     time_wave = xr.DataArray(time_bins[:-1], dims=('time'))
     time_wave.attrs["long_name"] = "Time"
     time_wave.attrs["units"] = "seconds since 01-01-1904 00:00:00 UTC"
@@ -375,52 +368,27 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     ScatNumEnsemble.attrs["long_name"] = "Scattering number distribution"
     ScatNumEnsemble.attrs["standard_name"] = "scattering_number_distribution"
     ScatNumEnsemble.attrs["units"] = "cm-3 per bin"
-
-    ScatNumEnsemble_ = xr.DataArray(ScatNumEnsemble_, dims=('time', 'num_bins')) #JB
-    ScatNumEnsemble_.attrs["long_name"] = "Scattering number distribution" #JB
-    ScatNumEnsemble_.attrs["standard_name"] = "scattering_number_distribution" #JB
-    ScatNumEnsemble_.attrs["units"] = "cm-3 per bin" #JB
     
     IncanNumEnsemble = xr.DataArray(IncanNumEnsemble, dims=('time', 'num_bins'))
     IncanNumEnsemble.attrs["long_name"] = "Incandescence number distribution"
     IncanNumEnsemble.attrs["standard_name"] = "incandescence_number_distribution"
     IncanNumEnsemble.attrs["units"] = "cm-3 per bin"
 
-    IncanNumEnsemble_ = xr.DataArray(IncanNumEnsemble_, dims=('time', 'num_bins')) #JB
-    IncanNumEnsemble_.attrs["long_name"] = "Incandescence number distribution" #JB
-    IncanNumEnsemble_.attrs["standard_name"] = "incandescence_number_distribution" #JB
-    IncanNumEnsemble_.attrs["units"] = "cm-3 per bin" #JB
-
     ScatMassEnsemble = xr.DataArray(ScatMassEnsemble, dims=('time', 'num_bins'))
     ScatMassEnsemble.attrs["long_name"] = "Scattering mass distribution"
     ScatMassEnsemble.attrs["standard_name"] = "scattering_mass_distribution"
     ScatMassEnsemble.attrs["units"] = "ug m-3 per bin"
     
-    ScatMassEnsemble_ = xr.DataArray(ScatMassEnsemble_, dims=('time', 'num_bins')) #JB
-    ScatMassEnsemble_.attrs["long_name"] = "Scattering mass distribution" #JB
-    ScatMassEnsemble_.attrs["standard_name"] = "scattering_mass_distribution" #JB
-    ScatMassEnsemble_.attrs["units"] = "ug m-3 per bin" #JB
-
     IncanMassEnsemble = xr.DataArray(IncanMassEnsemble, dims=('time', 'num_bins'))
     IncanMassEnsemble.attrs["long_name"] = "Incandesence mass distribution"
     IncanMassEnsemble.attrs["standard_name"] = "incadesence_mass_distribution"
     IncanMassEnsemble.attrs["units"] = "ug m-3 per bin"
-    
-    IncanMassEnsemble_ = xr.DataArray(IncanMassEnsemble_, dims=('time', 'num_bins')) #JB 
-    IncanMassEnsemble_.attrs["long_name"] = "Incandesence mass distribution" #JB
-    IncanMassEnsemble_.attrs["standard_name"] = "incadesence_mass_distribution" #JB
-    IncanMassEnsemble_.attrs["units"] = "ug m-3 per bin" #JB
-    
+        
     ScatNumEnsembleBC = xr.DataArray(ScatNumEnsembleBC, dims=('time', 'num_bins'))
     ScatNumEnsembleBC.attrs["long_name"] = "Scattering number distribution (black carbon)"
     ScatNumEnsembleBC.attrs["standard_name"] = "scattering_number_distribution (black carbon)"
     ScatNumEnsembleBC.attrs["units"] = "cm-3 per bin"
     
-    ScatNumEnsembleBC_ = xr.DataArray(ScatNumEnsembleBC_, dims=('time', 'num_bins')) #JB
-    ScatNumEnsembleBC_.attrs["long_name"] = "Scattering number distribution (black carbon)" #JB
-    ScatNumEnsembleBC_.attrs["standard_name"] = "scattering_number_distribution (black carbon)" #JB
-    ScatNumEnsembleBC_.attrs["units"] = "cm-3 per bin" #JB
-
     SpecSizeBins = xr.DataArray(SpecSizeBins, dims=('num_bins'))
     SpecSizeBins.attrs["long_name"] = "Spectra size bin centers"
     SpecSizeBins.attrs["standard_name"] = "particle_diameter"
@@ -428,7 +396,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     
     psd_ds = xr.Dataset({'time': time,
                          'num_bins': SpecSizeBins,
-                         'TimeWave': time_wave,
+                         'DateTimeWaveUTC': time_wave,
                          'NumConcIncan': NumConcIncan,
                          'NumConcIncanScat': NumConcIncanScat,
                          'NumConcTotal': NumConcTotal,
@@ -440,15 +408,10 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
                          'MassScat2': MassScat2,
                          'MassScat2total':MassScat2total,
                          'ScatNumEnsemble': ScatNumEnsemble,
-                         'ScatNumEnsemble_': ScatNumEnsemble_, #JB
                          'ScatMassEnsemble': ScatMassEnsemble,
-                         'ScatMassEnsemble_': ScatMassEnsemble_, #JB
                          'IncanNumEnsemble': IncanNumEnsemble,
-                         'IncanNumEnsemble_': IncanNumEnsemble_, #JB
                          'IncanMassEnsemble': IncanMassEnsemble,
-                         'IncanMassEnsemble_': IncanMassEnsemble_, #JB
                          'ScatNumEnsembleBC': ScatNumEnsembleBC,
-                         'ScatNumEnsembleBC_': ScatNumEnsembleBC_, #JB
                          'NumFracBC': NumFracBC})
 
     return psd_ds
