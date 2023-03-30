@@ -144,7 +144,8 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         The xarray Dataset containing the time-averaged particle statistics.
     """
     DMTGlobal = DMTGlobals()
-    time_bins = np.arange(hk_ds['Timestamp'].values[0],
+    #Housekeeping 'Timestamp' is in seconds since 01-01-1904 00:00:00 UTC
+    time_bins = np.arange(hk_ds['Timestamp'].values[0], 
                           hk_ds['Timestamp'].values[-1],
                           avg_interval)
     time_wave = particle_ds['DateTimeWaveUTC'].values
@@ -215,22 +216,36 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         if len(times_hk) == 0:
             continue
 
-        for i in range(num_bins):
-            the_particles = np.logical_and.reduce((parts_time, scatter_accept,
-                            ScatDiaBC50 >= SpecSizeBins[i] - deltaSize / 2,
-                            ScatDiaBC50 < SpecSizeBins[i] + deltaSize / 2))
-            ScatNumEnsembleBC[t, i] = OneOfEvery * np.sum(the_particles)
-            the_particles = np.logical_and.reduce((parts_time, scatter_accept,
-                            ScatDiaSO4 >= SpecSizeBins[i] - deltaSize / 2,
-                            ScatDiaSO4 < SpecSizeBins[i] + deltaSize / 2))
-            ScatNumEnsemble[t, i] = OneOfEvery * np.sum(the_particles)
-            ScatMassEnsemble[t, i] = OneOfEvery * np.sum(ScatMassSO4[the_particles])
-            the_particles = np.logical_and.reduce((parts_time, incand_accept,
-                            SizeIncandOnly >= SpecSizeBins[i] - deltaSize / 2,
-                            SizeIncandOnly < SpecSizeBins[i] + deltaSize / 2))
-            IncanNumEnsemble[t, i] = OneOfEvery * np.sum(the_particles)
-            IncanMassEnsemble[t, i] = OneOfEvery * np.sum(sootMass[the_particles])
-
+        the_particles=np.logical_and.reduce((parts_time, scatter_accept))
+        ind=np.searchsorted(SpecSizeBins+deltaSize/2,ScatDiaBC50[the_particles],side='right')
+        np.add.at(ScatNumEnsembleBC[t,:],ind+1,OneOfEvery)
+        
+        ind=np.searchsorted(SpecSizeBins+deltaSize/2,ScatDiaSO4[the_particles],side='right')
+        np.add.at(ScatNumEnsemble[t,:],ind+1,OneOfEvery)
+        np.add.at(ScatMassEnsemble[t,:],ind+1,OneOfEvery * ScatMassSO4[the_particles])
+        
+        the_particles=np.logical_and.reduce((parts_time, incand_accept))
+        ind=np.searchsorted(SpecSizeBins+deltaSize/2,SizeIncandOnly[the_particles],side='right')
+        np.add.at(IncanNumEnsemble[t,:],ind+1,OneOfEvery)
+        np.add.at(IncanMassEnsemble[t,:],ind+1,OneOfEvery * sootMass[the_particles])
+        
+        # for i in range(num_bins):
+        #     the_particles = np.logical_and.reduce((parts_time, scatter_accept,
+        #                     ScatDiaBC50 >= SpecSizeBins[i] - deltaSize / 2,
+        #                     ScatDiaBC50 < SpecSizeBins[i] + deltaSize / 2))
+        #     ScatNumEnsembleBC[t, i] = OneOfEvery * np.sum(the_particles)
+        #     the_particles = np.logical_and.reduce((parts_time, scatter_accept,
+        #                     ScatDiaSO4 >= SpecSizeBins[i] - deltaSize / 2,
+        #                     ScatDiaSO4 < SpecSizeBins[i] + deltaSize / 2))
+        #     ScatNumEnsemble[t, i] = OneOfEvery * np.sum(the_particles)
+        #     ScatMassEnsemble[t, i] = OneOfEvery * np.sum(ScatMassSO4[the_particles])
+            
+        #     the_particles = np.logical_and.reduce((parts_time, incand_accept,
+        #                     SizeIncandOnly >= SpecSizeBins[i] - deltaSize / 2,
+        #                     SizeIncandOnly < SpecSizeBins[i] + deltaSize / 2))
+        #     IncanNumEnsemble[t, i] = OneOfEvery * np.sum(the_particles)
+        #     IncanMassEnsemble[t, i] = OneOfEvery * np.sum(sootMass[the_particles])
+            
         scat_parts = np.logical_and(scatter_accept, parts_time)
         incan_parts = np.logical_and(incand_accept, parts_time)
         ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
@@ -277,7 +292,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
             IncanNumEnsemble[t, :] = IncanNumEnsemble[t, :] / FlowCycle
             IncanMassEnsemble[t, :] = IncanMassEnsemble[t, :] / FlowCycle
             ScatNumEnsembleBC[t, :] = ScatNumEnsembleBC[t, :] / FlowCycle
-            ScatMassEnsembleBC[t, :] = ScatMassEnsembleBC[t, :] / FlowCycle
+            ScatMassEnsembleBC[t, :] = ScatMassEnsembleBC[t, :] / FlowCycle #Not in use, always zero
             ScatNumEnsemble[t, :] = ScatNumEnsemble[t, :] / FlowCycle
             ScatMassEnsemble[t, :] = ScatMassEnsemble[t, :] / FlowCycle
 
@@ -285,9 +300,11 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     MassIncand2total.attrs["long_name"] = "Incandescence mass concentration (total)"
     MassIncand2total.attrs["standard_name"] = "mass_concentration"
     MassIncand2total.attrs["units"] = "ng m-3"
+    
     base_time = pd.Timestamp('1904-01-01')
     time = np.array([(base_time + datetime.timedelta(seconds=x)).to_datetime64() for x in time_bins[:-1]])
     time = xr.DataArray(time, dims=('time'))
+    
     time_wave = xr.DataArray(time_bins[:-1], dims=('time'))
     time_wave.attrs["long_name"] = "Time"
     time_wave.attrs["units"] = "seconds since 01-01-1904 00:00:00 UTC"
@@ -318,7 +335,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     NumConcTotal.attrs["units"] = "cm-3"
 
     MassIncand = xr.DataArray(MassIncand2total, dims=('time'))
-    MassIncand.attrs["long_name"] = "Incandescence mass concentration"
+    MassIncand.attrs["long_name"] = "Incandescence mass concentration (total)"
     MassIncand.attrs["standard_name"] = "mass_concentration"
     MassIncand.attrs["units"] = "ng m-3"
     
@@ -333,9 +350,14 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     MassIncand2Sat.attrs["units"] = "ng m-3"
 
     MassScat2 = xr.DataArray(MassScat2, dims=('time'))
-    MassScat2.attrs["long_name"] = "Scattering mass concentration (cm-3)"
+    MassScat2.attrs["long_name"] = "Scattering mass concentration"
     MassScat2.attrs["standard_name"] = "scatter_mass_concentration"
     MassScat2.attrs["units"] = "ng cm-3"
+    
+    MassScat2total = xr.DataArray(MassScat2total, dims=('time'))
+    MassScat2total.attrs["long_name"] = "Scattering mass concentration (total)"
+    MassScat2total.attrs["standard_name"] = "scatter_mass_concentration"
+    MassScat2total.attrs["units"] = "ng cm-3"
 
     NumFracBC = xr.DataArray(NumFracBC, dims=('time'))
     NumFracBC.attrs["long_name"] = "Number fraction of black carbon"
@@ -346,7 +368,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     ScatNumEnsemble.attrs["long_name"] = "Scattering number distribution"
     ScatNumEnsemble.attrs["standard_name"] = "scattering_number_distribution"
     ScatNumEnsemble.attrs["units"] = "cm-3 per bin"
-   
+    
     IncanNumEnsemble = xr.DataArray(IncanNumEnsemble, dims=('time', 'num_bins'))
     IncanNumEnsemble.attrs["long_name"] = "Incandescence number distribution"
     IncanNumEnsemble.attrs["standard_name"] = "incandescence_number_distribution"
@@ -355,24 +377,26 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     ScatMassEnsemble = xr.DataArray(ScatMassEnsemble, dims=('time', 'num_bins'))
     ScatMassEnsemble.attrs["long_name"] = "Scattering mass distribution"
     ScatMassEnsemble.attrs["standard_name"] = "scattering_mass_distribution"
-    ScatMassEnsemble.attrs["units"] = "ng m-3 per bin"
-
+    ScatMassEnsemble.attrs["units"] = "ug m-3 per bin"
+    
     IncanMassEnsemble = xr.DataArray(IncanMassEnsemble, dims=('time', 'num_bins'))
     IncanMassEnsemble.attrs["long_name"] = "Incandesence mass distribution"
     IncanMassEnsemble.attrs["standard_name"] = "incadesence_mass_distribution"
-    IncanMassEnsemble.attrs["units"] = "ng m-3 per bin"
-
+    IncanMassEnsemble.attrs["units"] = "ug m-3 per bin"
+        
     ScatNumEnsembleBC = xr.DataArray(ScatNumEnsembleBC, dims=('time', 'num_bins'))
     ScatNumEnsembleBC.attrs["long_name"] = "Scattering number distribution (black carbon)"
     ScatNumEnsembleBC.attrs["standard_name"] = "scattering_number_distribution (black carbon)"
     ScatNumEnsembleBC.attrs["units"] = "cm-3 per bin"
-
+    
     SpecSizeBins = xr.DataArray(SpecSizeBins, dims=('num_bins'))
     SpecSizeBins.attrs["long_name"] = "Spectra size bin centers"
     SpecSizeBins.attrs["standard_name"] = "particle_diameter"
-    SpecSizeBins.attrs["units"] = "nm"
+    SpecSizeBins.attrs["units"] = "um"
+    
     psd_ds = xr.Dataset({'time': time,
-                         'TimeWave': time_wave,
+                         'num_bins': SpecSizeBins,
+                         'DateTimeWaveUTC': time_wave,
                          'NumConcIncan': NumConcIncan,
                          'NumConcIncanScat': NumConcIncanScat,
                          'NumConcTotal': NumConcTotal,
@@ -382,6 +406,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
                          'MassIncand2Sat': MassIncand2Sat,
                          'MassIncand2total': MassIncand2total,
                          'MassScat2': MassScat2,
+                         'MassScat2total':MassScat2total,
                          'ScatNumEnsemble': ScatNumEnsemble,
                          'ScatMassEnsemble': ScatMassEnsemble,
                          'IncanNumEnsemble': IncanNumEnsemble,
