@@ -40,7 +40,7 @@ LONG_DESCRIPTION = "\n".join(DOCLINES[2:])
 LICENSE = 'BSD'
 PLATFORMS = "Linux, Windows, OSX"
 MAJOR = 1
-MINOR = 2
+MINOR = 3
 MICRO = 0
 
 #SCRIPTS = glob.glob('scripts/*')
@@ -72,11 +72,9 @@ def setup_package():
         packages=find_packages(exclude=['contrib', 'docs', 
                                         'tests', 'examples']),
         project_urls={
-            'Source': 'https://github.com/rcjackson/PySP2'},
-        #test_suite=TEST_SUITE,
-        #tests_require=TESTS_REQUIRE,
-        #scripts=SCRIPTS,
+            'Source': 'https://github.com/ARM-DOE/PySP2'},
     )
+
 
 if __name__ == '__main__':
     setup_package()

@@ -216,40 +216,24 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         if len(times_hk) == 0:
             continue
 
-        the_particles=np.logical_and.reduce((parts_time, scatter_accept))
-        ind=np.searchsorted(SpecSizeBins+deltaSize/2,ScatDiaBC50[the_particles],side='right')
-        np.add.at(ScatNumEnsembleBC[t,:],ind+1,OneOfEvery)
+        the_particles = np.logical_and.reduce((parts_time, scatter_accept))
+        ind = np.searchsorted(SpecSizeBins+deltaSize / 2,ScatDiaBC50[the_particles], side='right')
+        np.add.at(ScatNumEnsembleBC[t,:], ind+1, OneOfEvery)
         
-        ind=np.searchsorted(SpecSizeBins+deltaSize/2,ScatDiaSO4[the_particles],side='right')
-        np.add.at(ScatNumEnsemble[t,:],ind+1,OneOfEvery)
-        np.add.at(ScatMassEnsemble[t,:],ind+1,OneOfEvery * ScatMassSO4[the_particles])
+        ind=np.searchsorted(SpecSizeBins+deltaSize / 2,ScatDiaSO4[the_particles], side='right')
+        np.add.at(ScatNumEnsemble[t,:], ind+1, OneOfEvery)
+        np.add.at(ScatMassEnsemble[t,:], ind+1, OneOfEvery * ScatMassSO4[the_particles])
         
         the_particles=np.logical_and.reduce((parts_time, incand_accept))
-        ind=np.searchsorted(SpecSizeBins+deltaSize/2,SizeIncandOnly[the_particles],side='right')
-        np.add.at(IncanNumEnsemble[t,:],ind+1,OneOfEvery)
-        np.add.at(IncanMassEnsemble[t,:],ind+1,OneOfEvery * sootMass[the_particles])
+        ind=np.searchsorted(SpecSizeBins+deltaSize / 2,SizeIncandOnly[the_particles], side='right')
+        np.add.at(IncanNumEnsemble[t,:], ind+1, OneOfEvery)
+        np.add.at(IncanMassEnsemble[t,:], ind+1, OneOfEvery * sootMass[the_particles])
         
-        # for i in range(num_bins):
-        #     the_particles = np.logical_and.reduce((parts_time, scatter_accept,
-        #                     ScatDiaBC50 >= SpecSizeBins[i] - deltaSize / 2,
-        #                     ScatDiaBC50 < SpecSizeBins[i] + deltaSize / 2))
-        #     ScatNumEnsembleBC[t, i] = OneOfEvery * np.sum(the_particles)
-        #     the_particles = np.logical_and.reduce((parts_time, scatter_accept,
-        #                     ScatDiaSO4 >= SpecSizeBins[i] - deltaSize / 2,
-        #                     ScatDiaSO4 < SpecSizeBins[i] + deltaSize / 2))
-        #     ScatNumEnsemble[t, i] = OneOfEvery * np.sum(the_particles)
-        #     ScatMassEnsemble[t, i] = OneOfEvery * np.sum(ScatMassSO4[the_particles])
-            
-        #     the_particles = np.logical_and.reduce((parts_time, incand_accept,
-        #                     SizeIncandOnly >= SpecSizeBins[i] - deltaSize / 2,
-        #                     SizeIncandOnly < SpecSizeBins[i] + deltaSize / 2))
-        #     IncanNumEnsemble[t, i] = OneOfEvery * np.sum(the_particles)
-        #     IncanMassEnsemble[t, i] = OneOfEvery * np.sum(sootMass[the_particles])
             
         scat_parts = np.logical_and(scatter_accept, parts_time)
         incan_parts = np.logical_and(incand_accept, parts_time)
         ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
-        ConcTotalCycle = OneOfEvery * np.sum(np.logical_or(incan_parts,scat_parts))
+        ConcTotalCycle = OneOfEvery * np.sum(np.logical_or(incan_parts, scat_parts))
         ConcScatCycle = OneOfEvery * np.sum(scat_parts)
         ConcScatSatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_sat))
         ConcIncanScatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_parts))

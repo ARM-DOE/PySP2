@@ -366,7 +366,7 @@ def _fit_record_gaussian(my_ds, record_number):
         coeff, var_matrix = curve_fit(_gaus, bins_fit, data_fit, p0=p0, method='lm', maxfev=40, ftol=1e-3)
         amplitude = coeff[0]
         peakpos = coeff[1]
-        width = coeff[2]*(2.35482)
+        width = coeff[2] * (2.35482)
         base = coeff[3]
         fit_data = _gaus(np.array(bins, dtype=np.float64), *coeff)
         chi2 = chisquare(np.array(data, dtype='float64'), f_exp=np.array(fit_data, dtype='float64'))
