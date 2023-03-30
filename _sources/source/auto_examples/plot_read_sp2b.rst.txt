@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_source_auto_examples_plot_read_sp2b.py>`
+        :ref:`Go to the end <sphx_glr_download_source_auto_examples_plot_read_sp2b.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -40,10 +40,6 @@ Example for plotting a wave in a .sp2b file
     Processing record 0
     /usr/share/miniconda3/envs/pysp2-docs/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:906: OptimizeWarning: Covariance of the parameters could not be estimated
       warnings.warn('Covariance of the parameters could not be estimated',
-    /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:348: RuntimeWarning: divide by zero encountered in divide
-      return a * np.exp(-((x - x0)**2/(2 * sigma**2))) + base
-    /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:348: RuntimeWarning: invalid value encountered in divide
-      return a * np.exp(-((x - x0)**2/(2 * sigma**2))) + base
     Processing record 1000
     Processing record 2000
     Processing record 3000
@@ -51,7 +47,7 @@ Example for plotting a wave in a .sp2b file
     Processing record 5000
     /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:76: RuntimeWarning: Mean of empty slice
       ratio = np.nanmean(
-    5877 records processed in 7.714786767959595 s
+    5877 records processed in 8.367725372314453 s
     <xarray.Dataset>
     Dimensions:              (event_index: 5877, columns: 100)
     Dimensions without coordinates: event_index, columns
@@ -69,7 +65,7 @@ Example for plotting a wave in a .sp2b file
         IncanRatioch5ch6     (event_index) float64 nan nan 1.021 ... 0.7619 17.5
         ScatRejectKey        (event_index) int64 0 0 3 0 0 3 0 0 ... 1 0 3 0 3 0 1 1
         IncanRejectKey       (event_index) int64 2 2 3 2 2 2 2 2 ... 9 0 2 2 2 2 2 2
-    /usr/share/miniconda3/envs/pysp2-docs/lib/python3.11/site-packages/act/plotting/plot.py:80: UserWarning: Could not discern datastreamname and dict or tuple were not provided. Using defaultname of act_datastream!
+    /usr/share/miniconda3/envs/pysp2-docs/lib/python3.11/site-packages/act/plotting/plot.py:81: UserWarning: Could not discern datastreamname and dict or tuple were not provided. Using defaultname of act_datastream!
       warnings.warn(
 
 
@@ -94,7 +90,7 @@ Example for plotting a wave in a .sp2b file
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.183 seconds)
+   **Total running time of the script:** ( 0 minutes  8.997 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_read_sp2b.py:
@@ -102,6 +98,8 @@ Example for plotting a wave in a .sp2b file
 .. only:: html
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
+
+
 
 
     .. container:: sphx-glr-download sphx-glr-download-python

@@ -16,7 +16,7 @@ Here are examples on how to use PySP2.
 .. only:: html
 
   .. image:: /source/auto_examples/images/thumb/sphx_glr_plot_hk_thumb.png
-    :alt: Example for plotting number of particles in housekeeping data
+    :alt:
 
   :ref:`sphx_glr_source_auto_examples_plot_hk.py`
 
@@ -33,7 +33,7 @@ Here are examples on how to use PySP2.
 .. only:: html
 
   .. image:: /source/auto_examples/images/thumb/sphx_glr_plot_read_sp2b_thumb.png
-    :alt: Example for plotting a wave in a .sp2b file
+    :alt:
 
   :ref:`sphx_glr_source_auto_examples_plot_read_sp2b.py`
 
@@ -50,7 +50,7 @@ Here are examples on how to use PySP2.
 .. only:: html
 
   .. image:: /source/auto_examples/images/thumb/sphx_glr_plot_psd_thumb.png
-    :alt: Example on plotting particle concentration data timeseries
+    :alt:
 
   :ref:`sphx_glr_source_auto_examples_plot_psd.py`
 
