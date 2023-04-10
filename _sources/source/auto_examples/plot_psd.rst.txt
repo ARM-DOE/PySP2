@@ -47,7 +47,7 @@ Example on plotting particle concentration data timeseries
     Processing record 5000
     /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:76: RuntimeWarning: Mean of empty slice
       ratio = np.nanmean(
-    5877 records processed in 8.28744387626648 s
+    5877 records processed in 6.770099878311157 s
     /home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:38: RuntimeWarning: All-NaN slice encountered
       PkHt_ch0 = np.nanmax(np.stack([input_ds['PkHt_ch0'].values, input_ds['FtAmp_ch0'].values]), axis=0)
     /home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:39: RuntimeWarning: All-NaN slice encountered
@@ -84,7 +84,7 @@ Example on plotting particle concentration data timeseries
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.066 seconds)
+   **Total running time of the script:** ( 0 minutes  10.172 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_psd.py:
