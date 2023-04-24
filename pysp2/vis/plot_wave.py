@@ -137,4 +137,7 @@ def plot_waves(ds, record_no, plot_fit=True):
         ax.set_xlabel(xlabels[i])
         ax.set_ylabel(ylabels[i])
         ax.legend(legends[i])
+        if i==2:
+            ax.plot(ds['PkSplitPos_ch3'].isel(event_index=record_no),0,'+',markersize=10)
+            ax.plot(ds['PkSplitPos_ch7'].isel(event_index=record_no),0,'x',markersize=10)
     return display
