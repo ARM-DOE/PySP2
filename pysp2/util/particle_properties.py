@@ -280,11 +280,6 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
             ScatNumEnsemble[t, :] = ScatNumEnsemble[t, :] / FlowCycle
             ScatMassEnsemble[t, :] = ScatMassEnsemble[t, :] / FlowCycle
 
-    MassIncand2total = xr.DataArray(MassIncand2Sat + MassIncand2, dims=('time'))
-    MassIncand2total.attrs["long_name"] = "Incandescence mass concentration (total)"
-    MassIncand2total.attrs["standard_name"] = "mass_concentration"
-    MassIncand2total.attrs["units"] = "ng m-3"
-    
     base_time = pd.Timestamp('1904-01-01')
     time = np.array([(base_time + datetime.timedelta(seconds=x)).to_datetime64() for x in time_bins[:-1]])
     time = xr.DataArray(time, dims=('time'))
@@ -292,6 +287,21 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     time_wave = xr.DataArray(time_bins[:-1], dims=('time'))
     time_wave.attrs["long_name"] = "Time"
     time_wave.attrs["units"] = "seconds since 01-01-1904 00:00:00 UTC"
+
+    MassIncand2total = xr.DataArray(MassIncand2Sat + MassIncand2, dims=('time'))
+    MassIncand2total.attrs["long_name"] = "Incandescence mass concentration (total)"
+    MassIncand2total.attrs["standard_name"] = "mass_concentration"
+    MassIncand2total.attrs["units"] = "ng m-3"
+    
+    MassIncand2 = xr.DataArray(MassIncand2, dims=('time'))
+    MassIncand2.attrs["long_name"] = "Incandescence mass concentration (non-saturated)"
+    MassIncand2.attrs["standard_name"] = "mass_concentration"
+    MassIncand2.attrs["units"] = "ng m-3"
+
+    MassIncand2Sat = xr.DataArray(MassIncand2Sat, dims=('time'))
+    MassIncand2Sat.attrs["long_name"] = "Incandescence mass concentration (saturated)"
+    MassIncand2Sat.attrs["standard_name"] = "mass_concentration"
+    MassIncand2Sat.attrs["units"] = "ng m-3"
 
     NumConcIncan = xr.DataArray(NumConcIncan2, dims=('time'))
     NumConcIncan.attrs["long_name"] = "Total number concentration (incandescence)"
@@ -317,22 +327,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     NumConcTotal.attrs["long_name"] = "Total number concentration"
     NumConcTotal.attrs["standard_name"] = "number_concentration"
     NumConcTotal.attrs["units"] = "cm-3"
-
-    MassIncand = xr.DataArray(MassIncand2total, dims=('time'))
-    MassIncand.attrs["long_name"] = "Incandescence mass concentration (total)"
-    MassIncand.attrs["standard_name"] = "mass_concentration"
-    MassIncand.attrs["units"] = "ng m-3"
     
-    MassIncand2 = xr.DataArray(MassIncand2, dims=('time'))
-    MassIncand2.attrs["long_name"] = "Incandescence mass concentration"
-    MassIncand2.attrs["standard_name"] = "mass_concentration"
-    MassIncand2.attrs["units"] = "ng m-3"
-
-    MassIncand2Sat = xr.DataArray(MassIncand2Sat, dims=('time'))
-    MassIncand2Sat.attrs["long_name"] = "Incandescence mass concentration (saturated)"
-    MassIncand2Sat.attrs["standard_name"] = "mass_concentration"
-    MassIncand2Sat.attrs["units"] = "ng m-3"
-
     MassScat2 = xr.DataArray(MassScat2, dims=('time'))
     MassScat2.attrs["long_name"] = "Scattering mass concentration"
     MassScat2.attrs["standard_name"] = "scatter_mass_concentration"
