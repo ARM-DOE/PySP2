@@ -100,7 +100,7 @@ def plot_waves(ds, record_no, plot_fit=True):
     Returns
     -------
     display: ACT HistogramDisplay object
-        Returns the ACT
+        Returns the ACT display object
     """
 
     chns = [i for i in range(8)]
@@ -138,6 +138,7 @@ def plot_waves(ds, record_no, plot_fit=True):
         ax.set_ylabel(ylabels[i])
         ax.legend(legends[i])
         if i==2:
-            ax.plot(ds['PkSplitPos_ch3'].isel(event_index=record_no),0,'+',markersize=10)
-            ax.plot(ds['PkSplitPos_ch7'].isel(event_index=record_no),0,'x',markersize=10)
+            lines=ax.get_lines()
+            ax.plot(ds['PkSplitPos_ch3'].isel(event_index=record_no),0,'*',markersize=10,color=lines[0].get_color())
+            ax.plot(ds['PkSplitPos_ch7'].isel(event_index=record_no),0,'*',markersize=10,color=lines[1].get_color())
     return display
