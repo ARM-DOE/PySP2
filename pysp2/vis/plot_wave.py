@@ -125,6 +125,7 @@ def plot_waves(ds, record_no, plot_fit=True):
             display = plot_wave(ds, record_no, chns[i], plot_fit=plot_fit,
                                 append_to_display=display,
                                 subplot_index=(panel,))
+        
     titles = ['Scattering chanels',
               ' Incandesence channels',
               'Split detector channels']
