@@ -2,6 +2,7 @@ import numpy as np
 import xarray as xr
 import datetime
 import pandas as pd
+import warnings
 
 from .DMTGlobals import DMTGlobals
 
@@ -180,7 +181,9 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     incand_accept = ~np.isnan(sootMass)
     try:
         OneOfEvery = int(config['Acquisition']['1 of Every'])
-    except:
+    except KeyError:
+        warnings.warn("One of Every field not found in inputs! Defaulting to 1, this may cause" +
+                      "drastically underestimated mass/number concentrations.", UserWarning)
         OneOfEvery = 1
     
     IncandPos = particle_ds['PkPos_ch1'].values
@@ -217,17 +220,28 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
             continue
 
         the_particles = np.logical_and.reduce((parts_time, scatter_accept))
-        ind = np.searchsorted(SpecSizeBins+deltaSize / 2,ScatDiaBC50[the_particles], side='right')
+        # Remove particles above max size
+        the_particles_scat = np.logical_and.reduce(
+            (the_particles, ScatDiaBC50 > SpecSizeBins[-1] + deltaSize / 2))
+        ind = np.searchsorted(SpecSizeBins+deltaSize / 2,
+                              ScatDiaBC50[the_particles_scat], side='right')
+        # Remove oversize particles
         np.add.at(ScatNumEnsembleBC[t,:], ind+1, OneOfEvery)
-        
-        ind=np.searchsorted(SpecSizeBins+deltaSize / 2,ScatDiaSO4[the_particles], side='right')
+        the_particles_scat = np.logical_and.reduce(
+            (the_particles, ScatDiaSO4 > SpecSizeBins[-1] + deltaSize / 2))
+        ind = np.searchsorted(SpecSizeBins+deltaSize / 2, ScatDiaSO4[the_particles_scat], side='right')
+        # Remove oversize particles
         np.add.at(ScatNumEnsemble[t,:], ind+1, OneOfEvery)
-        np.add.at(ScatMassEnsemble[t,:], ind+1, OneOfEvery * ScatMassSO4[the_particles])
+        np.add.at(ScatMassEnsemble[t,:], ind+1, OneOfEvery * ScatMassSO4[the_particles_scat])
         
-        the_particles=np.logical_and.reduce((parts_time, incand_accept))
-        ind=np.searchsorted(SpecSizeBins+deltaSize / 2,SizeIncandOnly[the_particles], side='right')
+        the_particles = np.logical_and.reduce((parts_time, incand_accept))
+        the_particles_incan = np.logical_and.reduce(
+            (the_particles, SizeIncandOnly > SpecSizeBins[-1] + deltaSize / 2))
+        ind = np.searchsorted(SpecSizeBins+deltaSize / 2, 
+                              SizeIncandOnly[the_particles_incan], side='right')
+        # Remove oversize particles
         np.add.at(IncanNumEnsemble[t,:], ind+1, OneOfEvery)
-        np.add.at(IncanMassEnsemble[t,:], ind+1, OneOfEvery * sootMass[the_particles])
+        np.add.at(IncanMassEnsemble[t,:], ind+1, OneOfEvery * sootMass[the_particles_incan])
         
             
         scat_parts = np.logical_and(scatter_accept, parts_time)

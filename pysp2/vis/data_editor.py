@@ -63,7 +63,7 @@ class DataEditor(object):
             print('unknown key pressed')
             return
         if event.key == 'd':
-            self.axs.set_title('pick x range to delete (left click)')
+            self.ax.set_title('pick x range to delete (left click)')
             self.fig.canvas.draw()
             self.binding_id = self.fig.canvas.mpl_connect(
                 'button_press_event', self.pick_x_range)
@@ -73,7 +73,7 @@ class DataEditor(object):
                 x2, y2 = self.click_buffer[1]
                 self.click_buffer = []
                 self.remove_x_range_points[0].remove()
-                self.axs.set_title('')
+                self.ax.set_title('')
                 self.fig.canvas.draw()
                 self.x_range_highlighted = False
                 x_range = dates.num2date([min([x1, x2]), max([x1, x2])])
@@ -95,7 +95,7 @@ class DataEditor(object):
         elif event.key == 'n':
             print('discarding')
             self.remove_x_range_points[0].remove()
-            self.axs.set_title('press [d] to delete x-range')
+            self.ax.set_title('press [d] to delete x-range')
             self.fig.canvas.draw()
             self.x_range_highlighted = False
             self.click_buffer = []
@@ -112,10 +112,10 @@ class DataEditor(object):
                 lnx = dates.date2num(self.line.get_xdata())
                 lny = self.line.get_ydata()
                 bl = np.logical_and(lnx > (min(x1, x2)), lnx < (max(x1, x2)))
-                self.remove_x_range_points = self.axs.plot(
+                self.remove_x_range_points = self.ax.plot(
                     lnx[bl], lny[bl], '.r', linestyle='')
                 print(x1, x2, np.sum(bl))
-                self.axs.set_title('remove %i points [y/n]' % (np.sum(bl)))
+                self.ax.set_title('remove %i points [y/n]' % (np.sum(bl)))
                 self.fig.canvas.draw()
                 self.x_range_highlighted = True
             else:
