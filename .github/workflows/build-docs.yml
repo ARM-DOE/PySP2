@@ -24,14 +24,10 @@ jobs:
 
       # Install dependencies
       - name: Setup Conda Environment
-        uses: conda-incubator/setup-miniconda@v2
+        uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: docs/environment_docs.yml
           activate-environment: pysp2-docs
-          auto-activate-base: false
-          mamba-version: '*'
-          use-mamba: true
-          miniforge-variant: Mambaforge
 
       - name: Install PySP2
         run: |
