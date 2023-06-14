@@ -89,4 +89,4 @@ def read_multi_hk_file(file_path):
         df = read_hk_file(f)
         the_list.append(df)
 
-    return xr.concat(the_list, dim='time')
+    return xr.concat(the_list, dim='time').sortby('time')
