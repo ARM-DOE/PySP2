@@ -27,15 +27,12 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setup Conda Environment
-        uses: conda-incubator/setup-miniconda@v2
+        uses: mamba-org/setup-micromamba@v1
         with:
             python-version: ${{ matrix.python-version }}
             environment-file: ./continuous_integration/environment_actions.yml
             activate-environment: sp2_env
-            auto-activate-base: False
-            mamba-version: '*'
-            use-mamba: true
-            miniforge-variant: Mambaforge
+
       - name: Install PySP2
         run: |
             pip install -e .
