@@ -402,7 +402,7 @@ def _fit_record_gaussian(my_ds, record_number):
 
         try:
             start = np.where((data - base) < 50)[0]
-            if start == []:
+            if not np.any(start):
                 start = np.nan
             else:
                 start = start[start <= pos][-1]
