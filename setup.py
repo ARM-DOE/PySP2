@@ -41,7 +41,7 @@ LICENSE = 'BSD'
 PLATFORMS = "Linux, Windows, OSX"
 MAJOR = 1
 MINOR = 3
-MICRO = 1
+MICRO = 2
 
 #SCRIPTS = glob.glob('scripts/*')
 #TEST_SUITE = 'nose.collector'
