@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Example for plotting a wave in a .sp2b file &#8212; PySP2 1.3.2 documentation</title>
+    <title>Example for plotting a wave in a .sp2b file &#8212; PySP2 1.3.3 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -212,7 +212,7 @@ to download the full example code</p>
 <img src="../../_images/sphx_glr_plot_read_sp2b_001.png" srcset="../../_images/sphx_glr_plot_read_sp2b_001.png" alt="Channel 0 record 1100" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:452: RuntimeWarning: divide by zero encountered in divide
   peak2area = np.max(data2, axis=1)/denominator
 Processing record 0
-/home/runner/micromamba/envs/pysp2-docs/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:906: OptimizeWarning: Covariance of the parameters could not be estimated
+/home/runner/micromamba/envs/pysp2-docs/lib/python3.11/site-packages/scipy/optimize/_minpack_py.py:1010: OptimizeWarning: Covariance of the parameters could not be estimated
   warnings.warn(&#39;Covariance of the parameters could not be estimated&#39;,
 Processing record 1000
 Processing record 2000
@@ -221,7 +221,7 @@ Processing record 4000
 Processing record 5000
 /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:76: RuntimeWarning: Mean of empty slice
   ratio = np.nanmean(
-5877 records processed in 6.742641448974609 s
+5877 records processed in 8.390099287033081 s
 &lt;xarray.Dataset&gt;
 Dimensions:              (event_index: 5877, columns: 100)
 Dimensions without coordinates: event_index, columns
@@ -257,7 +257,7 @@ Data variables: (12/81)
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  7.290 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.868 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-source-auto-examples-plot-read-sp2b-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5247039f1f38d2c006d2f3ebecb4fce3/plot_read_sp2b.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_read_sp2b.py</span></code></a></p>
