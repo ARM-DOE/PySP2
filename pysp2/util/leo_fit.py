@@ -4,7 +4,7 @@ from .peak_fit import _gaus
 from scipy.optimize import curve_fit
 
 
-def beam_shape(my_binary,Globals=None):
+def beam_shape(my_binary,beam_position_from='peak maximum',Globals=None):
     """
     
     Calculates the beam shape needed to determine the laser intensity profile
@@ -22,6 +22,13 @@ def beam_shape(my_binary,Globals=None):
     Globals: DMTGlobals structure or None
         DMTGlobals structure containing calibration coefficients.
         
+    beam_position_from : str
+           'peak maximum' = construct the beam profile arround the maximum peak
+           poistion. The maximum peak position is determied from the peak-height
+           weighted average peak position.
+           'split detector' = construct the beam profile arround the split position.
+           The split position is taken from the split detector. Not working yet.
+           
     Returns
     -------
     coeff : numpy array with gaussian fit [amplitude, peakpos, width, base] 
