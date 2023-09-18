@@ -492,7 +492,8 @@ def _split_scatter_fit(my_ds, channel):
     data = my_ds['Data_ch' + str(channel)].values
     V_maxloc = np.argmax(data, axis=1)
     V_minloc = np.argmin(data, axis=1)
-    data[V_maxloc < V_minloc, :] = -data[V_maxloc < V_minloc, :]
+    invert = V_maxloc < V_minloc
+    data[invert, :] = -data[invert, :]
     base = np.nanmean(data[:, 0:num_base_pts_2_avg], axis=1)
     V_max = data.max(axis=1)
     conditions = np.logical_and.reduce(((V_max - base) > 1, V_maxloc < len(data), V_maxloc > 0))
@@ -507,7 +508,7 @@ def _split_scatter_fit(my_ds, channel):
     pos_tile = np.tile(pos, (data.shape[1], 1)).T
     counting_up = np.where(np.logical_and(data < 5, counting_up <= pos_tile), counting_up, -1)
     start = counting_up.max(axis=1)
-    fit_coeffs = {'base': base, 'height': height, 'pos': pos, 'start': start}
+    fit_coeffs = {'base': base, 'height': height, 'pos': pos, 'start': start, 'inverted': invert}
 
     return fit_coeffs
 
