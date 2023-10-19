@@ -93,8 +93,9 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
         Raw SP2 binary dataset
     config: ConfigParser object
         The configuration loaded from the INI file.
-    parallel: bool
-        If true, use dask to enable parallelism
+    parallel: bool or str
+        If True, use dask to enable parallelism
+        If 'Pool' use multiprocessing.Pool to enable parallelism.
     num_records: int or None
         Only process first num_records datapoints. Set to
         None to process all records.
@@ -169,6 +170,11 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
         proc_records = []
         for i in range(num_records):
             proc_records.append(_do_fit_records(my_ds, i, num_trig_pts))
+    if parallel == 'Pool':
+        from multiprocessing import Pool
+        from itertools import repeat
+        with Pool() as pool:
+            proc_records = pool.starmap(_do_fit_records, zip(repeat(my_ds), range(num_records),repeat(num_trig_pts)))
     else:
         fit_record = lambda x: _do_fit_records(my_ds, x, num_trig_pts)
         the_bag = db.from_sequence(range(num_records))
