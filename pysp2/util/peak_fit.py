@@ -1,6 +1,8 @@
 import numpy as np
 import time
 import dask.bag as db
+from multiprocessing import Pool
+from itertools import repeat
 
 from scipy.optimize import curve_fit
 from .DMTGlobals import DMTGlobals
@@ -93,9 +95,10 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
         Raw SP2 binary dataset
     config: ConfigParser object
         The configuration loaded from the INI file.
-    parallel: bool or str
-        If True, use dask to enable parallelism
-        If 'Pool' use multiprocessing.Pool to enable parallelism.
+    parallel: str or bool
+        If 'dask', use dask.bag to enable parallelism
+        If 'multiprocessing' use multiprocessing.Pool to enable parallelism.
+        By default, no parallelism is enabled (parallel=False).
     num_records: int or None
         Only process first num_records datapoints. Set to
         None to process all records.
@@ -166,19 +169,23 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
         my_ds['PkEnd_ch' + str(i)].attrs["long_name"] = "Peak end for channel %d" % i
         my_ds['PkEnd_ch' + str(i)].attrs["_FillValue"] = np.nan
 
-    if not parallel:
-        proc_records = []
-        for i in range(num_records):
-            proc_records.append(_do_fit_records(my_ds, i, num_trig_pts))
-    if parallel == 'Pool':
-        from multiprocessing import Pool
-        from itertools import repeat
-        with Pool() as pool:
-            proc_records = pool.starmap(_do_fit_records, zip(repeat(my_ds), range(num_records),repeat(num_trig_pts)))
-    else:
+    #use dask.bag to do the curve fits in parallel
+    if parallel == 'dask':
         fit_record = lambda x: _do_fit_records(my_ds, x, num_trig_pts)
         the_bag = db.from_sequence(range(num_records))
         proc_records = the_bag.map(fit_record).compute()
+    #use multiprocessing.Pool to do the curve fits in parallel
+    elif parallel == 'multiprocessing':
+        with Pool() as pool:
+            proc_records = pool.starmap(_do_fit_records, zip(repeat(my_ds), 
+                                                             range(num_records), 
+                                                             repeat(num_trig_pts)))
+    #else, no parallelism
+    else:
+        proc_records = []
+        for i in range(num_records):
+            proc_records.append(_do_fit_records(my_ds, i, num_trig_pts))
+        
 
     FtAmp = np.stack([x[0] for x in proc_records])
     FtPos = np.stack([x[1] for x in proc_records])
