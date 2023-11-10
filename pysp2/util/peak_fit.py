@@ -352,6 +352,9 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
     my_ds['IncanRejectKey'] = (('event_index'), incan_reject_key)
     my_ds['IncanRejectKey'].attrs["long_name"] = "Incandescence reject flag"
     my_ds['IncanRejectKey'].attrs["_FillValue"] = np.nan
+    
+    OneofEvery=np.zeros(num_records, dtype='float64') + int(config['Acquisition']['1 of Every'])
+    my_ds['OneofEvery'] = (('event_index'), OneofEvery)
 
     print(str(num_records) + ' records processed in ' + str(time.time()-start_time) + ' s')
     return my_ds
