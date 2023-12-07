@@ -78,7 +78,7 @@ def read_multi_hk_file(file_path):
         Examples: 
             Read all .hk files in one directoy:
                 my_hk = pysp2.io.read_multi_hk_file(/path/to/directory/*.hk')
-            Read all .hk files in and check in the subdirectories too:
+            Read all .hk files and check in the subdirectories as well.
                 my_hk = pysp2.io.read_multi_hk_file(/path/to/directory/**/*.hk')
                 
     Returns
