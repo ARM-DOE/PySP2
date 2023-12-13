@@ -177,9 +177,9 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
     #use multiprocessing.Pool to do the curve fits in parallel
     elif parallel == 'multiprocessing':
         with Pool() as pool:
-            proc_records = pool.starmap(_do_fit_records, zip(repeat(my_ds), 
-                                                             range(num_records), 
-                                                             repeat(num_trig_pts)))
+            proc_records = pool.starmap(_do_fit_records, 
+                                        zip(repeat(my_ds), range(num_records), 
+                                        repeat(num_trig_pts)))
     #else, no parallelism
     else:
         proc_records = []
