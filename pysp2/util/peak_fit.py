@@ -6,7 +6,7 @@ from itertools import repeat
 
 from scipy.optimize import curve_fit
 from .DMTGlobals import DMTGlobals
-
+from .deadtime import deadtime
 
 def _do_fit_records(my_ds, i, num_trig_pts, debug=True):
     if debug and i % 1000 == 0:
@@ -355,6 +355,8 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
     
     OneofEvery=np.zeros(num_records, dtype='float64') + int(config['Acquisition']['1 of Every'])
     my_ds['OneofEvery'] = (('event_index'), OneofEvery)
+    #calculate the deadtime relative bias and add it to the Dataset
+    my_ds=deadtime(my_ds, config)
 
     print(str(num_records) + ' records processed in ' + str(time.time()-start_time) + ' s')
     return my_ds
