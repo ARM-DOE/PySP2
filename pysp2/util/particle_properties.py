@@ -246,7 +246,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         np.add.at(ScatNumEnsemble[t,:], ind, OneOfEvery[the_particles_scat])
         #np.add.at(ScatMassEnsemble[t,:], ind, OneOfEvery * ScatMassSO4[the_particles_scat])
         np.add.at(ScatMassEnsemble[t,:], ind, np.multiply(
-            OneOfEvery[the_particles_scat],ScatMassSO4[the_particles_scat]))
+            OneOfEvery[the_particles_scat], ScatMassSO4[the_particles_scat]))
         
         the_particles = np.logical_and.reduce((parts_time, incand_accept))
         # Remove oversize particles
@@ -258,17 +258,17 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         np.add.at(IncanNumEnsemble[t,:], ind, OneOfEvery[the_particles_incan])
         #np.add.at(IncanMassEnsemble[t,:], ind, OneOfEvery * sootMass[the_particles_incan])
         np.add.at(IncanMassEnsemble[t,:], ind, np.multiply(
-            OneOfEvery[the_particles_incan],sootMass[the_particles_incan]))
+            OneOfEvery[the_particles_incan], sootMass[the_particles_incan]))
         
         scat_parts = np.logical_and(scatter_accept, parts_time)
         incan_parts = np.logical_and(incand_accept, parts_time)
         #ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
-        ConcIncanCycle = np.sum(np.multiply(OneOfEvery,incan_parts))
+        ConcIncanCycle = np.sum(np.multiply(OneOfEvery, incan_parts))
         #ConcTotalCycle = OneOfEvery * np.sum(np.logical_or(incan_parts, scat_parts))
         bl_any_particle = np.logical_or(incan_parts, scat_parts)
-        ConcTotalCycle = np.sum(np.multiply(OneOfEvery,bl_any_particle))
+        ConcTotalCycle = np.sum(np.multiply(OneOfEvery, bl_any_particle))
         #ConcScatCycle = OneOfEvery * np.sum(scat_parts)
-        ConcScatCycle = np.sum(np.multiply(OneOfEvery ,scat_parts))
+        ConcScatCycle = np.sum(np.multiply(OneOfEvery, scat_parts))
         #ConcScatSatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_sat))
         bl_scat_and_incandsat_particle = np.logical_and(scat_parts, incan_sat)
         ConcScatSatCycle = np.sum(np.multiply(OneOfEvery,
