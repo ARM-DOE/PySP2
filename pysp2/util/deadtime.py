@@ -44,7 +44,7 @@ def deadtime(my_binary, my_ini):
     #find locations where the buffer changes (i.e. where the TimeWave values changes)
     #get unique time stamps
     unique_buffer_time_stamps = np.unique(my_binary['TimeWave'].values) 
-    #find locations where those unique time stamps shoudl be inserted
+    #find locations where those unique time stamps should be inserted
     ind = np.searchsorted(my_binary['TimeWave'].values, unique_buffer_time_stamps) 
     #add the end to the list of indexes if needed
     if ind[-1] < my_binary.dims['event_index']:
@@ -60,13 +60,12 @@ def deadtime(my_binary, my_ini):
         N_I = incandesence_triggered[fr:to].sum()
         #length of time, in seconds, for a single measurement of the digitizer
         t_b = 1. / digitization_rate
-        #"PW is the total number of data points (for each chan- nel of data) in the window"
+        #"PW is the total number of data points (for each channel of data) in the window"
         P_W = event_length_points
         #Buffer length in seconds
         T_B = buffer_length_seconds     
         #Fraction triggered (Eq. 2) in doi:10.1080/02786826.2022.2064265
         F_T = (N_S * S_S+N_I) * P_W * t_b / T_B
-        #print('Fraction triggered',F_T)
         #pretrigger length data points
         P_PT = pretrigger_length_points
         #T_P is the total points in each window
