@@ -32,7 +32,7 @@ def plot_wave(ds, record_no, chn, plot_fit=True,
 
     Returns
     -------
-    display: ACT HistogramDisplay object
+    display: ACT DistributionDisplay object
         Returns the ACT
     """
     spectra = ds.isel(event_index=record_no)
@@ -50,9 +50,9 @@ def plot_wave(ds, record_no, chn, plot_fit=True,
         if append_to_display is not False:
             display = append_to_display
         else:
-            display = act.plotting.HistogramDisplay(inp_data)
+            display = act.plotting.DistributionDisplay(inp_data)
     else:
-        display = act.plotting.HistogramDisplay(inp_data, **init_kwargs)
+        display = act.plotting.DistributionDisplay(inp_data, **init_kwargs)
     if 'subplot_index' in kwargs.keys():
         ax = display.plot_size_distribution(
             'Data_ch' + str(chn), bins,
@@ -99,7 +99,7 @@ def plot_waves(ds, record_no, plot_fit=True):
         Set to True to plot the gaussian fit. Only used for channels 0 and 4.
     Returns
     -------
-    display: ACT HistogramDisplay object
+    display: ACT DistributionDisplay object
         Returns the ACT
     """
 
