@@ -29,3 +29,8 @@ def test_psds():
         my_binary['ScatDiaBC50'].values[ScatRejectKey == 0]) < 1000.
     my_psds = pysp2.util.process_psds(my_binary, my_hk, my_ini)
     np.testing.assert_almost_equal(my_psds['NumConcIncan'].max(), 0.95805343)
+    np.testing.assert_almost_equal(my_psds['ScatNumEnsemble'].sum(), 254.773995310)
+    np.testing.assert_almost_equal(my_psds['IncanNumEnsemble'].sum(), 32.22939087)
+    np.testing.assert_almost_equal(my_psds['ScatMassEnsemble'].sum(), 3.15026266)
+    np.testing.assert_almost_equal(my_psds['IncanMassEnsemble'].sum(), 0.08177226)
+
