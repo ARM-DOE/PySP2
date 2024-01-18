@@ -26,10 +26,12 @@ def read_hk_file(file_name):
     hk_df: pandas.DataFrame
         The housekeeping information in a pandas DataFrame
     """
+
     try:
         my_df = act.io.csvfiles.read_csv(file_name, sep="\t")
     except AttributeError:
         my_df = act.io.text.read_csv(file_name, sep="\t")
+
     # Parse time from filename
     start_time = pd.Timestamp('1904-01-01')
     my_df = my_df.rename({'index': 'time'}) 
