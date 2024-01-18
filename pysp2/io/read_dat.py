@@ -38,9 +38,9 @@ def read_dat(file_name, type):
     for f in fname:
         try:
             if type.lower() == 'particle':
-                ds = act.io.text.read_csv(f, sep="\t", skiprows=2)
+                ds = act.io.csvfiles.read_csv(f, sep="\t", skiprows=2)
             else:
-                ds = act.io.text.read_csv(f, sep="\t")
+                ds = act.io.csvfiles.read_csv(f, sep="\t")
             ds_list.append(ds)
         except (pd.errors.EmptyDataError, IndexError):
             continue
