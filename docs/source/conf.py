@@ -72,9 +72,6 @@ napoleon_use_ivar = True
 napoleon_include_init_with_doc = False
 napoleon_use_param = False
 
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -87,7 +84,7 @@ html_theme = 'pydata_sphinx_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_css_files = ['default.css']
+html_css_files = ['act-theme.css']
 
 html_js_files = ['doc_shared.js']
 

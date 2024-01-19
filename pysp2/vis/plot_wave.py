@@ -50,9 +50,9 @@ def plot_wave(ds, record_no, chn, plot_fit=True,
         if append_to_display is not False:
             display = append_to_display
         else:
-            display = act.plotting.HistogramDisplay(inp_data)
+            display = act.plotting.DistributionDisplay(inp_data)
     else:
-        display = act.plotting.HistogramDisplay(inp_data, **init_kwargs)
+        display = act.plotting.DistributionDisplay(inp_data, **init_kwargs)
     if 'subplot_index' in kwargs.keys():
         ax = display.plot_size_distribution(
             'Data_ch' + str(chn), bins,
