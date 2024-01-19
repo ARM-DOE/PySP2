@@ -47,7 +47,7 @@ Example for plotting a wave in a .sp2b file
     Processing record 5000
     /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:76: RuntimeWarning: Mean of empty slice
       ratio = np.nanmean(
-    5877 records processed in 8.776434659957886 s
+    5877 records processed in 7.623170852661133 s
     <xarray.Dataset>
     Dimensions:              (event_index: 5877, columns: 100)
     Dimensions without coordinates: event_index, columns
@@ -65,8 +65,7 @@ Example for plotting a wave in a .sp2b file
         IncanRatioch5ch6     (event_index) float64 nan nan 1.021 ... 0.7619 17.5
         ScatRejectKey        (event_index) int64 0 0 3 0 0 3 0 0 ... 1 0 3 0 3 0 1 1
         IncanRejectKey       (event_index) int64 2 2 3 2 2 2 2 2 ... 9 0 2 2 2 2 2 2
-    0.3.0
-    /home/runner/micromamba/envs/pysp2-docs/lib/python3.12/site-packages/act/plotting/plot.py:81: UserWarning: Could not discern datastreamname and dict or tuple were not provided. Using defaultname of act_datastream!
+    /home/runner/micromamba/envs/pysp2-docs/lib/python3.12/site-packages/act/plotting/plot.py:82: UserWarning: Could not discern datastreamname and dict or tuple were not provided. Using defaultname of act_datastream!
       warnings.warn(
 
 
@@ -76,7 +75,7 @@ Example for plotting a wave in a .sp2b file
 
 |
 
-.. code-block:: default
+.. code-block:: Python
 
     import pysp2
     import matplotlib.pyplot as plt
@@ -91,7 +90,7 @@ Example for plotting a wave in a .sp2b file
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.486 seconds)
+   **Total running time of the script:** (0 minutes 8.177 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_read_sp2b.py:
@@ -100,16 +99,13 @@ Example for plotting a wave in a .sp2b file
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_read_sp2b.ipynb <plot_read_sp2b.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_read_sp2b.py <plot_read_sp2b.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_read_sp2b.ipynb <plot_read_sp2b.ipynb>`
 
 
 .. only:: html

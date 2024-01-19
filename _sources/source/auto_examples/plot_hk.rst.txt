@@ -65,7 +65,7 @@ Example for plotting number of particles in housekeeping data
 
 |
 
-.. code-block:: default
+.. code-block:: Python
 
     import pysp2
     import matplotlib.pyplot as plt
@@ -80,7 +80,7 @@ Example for plotting number of particles in housekeeping data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.016 seconds)
+   **Total running time of the script:** (0 minutes 2.844 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_hk.py:
@@ -89,16 +89,13 @@ Example for plotting number of particles in housekeeping data
 
   .. container:: sphx-glr-footer sphx-glr-footer-example
 
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
+      :download:`Download Jupyter notebook: plot_hk.ipynb <plot_hk.ipynb>`
 
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: plot_hk.py <plot_hk.py>`
-
-    .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-      :download:`Download Jupyter notebook: plot_hk.ipynb <plot_hk.ipynb>`
 
 
 .. only:: html
