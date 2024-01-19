@@ -1,5 +1,4 @@
 import numpy as np
-#import matplotlib.pyplot as plt
 from .peak_fit import _gaus
 from scipy.optimize import curve_fit
 
@@ -114,6 +113,7 @@ def beam_shape(my_binary, beam_position_from='peak maximum', Globals=None):
                    np.argmax(beam_profile), 20., 
                    np.nanmin(beam_profile)]).astype(float)
     #fit gaussian curve
+    #coeff[amplitude, peakpos, width , baseline]
     coeff, var_matrix = curve_fit(_gaus, bins[:fit_to], beam_profile[:fit_to], 
                                   p0=p0, method='lm', maxfev=40, ftol=1e-3)
     
