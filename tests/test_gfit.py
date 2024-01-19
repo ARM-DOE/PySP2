@@ -29,3 +29,8 @@ def test_psds():
         my_binary['ScatDiaBC50'].values[ScatRejectKey == 0]) < 1000.
     my_psds = pysp2.util.process_psds(my_binary, my_hk, my_ini)
     np.testing.assert_almost_equal(my_psds['NumConcIncan'].max(), 0.95805343)
+    np.testing.assert_almost_equal(my_binary['DeadtimeRelativeBias'].mean(), -0.00023515)
+    coeff, beam_profile = pysp2.util.beam_shape(my_binary,beam_position_from='peak maximum',Globals=pysp2.util.DMTGlobals())
+    
+    
+    
