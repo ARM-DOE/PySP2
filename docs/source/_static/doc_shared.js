@@ -1,4 +1,4 @@
-const project = "ACT";
+const project = "PySP2";
 
 // Borrowed from Bokeh docs to look for a banner.html at the base of the docs repo and add that
 // to the banner if present.
