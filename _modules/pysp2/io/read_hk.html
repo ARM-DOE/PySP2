@@ -433,7 +433,12 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    file_path: str</span>
 <span class="sd">        The path (with wildcards) to the housekeeping files.</span>
-
+<span class="sd">        Examples: </span>
+<span class="sd">            Read all .hk files in one directoy:</span>
+<span class="sd">                my_hk = pysp2.io.read_multi_hk_file(/path/to/directory/*.hk&#39;)</span>
+<span class="sd">            Read all .hk files and check in the subdirectories as well.</span>
+<span class="sd">                my_hk = pysp2.io.read_multi_hk_file(/path/to/directory/**/*.hk&#39;)</span>
+<span class="sd">                </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    my_df: xarray.Dataset</span>
@@ -447,7 +452,7 @@ document.write(`
         <span class="n">df</span> <span class="o">=</span> <span class="n">read_hk_file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="n">the_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">the_list</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">the_list</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
 </pre></div>
 
                 </article>

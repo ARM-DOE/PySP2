@@ -352,10 +352,12 @@ document.write(`
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">db</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">repeat</span>
 
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
 <span class="kn">from</span> <span class="nn">.DMTGlobals</span> <span class="kn">import</span> <span class="n">DMTGlobals</span>
-
+<span class="kn">from</span> <span class="nn">.deadtime</span> <span class="kn">import</span> <span class="n">deadtime</span>
 
 <span class="k">def</span> <span class="nf">_do_fit_records</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">num_trig_pts</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">debug</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -446,8 +448,10 @@ document.write(`
 <span class="sd">        Raw SP2 binary dataset</span>
 <span class="sd">    config: ConfigParser object</span>
 <span class="sd">        The configuration loaded from the INI file.</span>
-<span class="sd">    parallel: bool</span>
-<span class="sd">        If true, use dask to enable parallelism</span>
+<span class="sd">    parallel: str or bool</span>
+<span class="sd">        If &#39;dask&#39;, use dask.bag to enable parallelism</span>
+<span class="sd">        If &#39;multiprocessing&#39; use multiprocessing.Pool to enable parallelism.</span>
+<span class="sd">        By default, no parallelism is enabled (parallel=False).</span>
 <span class="sd">    num_records: int or None</span>
 <span class="sd">        Only process first num_records datapoints. Set to</span>
 <span class="sd">        None to process all records.</span>
@@ -518,14 +522,23 @@ document.write(`
         <span class="n">my_ds</span><span class="p">[</span><span class="s1">&#39;PkEnd_ch&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Peak end for channel </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span>
         <span class="n">my_ds</span><span class="p">[</span><span class="s1">&#39;PkEnd_ch&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;_FillValue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">parallel</span><span class="p">:</span>
-        <span class="n">proc_records</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_records</span><span class="p">):</span>
-            <span class="n">proc_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_do_fit_records</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">num_trig_pts</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="c1">#use dask.bag to do the curve fits in parallel</span>
+    <span class="k">if</span> <span class="n">parallel</span> <span class="o">==</span> <span class="s1">&#39;dask&#39;</span><span class="p">:</span>
         <span class="n">fit_record</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_do_fit_records</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">num_trig_pts</span><span class="p">)</span>
         <span class="n">the_bag</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_records</span><span class="p">))</span>
         <span class="n">proc_records</span> <span class="o">=</span> <span class="n">the_bag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">fit_record</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+    <span class="c1">#use multiprocessing.Pool to do the curve fits in parallel</span>
+    <span class="k">elif</span> <span class="n">parallel</span> <span class="o">==</span> <span class="s1">&#39;multiprocessing&#39;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">proc_records</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">_do_fit_records</span><span class="p">,</span> 
+                                        <span class="nb">zip</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">my_ds</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_records</span><span class="p">),</span> 
+                                        <span class="n">repeat</span><span class="p">(</span><span class="n">num_trig_pts</span><span class="p">)))</span>
+    <span class="c1">#else, no parallelism</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">proc_records</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_records</span><span class="p">):</span>
+            <span class="n">proc_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_do_fit_records</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">num_trig_pts</span><span class="p">))</span>
+        
 
     <span class="n">FtAmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">proc_records</span><span class="p">])</span>
     <span class="n">FtPos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">proc_records</span><span class="p">])</span>
@@ -692,6 +705,11 @@ document.write(`
     <span class="n">my_ds</span><span class="p">[</span><span class="s1">&#39;IncanRejectKey&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;event_index&#39;</span><span class="p">),</span> <span class="n">incan_reject_key</span><span class="p">)</span>
     <span class="n">my_ds</span><span class="p">[</span><span class="s1">&#39;IncanRejectKey&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;long_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Incandescence reject flag&quot;</span>
     <span class="n">my_ds</span><span class="p">[</span><span class="s1">&#39;IncanRejectKey&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;_FillValue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    
+    <span class="n">OneofEvery</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_records</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Acquisition&#39;</span><span class="p">][</span><span class="s1">&#39;1 of Every&#39;</span><span class="p">])</span>
+    <span class="n">my_ds</span><span class="p">[</span><span class="s1">&#39;OneofEvery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;event_index&#39;</span><span class="p">),</span> <span class="n">OneofEvery</span><span class="p">)</span>
+    <span class="c1">#calculate the deadtime relative bias and add it to the Dataset</span>
+    <span class="n">my_ds</span><span class="o">=</span><span class="n">deadtime</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">num_records</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; records processed in &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_time</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; s&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">my_ds</span></div>
@@ -846,7 +864,8 @@ document.write(`
     <span class="n">data</span> <span class="o">=</span> <span class="n">my_ds</span><span class="p">[</span><span class="s1">&#39;Data_ch&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">channel</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
     <span class="n">V_maxloc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">V_minloc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">data</span><span class="p">[</span><span class="n">V_maxloc</span> <span class="o">&lt;</span> <span class="n">V_minloc</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">data</span><span class="p">[</span><span class="n">V_maxloc</span> <span class="o">&lt;</span> <span class="n">V_minloc</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">invert</span> <span class="o">=</span> <span class="n">V_maxloc</span> <span class="o">&lt;</span> <span class="n">V_minloc</span>
+    <span class="n">data</span><span class="p">[</span><span class="n">invert</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">data</span><span class="p">[</span><span class="n">invert</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">num_base_pts_2_avg</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">V_max</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">conditions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="o">.</span><span class="n">reduce</span><span class="p">(((</span><span class="n">V_max</span> <span class="o">-</span> <span class="n">base</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="n">V_maxloc</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">V_maxloc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
@@ -861,7 +880,7 @@ document.write(`
     <span class="n">pos_tile</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
     <span class="n">counting_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">data</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">,</span> <span class="n">counting_up</span> <span class="o">&lt;=</span> <span class="n">pos_tile</span><span class="p">),</span> <span class="n">counting_up</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">start</span> <span class="o">=</span> <span class="n">counting_up</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">fit_coeffs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;base&#39;</span><span class="p">:</span> <span class="n">base</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="n">height</span><span class="p">,</span> <span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="n">pos</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">}</span>
+    <span class="n">fit_coeffs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;base&#39;</span><span class="p">:</span> <span class="n">base</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="n">height</span><span class="p">,</span> <span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="n">pos</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s1">&#39;inverted&#39;</span><span class="p">:</span> <span class="n">invert</span><span class="p">}</span>
 
     <span class="k">return</span> <span class="n">fit_coeffs</span>
 

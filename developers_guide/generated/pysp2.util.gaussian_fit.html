@@ -395,7 +395,9 @@ This will do the fitting for channel 0 only.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>my_ds</strong> (<em>xarray Dataset</em>) – Raw SP2 binary dataset</p></li>
 <li><p><strong>config</strong> (<em>ConfigParser object</em>) – The configuration loaded from the INI file.</p></li>
-<li><p><strong>parallel</strong> (<em>bool</em>) – If true, use dask to enable parallelism</p></li>
+<li><p><strong>parallel</strong> (<em>str or bool</em>) – If ‘dask’, use dask.bag to enable parallelism
+If ‘multiprocessing’ use multiprocessing.Pool to enable parallelism.
+By default, no parallelism is enabled (parallel=False).</p></li>
 <li><p><strong>num_records</strong> (<em>int or None</em>) – Only process first num_records datapoints. Set to
 None to process all records.</p></li>
 </ul>
