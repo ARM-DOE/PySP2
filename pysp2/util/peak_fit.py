@@ -1,10 +1,12 @@
 import numpy as np
 import time
 import dask.bag as db
+from multiprocessing import Pool
+from itertools import repeat
 
 from scipy.optimize import curve_fit
 from .DMTGlobals import DMTGlobals
-
+from .deadtime import deadtime
 
 def _do_fit_records(my_ds, i, num_trig_pts, debug=True):
     if debug and i % 1000 == 0:
@@ -93,8 +95,10 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
         Raw SP2 binary dataset
     config: ConfigParser object
         The configuration loaded from the INI file.
-    parallel: bool
-        If true, use dask to enable parallelism
+    parallel: str or bool
+        If 'dask', use dask.bag to enable parallelism
+        If 'multiprocessing' use multiprocessing.Pool to enable parallelism.
+        By default, no parallelism is enabled (parallel=False).
     num_records: int or None
         Only process first num_records datapoints. Set to
         None to process all records.
@@ -165,14 +169,23 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
         my_ds['PkEnd_ch' + str(i)].attrs["long_name"] = "Peak end for channel %d" % i
         my_ds['PkEnd_ch' + str(i)].attrs["_FillValue"] = np.nan
 
-    if not parallel:
-        proc_records = []
-        for i in range(num_records):
-            proc_records.append(_do_fit_records(my_ds, i, num_trig_pts))
-    else:
+    #use dask.bag to do the curve fits in parallel
+    if parallel == 'dask':
         fit_record = lambda x: _do_fit_records(my_ds, x, num_trig_pts)
         the_bag = db.from_sequence(range(num_records))
         proc_records = the_bag.map(fit_record).compute()
+    #use multiprocessing.Pool to do the curve fits in parallel
+    elif parallel == 'multiprocessing':
+        with Pool() as pool:
+            proc_records = pool.starmap(_do_fit_records, 
+                                        zip(repeat(my_ds), range(num_records), 
+                                        repeat(num_trig_pts)))
+    #else, no parallelism
+    else:
+        proc_records = []
+        for i in range(num_records):
+            proc_records.append(_do_fit_records(my_ds, i, num_trig_pts))
+        
 
     FtAmp = np.stack([x[0] for x in proc_records])
     FtPos = np.stack([x[1] for x in proc_records])
@@ -339,6 +352,11 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
     my_ds['IncanRejectKey'] = (('event_index'), incan_reject_key)
     my_ds['IncanRejectKey'].attrs["long_name"] = "Incandescence reject flag"
     my_ds['IncanRejectKey'].attrs["_FillValue"] = np.nan
+    
+    OneofEvery=np.zeros(num_records, dtype='float64') + int(config['Acquisition']['1 of Every'])
+    my_ds['OneofEvery'] = (('event_index'), OneofEvery)
+    #calculate the deadtime relative bias and add it to the Dataset
+    my_ds=deadtime(my_ds, config)
 
     print(str(num_records) + ' records processed in ' + str(time.time()-start_time) + ' s')
     return my_ds
@@ -492,7 +510,8 @@ def _split_scatter_fit(my_ds, channel):
     data = my_ds['Data_ch' + str(channel)].values
     V_maxloc = np.argmax(data, axis=1)
     V_minloc = np.argmin(data, axis=1)
-    data[V_maxloc < V_minloc, :] = -data[V_maxloc < V_minloc, :]
+    invert = V_maxloc < V_minloc
+    data[invert, :] = -data[invert, :]
     base = np.nanmean(data[:, 0:num_base_pts_2_avg], axis=1)
     V_max = data.max(axis=1)
     conditions = np.logical_and.reduce(((V_max - base) > 1, V_maxloc < len(data), V_maxloc > 0))
@@ -507,7 +526,7 @@ def _split_scatter_fit(my_ds, channel):
     pos_tile = np.tile(pos, (data.shape[1], 1)).T
     counting_up = np.where(np.logical_and(data < 5, counting_up <= pos_tile), counting_up, -1)
     start = counting_up.max(axis=1)
-    fit_coeffs = {'base': base, 'height': height, 'pos': pos, 'start': start}
+    fit_coeffs = {'base': base, 'height': height, 'pos': pos, 'start': start, 'inverted': invert}
 
     return fit_coeffs
 

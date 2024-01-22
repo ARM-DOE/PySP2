@@ -120,7 +120,7 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
     return output_ds
 
 
-def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_interval=10):
+def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_interval=10,deadtime_correction=False):
     """
     Processes the Scattering and BC mass size distributions:
 
@@ -179,12 +179,21 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     ScatMassEnsemble = np.zeros_like(ScatNumEnsembleBC)
     scatter_accept = ~np.isnan(particle_ds['Scatter'].values)
     incand_accept = ~np.isnan(sootMass)
-    try:
-        OneOfEvery = int(config['Acquisition']['1 of Every'])
-    except KeyError:
-        warnings.warn("One of Every field not found in inputs! Defaulting to 1, this may cause" +
-                      "drastically underestimated mass/number concentrations.", UserWarning)
-        OneOfEvery = 1
+    
+    if 'OneofEvery' not in list(particle_ds.variables):
+        try:
+            OneOfEvery_ini = int(config['Acquisition']['1 of Every'])
+        except KeyError:
+            warnings.warn("One of Every field not found in inputs! Defaulting to 1, this may cause" +
+                          "drastically underestimated mass/number concentrations.", UserWarning)
+            OneOfEvery_ini = 1
+        OneOfEvery = np.zeros_like(sootMass)+OneOfEvery_ini
+    else:        
+        OneOfEvery = particle_ds['OneofEvery'].values
+        
+    if deadtime_correction:    
+        relative_bias=particle_ds['DeadtimeRelativeBias'].values
+        OneOfEvery = np.multiply(OneOfEvery,1./(1.+relative_bias))
     
     IncandPos = particle_ds['PkPos_ch1'].values
     PkHt_ch1 = particle_ds['PkHt_ch1'].values
@@ -208,6 +217,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     MassScat2total = np.zeros_like(time_bins[:-1])
     MassIncand2 = np.zeros_like(time_bins[:-1])
     MassIncand2Sat = np.zeros_like(time_bins[:-1])
+    
     for t in range(len(time_bins) - 1):
         parts_time = np.logical_and(
             time_wave >= time_bins[t], time_wave <= time_bins[t + 1])
@@ -225,42 +235,71 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
             (the_particles, ScatDiaBC50 < SpecSizeBins[-1] + deltaSize / 2))
         ind = np.searchsorted(SpecSizeBins+deltaSize / 2,
                               ScatDiaBC50[the_particles_scat], side='right')
+        #np.add.at(ScatNumEnsembleBC[t,:], ind, OneOfEvery)
+        np.add.at(ScatNumEnsembleBC[t,:], ind, OneOfEvery[the_particles_scat])
         
         # Remove oversize particles
-        np.add.at(ScatNumEnsembleBC[t,:], ind, OneOfEvery)
         the_particles_scat = np.logical_and.reduce(
             (the_particles, ScatDiaSO4 < SpecSizeBins[-1] + deltaSize / 2))
         ind = np.searchsorted(SpecSizeBins+deltaSize / 2, ScatDiaSO4[the_particles_scat], side='right')
-        # Remove oversize particles
-        np.add.at(ScatNumEnsemble[t,:], ind, OneOfEvery)
-        np.add.at(ScatMassEnsemble[t,:], ind, OneOfEvery * ScatMassSO4[the_particles_scat])
+        #np.add.at(ScatNumEnsemble[t,:], ind, OneOfEvery)
+        np.add.at(ScatNumEnsemble[t,:], ind, OneOfEvery[the_particles_scat])
+        #np.add.at(ScatMassEnsemble[t,:], ind, OneOfEvery * ScatMassSO4[the_particles_scat])
+        np.add.at(ScatMassEnsemble[t,:], ind, np.multiply(
+            OneOfEvery[the_particles_scat], ScatMassSO4[the_particles_scat]))
         
         the_particles = np.logical_and.reduce((parts_time, incand_accept))
+        # Remove oversize particles
         the_particles_incan = np.logical_and.reduce(
             (the_particles, SizeIncandOnly < SpecSizeBins[-1] + deltaSize / 2))
         ind = np.searchsorted(SpecSizeBins+deltaSize / 2, 
                               SizeIncandOnly[the_particles_incan], side='right')
-        # Remove oversize particles
-        np.add.at(IncanNumEnsemble[t,:], ind, OneOfEvery)
-        np.add.at(IncanMassEnsemble[t,:], ind, OneOfEvery * sootMass[the_particles_incan])
+        #np.add.at(IncanNumEnsemble[t,:], ind, OneOfEvery)
+        np.add.at(IncanNumEnsemble[t,:], ind, OneOfEvery[the_particles_incan])
+        #np.add.at(IncanMassEnsemble[t,:], ind, OneOfEvery * sootMass[the_particles_incan])
+        np.add.at(IncanMassEnsemble[t,:], ind, np.multiply(
+            OneOfEvery[the_particles_incan], sootMass[the_particles_incan]))
         
-            
         scat_parts = np.logical_and(scatter_accept, parts_time)
         incan_parts = np.logical_and(incand_accept, parts_time)
-        ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
-        ConcTotalCycle = OneOfEvery * np.sum(np.logical_or(incan_parts, scat_parts))
-        ConcScatCycle = OneOfEvery * np.sum(scat_parts)
-        ConcScatSatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_sat))
-        ConcIncanScatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_parts))
-        ConcIncanSatCycle = OneOfEvery * np.sum(np.logical_and(incan_parts, incan_sat))
-        massAvgScatCycle = OneOfEvery * np.sum(
-            ScatMassSO4[np.argwhere(np.logical_and(scat_parts, ~scat_sat))])
-        massAvgScatSatCycle = OneOfEvery * np.sum(
-            ScatMassSO4[np.argwhere(np.logical_and(scat_parts, scat_sat))])
-        massAvgIncandCycle = OneOfEvery * np.sum(
-            sootMass[np.argwhere(np.logical_and(~incan_sat, incan_parts))])
-        massAvgIncandSatCycle = OneOfEvery * np.sum(
-            sootMass[np.argwhere(np.logical_and(incan_sat, incan_parts))])
+        #ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
+        ConcIncanCycle = np.sum(np.multiply(OneOfEvery, incan_parts))
+        #ConcTotalCycle = OneOfEvery * np.sum(np.logical_or(incan_parts, scat_parts))
+        bl_any_particle = np.logical_or(incan_parts, scat_parts)
+        ConcTotalCycle = np.sum(np.multiply(OneOfEvery, bl_any_particle))
+        #ConcScatCycle = OneOfEvery * np.sum(scat_parts)
+        ConcScatCycle = np.sum(np.multiply(OneOfEvery, scat_parts))
+        #ConcScatSatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_sat))
+        bl_scat_and_incandsat_particle = np.logical_and(scat_parts, incan_sat)
+        ConcScatSatCycle = np.sum(np.multiply(OneOfEvery,
+                                              bl_scat_and_incandsat_particle))
+        #ConcIncanScatCycle = OneOfEvery * np.sum(np.logical_and(scat_parts, incan_parts))
+        bl_scat_and_incand_particle = np.logical_and(scat_parts, incan_parts)
+        ConcIncanScatCycle = np.sum(np.multiply(OneOfEvery, bl_scat_and_incand_particle))
+        #ConcIncanSatCycle = OneOfEvery * np.sum(np.logical_and(incan_parts, incan_sat))
+        bl_incandsat_particle = np.logical_and(incan_parts, incan_sat)
+        ConcIncanSatCycle = np.sum(np.multiply(OneOfEvery, bl_incandsat_particle))
+        #massAvgScatCycle = OneOfEvery * np.sum(
+        #    ScatMassSO4[np.argwhere(np.logical_and(scat_parts, ~scat_sat))])
+        ind_hg_scat_parts = np.argwhere(np.logical_and(scat_parts, ~scat_sat))
+        massAvgScatCycle = np.sum(np.multiply(OneOfEvery[ind_hg_scat_parts],
+                                               ScatMassSO4[ind_hg_scat_parts]))
+        #massAvgScatSatCycle = OneOfEvery * np.sum(
+        #    ScatMassSO4[np.argwhere(np.logical_and(scat_parts, scat_sat))])
+        ind_lg_scat_parts = np.argwhere(np.logical_and(scat_parts, scat_sat))
+        massAvgScatSatCycle = np.sum(np.multiply(OneOfEvery[ind_lg_scat_parts], 
+                                                  ScatMassSO4[ind_lg_scat_parts]))
+        #massAvgIncandCycle = OneOfEvery * np.sum(
+        #    sootMass[np.argwhere(np.logical_and(~incan_sat, incan_parts))])
+        ind_hg_incan_parts = np.argwhere(np.logical_and(~incan_sat, incan_parts))
+        massAvgIncandCycle = np.sum(np.multiply(OneOfEvery[ind_hg_incan_parts],
+                                                 sootMass[ind_hg_incan_parts]))
+        #massAvgIncandSatCycle = OneOfEvery * np.sum(
+        #    sootMass[np.argwhere(np.logical_and(incan_sat, incan_parts))])
+        ind_lg_incan_parts = np.argwhere(np.logical_and(incan_sat, incan_parts))
+        massAvgIncandSatCycle = np.sum(np.multiply(OneOfEvery[ind_lg_incan_parts],
+                                                   sootMass[ind_lg_incan_parts]))
+        
         fracBCnum = ConcIncanCycle / ConcTotalCycle
         if ConcTotalCycle < 5:
             fracBCnum = 0
@@ -295,11 +334,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
             ScatNumEnsemble[t, :] = ScatNumEnsemble[t, :] / FlowCycle
             ScatMassEnsemble[t, :] = ScatMassEnsemble[t, :] / FlowCycle
 
-    MassIncand2total = xr.DataArray(MassIncand2Sat + MassIncand2, dims=('time'))
-    MassIncand2total.attrs["long_name"] = "Incandescence mass concentration (total)"
-    MassIncand2total.attrs["standard_name"] = "mass_concentration"
-    MassIncand2total.attrs["units"] = "ng m-3"
-    
+
     base_time = pd.Timestamp('1904-01-01')
     time = np.array([(base_time + datetime.timedelta(seconds=x)).to_datetime64() for x in time_bins[:-1]])
     time = xr.DataArray(time, dims=('time'))
@@ -307,6 +342,21 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     time_wave = xr.DataArray(time_bins[:-1], dims=('time'))
     time_wave.attrs["long_name"] = "Time"
     time_wave.attrs["units"] = "seconds since 01-01-1904 00:00:00 UTC"
+
+    MassIncand2total = xr.DataArray(MassIncand2Sat + MassIncand2, dims=('time'))
+    MassIncand2total.attrs["long_name"] = "Incandescence mass concentration (total)"
+    MassIncand2total.attrs["standard_name"] = "mass_concentration"
+    MassIncand2total.attrs["units"] = "ng m-3"
+    
+    MassIncand2 = xr.DataArray(MassIncand2, dims=('time'))
+    MassIncand2.attrs["long_name"] = "Incandescence mass concentration (non-saturated)"
+    MassIncand2.attrs["standard_name"] = "mass_concentration"
+    MassIncand2.attrs["units"] = "ng m-3"
+
+    MassIncand2Sat = xr.DataArray(MassIncand2Sat, dims=('time'))
+    MassIncand2Sat.attrs["long_name"] = "Incandescence mass concentration (saturated)"
+    MassIncand2Sat.attrs["standard_name"] = "mass_concentration"
+    MassIncand2Sat.attrs["units"] = "ng m-3"
 
     NumConcIncan = xr.DataArray(NumConcIncan2, dims=('time'))
     NumConcIncan.attrs["long_name"] = "Total number concentration (incandescence)"
@@ -332,21 +382,6 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     NumConcTotal.attrs["long_name"] = "Total number concentration"
     NumConcTotal.attrs["standard_name"] = "number_concentration"
     NumConcTotal.attrs["units"] = "cm-3"
-
-    MassIncand = xr.DataArray(MassIncand2total, dims=('time'))
-    MassIncand.attrs["long_name"] = "Incandescence mass concentration (total)"
-    MassIncand.attrs["standard_name"] = "mass_concentration"
-    MassIncand.attrs["units"] = "ng m-3"
-    
-    MassIncand2 = xr.DataArray(MassIncand2, dims=('time'))
-    MassIncand2.attrs["long_name"] = "Incandescence mass concentration"
-    MassIncand2.attrs["standard_name"] = "mass_concentration"
-    MassIncand2.attrs["units"] = "ng m-3"
-
-    MassIncand2Sat = xr.DataArray(MassIncand2Sat, dims=('time'))
-    MassIncand2Sat.attrs["long_name"] = "Incandescence mass concentration (saturated)"
-    MassIncand2Sat.attrs["standard_name"] = "mass_concentration"
-    MassIncand2Sat.attrs["units"] = "ng m-3"
 
     MassScat2 = xr.DataArray(MassScat2, dims=('time'))
     MassScat2.attrs["long_name"] = "Scattering mass concentration"
