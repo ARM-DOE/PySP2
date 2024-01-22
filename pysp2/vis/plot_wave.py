@@ -100,7 +100,7 @@ def plot_waves(ds, record_no, plot_fit=True):
     Returns
     -------
     display: ACT HistogramDisplay object
-        Returns the ACT
+        Returns the ACT display object
     """
 
     chns = [i for i in range(8)]
@@ -125,6 +125,7 @@ def plot_waves(ds, record_no, plot_fit=True):
             display = plot_wave(ds, record_no, chns[i], plot_fit=plot_fit,
                                 append_to_display=display,
                                 subplot_index=(panel,))
+        
     titles = ['Scattering chanels',
               ' Incandesence channels',
               'Split detector channels']
@@ -137,4 +138,8 @@ def plot_waves(ds, record_no, plot_fit=True):
         ax.set_xlabel(xlabels[i])
         ax.set_ylabel(ylabels[i])
         ax.legend(legends[i])
+        if i==2:
+            lines=ax.get_lines()
+            ax.plot(ds['PkSplitPos_ch3'].isel(event_index=record_no),0,'*',markersize=10,color=lines[0].get_color())
+            ax.plot(ds['PkSplitPos_ch7'].isel(event_index=record_no),0,'*',markersize=10,color=lines[1].get_color())
     return display

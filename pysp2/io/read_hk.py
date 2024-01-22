@@ -76,7 +76,12 @@ def read_multi_hk_file(file_path):
     ----------
     file_path: str
         The path (with wildcards) to the housekeeping files.
-
+        Examples: 
+            Read all .hk files in one directoy:
+                my_hk = pysp2.io.read_multi_hk_file(/path/to/directory/*.hk')
+            Read all .hk files and check in the subdirectories as well.
+                my_hk = pysp2.io.read_multi_hk_file(/path/to/directory/**/*.hk')
+                
     Returns
     -------
     my_df: xarray.Dataset
@@ -90,4 +95,4 @@ def read_multi_hk_file(file_path):
         df = read_hk_file(f)
         the_list.append(df)
 
-    return xr.concat(the_list, dim='time')
+    return xr.concat(the_list, dim='time').sortby('time')

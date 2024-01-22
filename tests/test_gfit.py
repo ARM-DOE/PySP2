@@ -33,4 +33,8 @@ def test_psds():
     np.testing.assert_almost_equal(my_psds['IncanNumEnsemble'].sum(), 32.22939087)
     np.testing.assert_almost_equal(my_psds['ScatMassEnsemble'].sum(), 3.15026266)
     np.testing.assert_almost_equal(my_psds['IncanMassEnsemble'].sum(), 0.08177226)
-
+    np.testing.assert_almost_equal(my_binary['DeadtimeRelativeBias'].mean(), -0.00023515)
+    coeff, beam_profile = pysp2.util.beam_shape(
+        my_binary, beam_position_from='peak maximum', Globals=pysp2.util.DMTGlobals())
+    np.testing.assert_almost_equal(coeff, [9.83851858e-01, 4.64317390e+01, 
+                                           1.14337852e+01, 4.46761788e-03])
