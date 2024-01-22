@@ -9,4 +9,4 @@ from . import util
 from . import vis
 from . import testing
 
-__version__ = "1.4.0"
+__version__ = "1.5.0"
