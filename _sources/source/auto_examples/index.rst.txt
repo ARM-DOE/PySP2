@@ -8,6 +8,7 @@ Here are examples on how to use PySP2.
 
     <div class="sphx-glr-thumbnails">
 
+.. thumbnail-parent-div-open
 
 .. raw:: html
 
@@ -59,6 +60,8 @@ Here are examples on how to use PySP2.
       <div class="sphx-glr-thumbnail-title">Example on plotting particle concentration data timeseries</div>
     </div>
 
+
+.. thumbnail-parent-div-close
 
 .. raw:: html
 

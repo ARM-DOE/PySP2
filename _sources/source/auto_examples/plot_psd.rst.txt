@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_source_auto_examples_plot_psd.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -49,13 +49,7 @@ Example on plotting particle concentration data timeseries
     Processing record 5000
     /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:78: RuntimeWarning: Mean of empty slice
       ratio = np.nanmean(
-    /home/runner/work/PySP2/PySP2/pysp2/util/deadtime.py:30: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-      bias = np.zeros(my_binary.dims['event_index'], )
-    /home/runner/work/PySP2/PySP2/pysp2/util/deadtime.py:50: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-      if ind[-1] < my_binary.dims['event_index']:
-    /home/runner/work/PySP2/PySP2/pysp2/util/deadtime.py:51: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-      ind = np.append(ind, my_binary.dims['event_index'])
-    5877 records processed in 6.117044448852539 s
+    5877 records processed in 6.259682655334473 s
     /home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:38: RuntimeWarning: All-NaN slice encountered
       PkHt_ch0 = np.nanmax(np.stack([input_ds['PkHt_ch0'].values, input_ds['FtAmp_ch0'].values]), axis=0)
     /home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:39: RuntimeWarning: All-NaN slice encountered
@@ -65,8 +59,6 @@ Example on plotting particle concentration data timeseries
     Number of scattering particles rejected for peak width = 16
     Number of scattering particles rejected for fat peak = 0
     Number of scattering particles rejected for peak pos. = 91
-    /home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:340: UserWarning: Converting non-nanosecond precision datetime values to nanosecond precision. This behavior can eventually be relaxed in xarray, as it is an artifact from pandas which is now beginning to support non-nanosecond precision values. This warning is caused by passing non-nanosecond np.datetime64 or np.timedelta64 values to the DataArray or Variable constructor; it can be silenced by converting the values to nanosecond precision ahead of time.
-      time = xr.DataArray(time, dims=('time'))
 
 
 
@@ -94,7 +86,7 @@ Example on plotting particle concentration data timeseries
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.609 seconds)
+   **Total running time of the script:** (0 minutes 9.920 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_psd.py:

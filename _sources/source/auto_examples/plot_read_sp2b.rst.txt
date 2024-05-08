@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_source_auto_examples_plot_read_sp2b.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -49,30 +49,24 @@ Example for plotting a wave in a .sp2b file
     Processing record 5000
     /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:78: RuntimeWarning: Mean of empty slice
       ratio = np.nanmean(
-    /home/runner/work/PySP2/PySP2/pysp2/util/deadtime.py:30: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-      bias = np.zeros(my_binary.dims['event_index'], )
-    /home/runner/work/PySP2/PySP2/pysp2/util/deadtime.py:50: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-      if ind[-1] < my_binary.dims['event_index']:
-    /home/runner/work/PySP2/PySP2/pysp2/util/deadtime.py:51: FutureWarning: The return type of `Dataset.dims` will be changed to return a set of dimension names in future, in order to be more consistent with `DataArray.dims`. To access a mapping from dimension names to lengths, please use `Dataset.sizes`.
-      ind = np.append(ind, my_binary.dims['event_index'])
-    5877 records processed in 6.159078359603882 s
-    <xarray.Dataset>
+    5877 records processed in 6.243179798126221 s
+    <xarray.Dataset> Size: 41MB
     Dimensions:               (event_index: 5877, columns: 100)
     Dimensions without coordinates: event_index, columns
     Data variables: (12/83)
-        time                  (event_index) datetime64[ns] 2019-12-16T12:42:50.67...
-        Flag                  (event_index) int16 16 16 23 16 16 ... 2073 16 16 2329
-        Res1                  (event_index) float32 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0
-        Res5                  (event_index) float32 1.0 1.0 1.0 1.0 ... 1.0 1.0 1.0
-        Res6                  (event_index) float32 1.0 1.0 1.0 1.0 ... 1.0 1.0 1.0
-        Res7                  (event_index) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0
+        time                  (event_index) datetime64[ns] 47kB 2019-12-16T12:42:...
+        Flag                  (event_index) int16 12kB 16 16 23 16 ... 16 16 2329
+        Res1                  (event_index) float32 24kB 0.0 0.0 0.0 ... 0.0 0.0 0.0
+        Res5                  (event_index) float32 24kB 1.0 1.0 1.0 ... 1.0 1.0 1.0
+        Res6                  (event_index) float32 24kB 1.0 1.0 1.0 ... 1.0 1.0 1.0
+        Res7                  (event_index) float64 47kB 0.0 0.0 0.0 ... 0.0 0.0 0.0
         ...                    ...
-        IncanRatioch1ch2      (event_index) float64 1.261 nan ... -1.36 -0.1407
-        IncanRatioch5ch6      (event_index) float64 nan nan 1.021 ... 0.7619 17.5
-        ScatRejectKey         (event_index) int64 0 0 3 0 0 3 0 0 ... 0 3 0 3 0 1 1
-        IncanRejectKey        (event_index) int64 2 2 3 2 2 2 2 2 ... 0 2 2 2 2 2 2
-        OneofEvery            (event_index) float64 1.0 1.0 1.0 1.0 ... 1.0 1.0 1.0
-        DeadtimeRelativeBias  (event_index) float64 -0.0002 -0.0002 ... -0.00015
+        IncanRatioch1ch2      (event_index) float64 47kB 1.261 nan ... -1.36 -0.1407
+        IncanRatioch5ch6      (event_index) float64 47kB nan nan ... 0.7619 17.5
+        ScatRejectKey         (event_index) int64 47kB 0 0 3 0 0 3 0 ... 3 0 3 0 1 1
+        IncanRejectKey        (event_index) int64 47kB 2 2 3 2 2 2 2 ... 2 2 2 2 2 2
+        OneofEvery            (event_index) float64 47kB 1.0 1.0 1.0 ... 1.0 1.0 1.0
+        DeadtimeRelativeBias  (event_index) float64 47kB -0.0002 ... -0.00015
     /home/runner/micromamba/envs/pysp2-docs/lib/python3.12/site-packages/act/plotting/plot.py:81: UserWarning: Could not discern datastreamname and dict or tuple were not provided. Using defaultname of act_datastream!
       warnings.warn(
 
@@ -98,7 +92,7 @@ Example for plotting a wave in a .sp2b file
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.682 seconds)
+   **Total running time of the script:** (0 minutes 6.703 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_read_sp2b.py:
