@@ -61,7 +61,9 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
 
     PkHt_ch1 = input_ds['PkHt_ch1'].values
     PkHt_ch5 = input_ds['PkHt_ch5'].values
-    width = input_ds['PkEnd_ch1'].values - input_ds['PkStart_ch1'].values
+    width_ch1 = input_ds['PkEnd_ch1'].values - input_ds['PkStart_ch1'].values
+    width_ch5 = input_ds['PkEnd_ch5'].values - input_ds['PkStart_ch5'].values
+    width = np.where(np.isnan(width_ch1),width_ch5,width_ch1)
     accepted_incand = width >= Globals.IncanMinWidth
     accepted_incand = np.logical_and(accepted_incand,
                                      input_ds['PkHt_ch2'].values >= Globals.IncanMinPeakHt1)

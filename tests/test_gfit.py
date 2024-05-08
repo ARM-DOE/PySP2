@@ -11,7 +11,7 @@ def test_gaussian_fit():
         np.nanmax(my_binary.PkHt_ch0.values), 98708.92915295, decimal=1)
     np.testing.assert_almost_equal(
         np.nanmax(my_binary.PkHt_ch4.values), 65088.3959945008, decimal=1)
-    # check that there are requal amounts of successful fits for low gain and
+    # check that there are equal amounts of successful fits for low gain and
     # high gain scattering when the peak heighs are large enough
     bl_hg = np.logical_and(my_binary['FtAmp_ch0'] > 30000,
                            my_binary['FtAmp_ch0'] < 50000)
@@ -30,9 +30,9 @@ def test_psds():
     my_psds = pysp2.util.process_psds(my_binary, my_hk, my_ini)
     np.testing.assert_almost_equal(my_psds['NumConcIncan'].max(), 0.95805343)
     np.testing.assert_almost_equal(my_psds['ScatNumEnsemble'].sum(), 254.773995310)
-    np.testing.assert_almost_equal(my_psds['IncanNumEnsemble'].sum(), 32.22939087)
+    np.testing.assert_almost_equal(my_psds['IncanNumEnsemble'].sum(), 32.61006871)
     np.testing.assert_almost_equal(my_psds['ScatMassEnsemble'].sum(), 3.15026266)
-    np.testing.assert_almost_equal(my_psds['IncanMassEnsemble'].sum(), 0.08177226)
+    np.testing.assert_almost_equal(my_psds['IncanMassEnsemble'].sum(), 0.08280955)
     np.testing.assert_almost_equal(my_binary['DeadtimeRelativeBias'].mean(), -0.00023515)
     coeff, beam_profile = pysp2.util.beam_shape(
         my_binary, beam_position_from='peak maximum', Globals=pysp2.util.DMTGlobals())
