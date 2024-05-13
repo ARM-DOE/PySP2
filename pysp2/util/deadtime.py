@@ -27,7 +27,7 @@ def deadtime(my_binary, my_ini):
         in the SP2 at high concentrations. 
     """
     #numpy array to store the relative bias in
-    bias = np.zeros(my_binary.dims['event_index'], )
+    bias = np.zeros(my_binary.sizes['event_index'], )
     #scattering triggered
     scatter_triggered = np.any(np.isfinite(np.vstack((my_binary['PkHt_ch0'].values,
                                                     my_binary['PkHt_ch4'].values))), axis=0)
@@ -47,8 +47,8 @@ def deadtime(my_binary, my_ini):
     #find locations where those unique time stamps should be inserted
     ind = np.searchsorted(my_binary['TimeWave'].values, unique_buffer_time_stamps) 
     #add the end to the list of indexes if needed
-    if ind[-1] < my_binary.dims['event_index']:
-        ind = np.append(ind, my_binary.dims['event_index'])
+    if ind[-1] < my_binary.sizes['event_index']:
+        ind = np.append(ind, my_binary.sizes['event_index'])
     for i in range(len(ind)-1):
         #from index
         fr = ind[i]

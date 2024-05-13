@@ -3,7 +3,7 @@ import struct
 import numpy as np
 import platform
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def read_sp2(file_name, debug=False, arm_convention=True):
@@ -119,7 +119,8 @@ def read_sp2(file_name, debug=False, arm_convention=True):
         diff_epoch_1904 = (
             datetime(1970, 1, 1) - datetime(1904, 1, 1)).total_seconds()
         UTCdatetime = np.array([
-            datetime.utcfromtimestamp(x - diff_epoch_1904) for x in UTCtime])
+            datetime.fromtimestamp(
+                x - diff_epoch_1904, tz=timezone.utc).replace(tzinfo=None) for x in UTCtime])
 
         DateTimeWave = (dt - datetime(1904, 1, 1)).total_seconds() + TimeWave
 
