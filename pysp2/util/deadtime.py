@@ -28,7 +28,7 @@ def deadtime(my_binary, my_ini):
         in the SP2 at high concentrations.
     """
     # numpy array to store the relative bias in
-    bias = np.zeros(my_binary.sizes["event_index"], dtype="float64")
+    bias = np.zeros(my_binary.sizes["event_index"], dtype="float32")
     # scattering triggered
     scatter_triggered = np.any(
         np.isfinite(
