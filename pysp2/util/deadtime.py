@@ -43,15 +43,15 @@ def deadtime(my_binary, my_ini):
         ),
         axis=0,
     )
-    digitization_rate = int(my_ini["Acquisition"]["Samples/Sec"])
-    buffer_length = int(
+    digitization_rate = float(my_ini["Acquisition"]["Samples/Sec"])
+    buffer_length = float(
         my_ini["Acquisition"]["Scan Length"]
     )  # how many data points in one buffer
     buffer_length_seconds = buffer_length / digitization_rate  # in seconds
-    event_length_points = int(my_ini["Acquisition"]["Points per Event"])
-    pretrigger_length_points = int(my_ini["Acquisition"]["Pre-Trig Points"])
+    event_length_points = float(my_ini["Acquisition"]["Points per Event"])
+    pretrigger_length_points = float(my_ini["Acquisition"]["Pre-Trig Points"])
     # intentialanny skipped particles, notation from Eq. 2 in doi:10.1080/02786826.2022.2064265
-    S_S = int(my_ini["Acquisition"]["1 of every"])
+    S_S = float(my_ini["Acquisition"]["1 of every"])
     # find locations where the buffer changes (i.e. where the TimeWave values changes)
     # get unique time stamps
     unique_buffer_time_stamps = np.unique(my_binary["TimeWave"].values)
