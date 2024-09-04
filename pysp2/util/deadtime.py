@@ -66,9 +66,9 @@ def deadtime(my_binary, my_ini):
         # to index
         to = ind[i + 1]
         # number of scattering particle windows saved in the buffer
-        N_S = scatter_triggered[fr:to].sum()
+        N_S = scatter_triggered[fr:to].sum().astype('float64')
         # number of incandesence particle windows saved in the buffer
-        N_I = incandesence_triggered[fr:to].sum()
+        N_I = incandesence_triggered[fr:to].sum().astype('float64')
         # length of time, in seconds, for a single measurement of the digitizer
         t_b = 1.0 / digitization_rate
         # "PW is the total number of data points (for each channel of data) in the window"
