@@ -45,10 +45,12 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     max_amplitude_fraction = 0.03
     bins = my_binary['columns']
     
-    median_peak_width = my_binary['PkFWHM_ch0'].median().values / 2.35482
-    median_peak_pos = my_binary['FtPos_ch0'].median().values
-    peak_pos_ok = np.logical_and(my_binary['FtPos_ch0'].values >= median_peak_pos - median_peak_width, 
-                                 my_binary['FtPos_ch0'].values <= median_peak_pos + median_peak_width)
+    # median_peak_width = my_binary['PkFWHM_ch0'].median().values / 2.35482
+    # median_peak_pos = my_binary['FtPos_ch0'].median().values
+    # peak_pos_ok = np.logical_and(my_binary['FtPos_ch0'].values >= median_peak_pos - median_peak_width, 
+    #                              my_binary['FtPos_ch0'].values <= median_peak_pos + median_peak_width)
+    
+    
     
     #change this so that it uses scat_reject_key instead.
     #scatterin signal ok = True
@@ -57,12 +59,13 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         my_binary['PkFWHM_ch0'].values < Globals.ScatMaxWidth,
         my_binary['PkHt_ch0'].values > Globals.ScatMinPeakHt1,
         my_binary['PkHt_ch0'].values < Globals.ScatMaxPeakHt1,
-        peak_pos_ok))
-#        my_binary['FtPos_ch0'].values < Globals.ScatMaxPeakPos,
-#        my_binary['FtPos_ch0'].values > Globals.ScatMinPeakPos))
+        my_binary['FtPos_ch0'].values < Globals.ScatMaxPeakPos,
+        my_binary['FtPos_ch0'].values > Globals.ScatMinPeakPos))
         
     #no incandesence signal = True
-    no_incand_trigged = my_binary['PkHt_ch1'].values < Globals.IncanMinPeakHt1
+    no_incand_trigged = np.logical_and(
+        my_binary['PkHt_ch1'].values < Globals.IncanMinPeakHt1,
+        my_binary['PkHt_ch5'].values < Globals.IncanMinPeakHt2)
     
     #Particles that only scatter light
     only_scattering_high_gain = np.logical_and.reduce((scatter_high_gain_accepted,
@@ -85,15 +88,14 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     my_high_gain_profiles_ = np.zeros_like(my_high_gain_profiles)*np.nan
     
     mean_high_gain_max_peak_pos = int(np.nanmean(my_high_gain_scatterers['PkPos_ch0'].values))
-    mean_high_gain_split_pos = int(np.nanmean(my_high_gain_scatterers['PkSplitPos_ch3'].values))
+    mean_high_gain_split_pos = np.round(np.nanmean(my_high_gain_scatterers['PkSplitPos_ch3'].values)).astype(np.int32)
+    #mean_high_gain_split_pos = int(np.nanmean(my_high_gain_scatterers['PkSplitPos_ch3'].values))
         
     #cross to center
-    c2c = my_high_gain_scatterers['FtPos_ch0'].values - my_high_gain_scatterers['PkSplitPos_ch3'].values
-    mean_c2c = np.mean(c2c) #mean cross to centre
+    high_gain_c2c = my_high_gain_scatterers['FtPos_ch0'].values - my_high_gain_scatterers['PkSplitPos_ch3'].values
+    high_gain_mean_c2c = np.mean(high_gain_c2c) #mean cross to centre
     
     high_gain_split_position = my_high_gain_scatterers['PkSplitPos_ch3'].values
-    
-    mean_split_pos = np.round(np.nanmean(my_high_gain_scatterers['PkSplitPos_ch3'].values)).astype(np.int32)
     
     #loop through all particle events (THIS CAN BE MADE SMARTER WITH MUCH OF THE CALCULATIONS BEFORE THE LOOP)
     for i in my_high_gain_scatterers['event_index']:
@@ -114,7 +116,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         if beam_position_from == 'peak maximum':
             peak_difference = mean_high_gain_max_peak_pos - peak_pos
         elif beam_position_from == 'split point':
-            peak_difference = mean_split_pos - split_pos
+            peak_difference = mean_high_gain_split_pos - split_pos
         #insert so that the peak is at the right position (accounts for 
         #particles travelling at different speeds)
         if peak_difference > 0:
@@ -160,23 +162,37 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     #moving average of beam width
     moving_high_gain_beam_width = np.lib.stride_tricks.sliding_window_view(my_high_gain_scatterers['PkFWHM_ch0'].values, 
                                                                      moving_average_window, axis=0)
-    moving_avg_high_gain_beam_width = np.nanmean(moving_high_gain_beam_width,axis=1)
+    #moving_avg_high_gain_beam_width = np.nanmedian(moving_high_gain_beam_width,axis=1)
+    moving_median_high_gain_beam_width = np.nanmedian(moving_high_gain_beam_width,axis=1)
+    
+    moving_high_gain_c2c = np.lib.stride_tricks.sliding_window_view(high_gain_c2c, 
+                                                                     moving_average_window, axis=0)
+    moving_median_high_gain_c2c = np.nanmedian(moving_high_gain_c2c,axis=1)
 
     
     leo_FtMaxPosAmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan #will later be converted to int
     leo_FtMaxPosAmpFactor_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_max_leo_amplitude_factor
     
     leo_PkFWHM_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
-    leo_PkFWHM_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_beam_width
+    leo_PkFWHM_ch0[iloc[:-moving_average_window+1]] = moving_median_high_gain_beam_width
     
-    leo_PkPos_ch0 = np.zeros(scatter_high_gain_accepted.shape) * np.nan
-    leo_PkPos_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_beam_peakpos
+    leo_c2c_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
+    leo_c2c_ch0[iloc[:-moving_average_window+1]] = moving_median_high_gain_c2c
+    
+    #leo_PkPos_ch0 = np.zeros(scatter_high_gain_accepted.shape) * np.nan
+    #leo_PkPos_ch0[iloc[:-moving_average_window+1]] = 
     
     output_ds = my_binary.copy()
-    output_ds['leo_FtMaxPos_ch0'] = (('event_index'), leo_FtMaxPos_ch0)
+    #output_ds['leo_FtMaxPos_ch0'] = (('event_index'), leo_FtMaxPos_ch0)
     output_ds['leo_FtMaxPosAmpFactor_ch0'] = (('event_index'), leo_FtMaxPosAmpFactor_ch0)
     output_ds['leo_PkFWHM_ch0'] = (('event_index'), leo_PkFWHM_ch0)
-    output_ds['leo_PkPos_ch0'] = (('event_index'), leo_PkPos_ch0)
+    #output_ds['leo_PkPos_ch0'] = (('event_index'), leo_PkPos_ch0)
+    
+    # ADD HERE: CALCULATE leo_PkPos_ch0 from split_point + moving_median_high_gain_c2c for all particles
+    output_ds['leo_PkPos_ch0'] = (('event_index'), leo_c2c_ch0)
+    output_ds['leo_PkPos_ch0'] = output_ds['leo_PkPos_ch0'].interpolate_na(dim="event_index", 
+                                                        method="nearest", fill_value="extrapolate")
+    output_ds['leo_PkPos_ch0'] = output_ds['leo_PkPos_ch0'] + my_binary['PkSplitPos_ch3']
     
     output_ds['leo_FtMaxPos_ch0'] = output_ds['leo_FtMaxPos_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
