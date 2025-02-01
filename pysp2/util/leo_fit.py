@@ -179,14 +179,11 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     leo_c2c_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
     leo_c2c_ch0[iloc[:-moving_average_window+1]] = moving_median_high_gain_c2c
     
-    #leo_PkPos_ch0 = np.zeros(scatter_high_gain_accepted.shape) * np.nan
-    #leo_PkPos_ch0[iloc[:-moving_average_window+1]] = 
     
     output_ds = my_binary.copy()
-    #output_ds['leo_FtMaxPos_ch0'] = (('event_index'), leo_FtMaxPos_ch0)
+    output_ds['leo_FtMaxPos_ch0'] = (('event_index'), leo_FtMaxPos_ch0)
     output_ds['leo_FtMaxPosAmpFactor_ch0'] = (('event_index'), leo_FtMaxPosAmpFactor_ch0)
     output_ds['leo_PkFWHM_ch0'] = (('event_index'), leo_PkFWHM_ch0)
-    #output_ds['leo_PkPos_ch0'] = (('event_index'), leo_PkPos_ch0)
     
     # ADD HERE: CALCULATE leo_PkPos_ch0 from split_point + moving_median_high_gain_c2c for all particles
     output_ds['leo_PkPos_ch0'] = (('event_index'), leo_c2c_ch0)
@@ -202,9 +199,9 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
                                                         method="nearest", fill_value="extrapolate")
     output_ds['leo_PkPos_ch0'] = output_ds['leo_PkPos_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
-    
-    #c2c time series (data from scattering particles but extrapolted to all paricles) 
-    #leo_PkPos_ch0 (calculated from c2c) --> position of the max amplitude calculated from the split and extrapolated c2c
+    #ToDo:
+    #done: c2c time series (data from scattering particles but extrapolted to all paricles) 
+    #done: leo_PkPos_ch0 (calculated from c2c) --> position of the max amplitude calculated from the split and extrapolated c2c
     #leo_FtMaxPos_ch0 (from split)
     
     return output_ds
@@ -224,7 +221,7 @@ def leo_fit(my_binary,Globals=None):
     #                                                   bl_only_scattering_particles)
     
     #split to peak height difference (in bins) for scattering only particles
-    split_to_peak_high_gain = my_binary['PkPos_ch0'].values - my_binary['PkSplitPos_ch3'].values
+    #split_to_peak_high_gain = my_binary['PkPos_ch0'].values - my_binary['PkSplitPos_ch3'].values
     #For particles with inandesence signal, set to NaN since the peak needn't 
     #be where the laser intensity is the highest, so se to NaN
     #split_to_peak_high_gain[~bl_only_scattering_particles_ch0] = np.nan
