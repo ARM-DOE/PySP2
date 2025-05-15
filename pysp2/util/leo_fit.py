@@ -51,7 +51,6 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     #                              my_binary['FtPos_ch0'].values <= median_peak_pos + median_peak_width)
     
     
-    
     #change this so that it uses scat_reject_key instead.
     #scatterin signal ok = True
     scatter_high_gain_accepted = np.logical_and.reduce((
@@ -88,13 +87,13 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     my_high_gain_profiles_ = np.zeros_like(my_high_gain_profiles)*np.nan
     
     mean_high_gain_max_peak_pos = int(np.nanmean(my_high_gain_scatterers['PkPos_ch0'].values))
-    mean_high_gain_split_pos = np.round(np.nanmean(my_high_gain_scatterers['PkSplitPos_ch3'].values)).astype(np.int32)
+    mean_high_gain_split_pos_float = np.nanmean(my_high_gain_scatterers['PkSplitPos_ch3'].values)
+    mean_high_gain_split_pos = np.round(mean_high_gain_split_pos_float).astype(np.int32)
     #mean_high_gain_split_pos = int(np.nanmean(my_high_gain_scatterers['PkSplitPos_ch3'].values))
         
     #cross to center
     high_gain_c2c = my_high_gain_scatterers['FtPos_ch0'].values - my_high_gain_scatterers['PkSplitPos_ch3'].values
-    high_gain_mean_c2c = np.mean(high_gain_c2c) #mean cross to centre
-    
+        
     high_gain_split_position = my_high_gain_scatterers['PkSplitPos_ch3'].values
     
     #loop through all particle events (THIS CAN BE MADE SMARTER WITH MUCH OF THE CALCULATIONS BEFORE THE LOOP)
@@ -127,13 +126,20 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         else:
             my_high_gain_profiles[i, :] = profile
 
-    # MOVING AVERAGE OF THE BEAM PROFILE TO FIND THE DISTANCE BETWEEN THE SPLIT POINT AND THE POINT IN THE 
+    #MOVING AVERAGE OF THE BEAM PROFILE TO FIND THE DISTANCE BETWEEN THE SPLIT POINT AND THE POINT IN THE 
     #LASER BEAM WHERE PARTICLES CAN START TO EVAPORATE
     
     #moving average of the beam shape with a window of moving_average_window
     moving_high_gain_profile_window = np.lib.stride_tricks.sliding_window_view(my_high_gain_profiles, 
                                                                      moving_average_window, axis=0)
-    moving_avg_high_gain_profiles_ = np.nanmean(moving_high_gain_profile_window,axis=2)
+#    moving_avg_high_gain_profiles_ = np.nanmean(moving_high_gain_profile_window,axis=2)
+    moving_avg_high_gain_profiles_ = np.nanmedian(moving_high_gain_profile_window,axis=2)
+    
+    # #
+    # moving_high_gain_FtPos = np.lib.stride_tricks.sliding_window_view(my_high_gain_scatterers['FtPos_ch0'].values, 
+    #                                                                  moving_average_window, axis=0)
+    # moving_high_gain_FtPos_ = np.nanmedian(moving_high_gain_FtPos,axis=1)
+
     
     moving_avg_high_gain_profiles = np.zeros_like(moving_avg_high_gain_profiles_) * np.nan
     moving_avg_high_gain_split_to_leo_pos = np.zeros(moving_avg_high_gain_profiles_.shape[0]) * np.nan
@@ -148,7 +154,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         moving_avg_high_gain_profiles[i,:] =  (i_profile - np.nanmin(i_profile[:i_max])) / i_range
         #interpolate here to get the exact position in fraction (not integer) :: which posiiton (float) is the 0.03 cross in
         moving_avg_high_gain_max_leo_pos[i] = np.argwhere(moving_avg_high_gain_profiles[i,:] >= max_amplitude_fraction).min()-1
-        moving_avg_high_gain_split_to_leo_pos[i] = moving_avg_high_gain_max_leo_pos[i] - high_gain_split_position[i]
+        moving_avg_high_gain_split_to_leo_pos[i] = moving_avg_high_gain_max_leo_pos[i] - mean_high_gain_split_pos
         moving_avg_high_gain_max_leo_amplitude_factor[i] = 1./ moving_avg_high_gain_profiles[i, np.round(moving_avg_high_gain_max_leo_pos[i]).astype(int)]
 
     #cleaning up
@@ -158,6 +164,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     moving_avg_high_gain_max_leo_pos = np.where(moving_avg_high_gain_max_leo_pos < num_base_pts_2_avg, 
                                                 np.nan, moving_avg_high_gain_max_leo_pos)
     
+    moving_avg_high_gain_split_to_leo_pos = np.where(moving_avg_high_gain_split_to_leo_pos < -20. ,
+                                                   np.nan, moving_avg_high_gain_split_to_leo_pos)
 
     #moving average of beam width
     moving_high_gain_beam_width = np.lib.stride_tricks.sliding_window_view(my_high_gain_scatterers['PkFWHM_ch0'].values, 
@@ -167,42 +175,72 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     
     moving_high_gain_c2c = np.lib.stride_tricks.sliding_window_view(high_gain_c2c, 
                                                                      moving_average_window, axis=0)
+    #JB OK
     moving_median_high_gain_c2c = np.nanmedian(moving_high_gain_c2c,axis=1)
+    
 
+    #JB LATER
+    #leo_FtMaxPosAmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan #will later be converted to int
+    #leo_FtMaxPosAmpFactor_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_max_leo_amplitude_factor
     
-    leo_FtMaxPosAmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan #will later be converted to int
-    leo_FtMaxPosAmpFactor_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_max_leo_amplitude_factor
-    
+    #JB OK
     leo_PkFWHM_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
     leo_PkFWHM_ch0[iloc[:-moving_average_window+1]] = moving_median_high_gain_beam_width
     
+    #JB OK
     leo_c2c_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
     leo_c2c_ch0[iloc[:-moving_average_window+1]] = moving_median_high_gain_c2c
     
+    #JB OK
+    leo_split_to_leo_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
+    leo_split_to_leo_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_split_to_leo_pos
+    
+    
+    """
+    WHAT IS NEEDED:
+    * GAUSSIAN WIDTH FOR ALL PARTICLES - FROM PROFILES (DONE)
+    * PEAK POSITION FOR ALL PARTICLES - FROM C2C (DONE)
+    * LAST BIN TO USE FOR LEO FIT (from split detector) 
+    """
     
     output_ds = my_binary.copy()
-    output_ds['leo_FtMaxPos_ch0'] = (('event_index'), leo_FtMaxPos_ch0)
-    output_ds['leo_FtMaxPosAmpFactor_ch0'] = (('event_index'), leo_FtMaxPosAmpFactor_ch0)
+#    output_ds['leo_FtMaxPos_ch0'] = (('event_index'), leo_FtMaxPos_ch0) #same as leo_PkPos_ch0?
+#    output_ds['leo_FtMaxPosAmpFactor_ch0'] = (('event_index'), leo_FtMaxPosAmpFactor_ch0)
     output_ds['leo_PkFWHM_ch0'] = (('event_index'), leo_PkFWHM_ch0)
     
-    # ADD HERE: CALCULATE leo_PkPos_ch0 from split_point + moving_median_high_gain_c2c for all particles
+    #distance from cross-to-centre (split point to laser maximum intensity). This comes from scattering only partilces
     output_ds['leo_PkPos_ch0'] = (('event_index'), leo_c2c_ch0)
+    #interpolate to all particles (including and most importantly rBC particles)
     output_ds['leo_PkPos_ch0'] = output_ds['leo_PkPos_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
+    #add split position to cross-to-centre distance to get location of the (estimated) location of the peak maximum
+    #This is needed for the LEO-fit.
     output_ds['leo_PkPos_ch0'] = output_ds['leo_PkPos_ch0'] + my_binary['PkSplitPos_ch3']
     
-    output_ds['leo_FtMaxPos_ch0'] = output_ds['leo_FtMaxPos_ch0'].interpolate_na(dim="event_index", 
+    #First add t_alpha_to_split data
+    output_ds['leo_MaxPos_ch0'] = (('event_index'), leo_split_to_leo_ch0)
+    #interpolate to all particles
+    output_ds['leo_MaxPos_ch0'] = output_ds['leo_MaxPos_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
-    output_ds['leo_FtMaxPosAmpFactor_ch0'] = output_ds['leo_FtMaxPosAmpFactor_ch0'].interpolate_na(dim="event_index", 
-                                                        method="nearest", fill_value="extrapolate")
+    #calculate the position at which the leo fits should end based on the split position (of all particles)
+    output_ds['leo_MaxPos_ch0'] = output_ds['leo_MaxPos_ch0'] + output_ds['PkSplitPos_ch3']
+    
+#same as leo_PkPos_ch0
+#    output_ds['leo_FtMaxPos_ch0'] = output_ds['leo_FtMaxPos_ch0'].interpolate_na(dim="event_index", 
+#                                                        method="nearest", fill_value="extrapolate")
+#    output_ds['leo_FtMaxPosAmpFactor_ch0'] = output_ds['leo_FtMaxPosAmpFactor_ch0'].interpolate_na(dim="event_index", 
+#                                                        method="nearest", fill_value="extrapolate")
     output_ds['leo_PkFWHM_ch0'] = output_ds['leo_PkFWHM_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
     output_ds['leo_PkPos_ch0'] = output_ds['leo_PkPos_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
+    
+    
+    
     #ToDo:
     #done: c2c time series (data from scattering particles but extrapolted to all paricles) 
     #done: leo_PkPos_ch0 (calculated from c2c) --> position of the max amplitude calculated from the split and extrapolated c2c
-    #leo_FtMaxPos_ch0 (from split)
+    #done: leo_FtMaxPos_ch0 (from split)
     
     return output_ds
 
