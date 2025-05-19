@@ -276,23 +276,26 @@ def leo_fit(my_binary,Globals=None):
     #mean of the lowest 3 points
     leo_base_ch0 = np.mean(data_ch0[:, 0:num_base_pts_2_avg], axis=1)
     
-    leo_fit_max_pos = my_binary['leo_FtMaxPos_ch0'].astype(int).values
-    leo_FtMaxPosAmpFactor_ch0 = my_binary['leo_FtMaxPosAmpFactor_ch0'].values
+    leo_fit_max_pos = my_binary['leo_EndPos_ch0'].astype(int).values
+    #leo_FtMaxPosAmpFactor_ch0 = my_binary['leo_FtMaxPosAmpFactor_ch0'].values
     leo_PkHt_ch0 = np.zeros_like(my_binary['PkHt_ch0'].values)*np.nan
     leo_PkHt_ch0_ = np.zeros_like(my_binary['PkHt_ch0'].values)*np.nan
 
     for i in range(my_binary.dims['event_index']):
-        #NAGOYA STYLE
-        fractional_peak_height_ch0 = data_ch0[i, leo_fit_max_pos[i]] - leo_base_ch0[i]
-        estimated_peak_height_ch0 = fractional_peak_height_ch0 * leo_FtMaxPosAmpFactor_ch0[i]
-        leo_PkHt_ch0_[i] = estimated_peak_height_ch0
+        #one factor for the peak height:
+        #fractional_peak_height_ch0 = data_ch0[i, leo_fit_max_pos[i]] - leo_base_ch0[i]
+        #estimated_peak_height_ch0 = fractional_peak_height_ch0 * leo_FtMaxPosAmpFactor_ch0[i]
+        #leo_PkHt_ch0_[i] = estimated_peak_height_ch0
         max_value = data_ch0[i,:].max() - data_ch0[i,:].min()
         bins_ = bins[:leo_fit_max_pos[i]]
+        if len(bins_) < 2:
+            leo_PkHt_ch0[i] = np.nan
+            continue
         #signals
         data_ch0_ = data_ch0[i, :leo_fit_max_pos[i]]
         leo_coeff, var_matrix = curve_fit(
             lambda x, a: _gaus(x, a, pos[i], width[i], leo_base_ch0[i]), 
-            bins_[:], data_ch0_[:], p0=[max_value], maxfev=40, 
+            bins_[:], data_ch0_[:], p0=[leo_base_ch0[i]+max_value], maxfev=40, 
             ftol=1e-3, method='lm' ) #, bounds=(0, 1e6)) #, method='lm'
         leo_PkHt_ch0[i] = leo_coeff[0]
     
