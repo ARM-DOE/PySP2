@@ -178,7 +178,6 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     #JB OK
     moving_median_high_gain_c2c = np.nanmedian(moving_high_gain_c2c,axis=1)
     
-
     #JB LATER
     #leo_FtMaxPosAmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan #will later be converted to int
     #leo_FtMaxPosAmpFactor_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_max_leo_amplitude_factor
@@ -194,7 +193,6 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     #JB OK
     leo_split_to_leo_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
     leo_split_to_leo_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_split_to_leo_pos
-    
     
     """
     WHAT IS NEEDED:
@@ -218,12 +216,16 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     output_ds['leo_PkPos_ch0'] = output_ds['leo_PkPos_ch0'] + my_binary['PkSplitPos_ch3']
     
     #First add t_alpha_to_split data
-    output_ds['leo_MaxPos_ch0'] = (('event_index'), leo_split_to_leo_ch0)
+    output_ds['leo_EndPos_ch0'] = (('event_index'), leo_split_to_leo_ch0)
     #interpolate to all particles
-    output_ds['leo_MaxPos_ch0'] = output_ds['leo_MaxPos_ch0'].interpolate_na(dim="event_index", 
+    output_ds['leo_EndPos_ch0'] = output_ds['leo_EndPos_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
     #calculate the position at which the leo fits should end based on the split position (of all particles)
-    output_ds['leo_MaxPos_ch0'] = output_ds['leo_MaxPos_ch0'] + output_ds['PkSplitPos_ch3']
+    output_ds['leo_EndPos_ch0'] = output_ds['leo_EndPos_ch0'] + output_ds['PkSplitPos_ch3']
+    #cleaning up
+    output_ds['leo_EndPos_ch0'].values = np.where(output_ds['leo_EndPos_ch0'].values < num_base_pts_2_avg,
+                                                  np.nan, output_ds['leo_EndPos_ch0'].values)
+    
     
 #same as leo_PkPos_ch0
 #    output_ds['leo_FtMaxPos_ch0'] = output_ds['leo_FtMaxPos_ch0'].interpolate_na(dim="event_index", 
@@ -236,11 +238,10 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
                                                         method="nearest", fill_value="extrapolate")
     
     
-    
     #ToDo:
     #done: c2c time series (data from scattering particles but extrapolted to all paricles) 
     #done: leo_PkPos_ch0 (calculated from c2c) --> position of the max amplitude calculated from the split and extrapolated c2c
-    #done: leo_FtMaxPos_ch0 (from split)
+    #done: leo_FtEndPos_ch0 (from split)
     
     return output_ds
 
