@@ -42,7 +42,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         
     num_base_pts_2_avg = 10
     moving_average_window = 5
-    max_amplitude_fraction = 0.05
+    max_amplitude_fraction = 0.033
     bins = my_binary['columns']
     
     # median_peak_width = my_binary['PkFWHM_ch0'].median().values / 2.35482
@@ -153,19 +153,25 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         i_range = i_profile[i_max] - np.nanmin(i_profile[:i_max])
         moving_avg_high_gain_profiles[i,:] =  (i_profile - np.nanmin(i_profile[:i_max])) / i_range
         #interpolate here to get the exact position in fraction (not integer) :: which posiiton (float) is the 0.03 cross in
-        moving_avg_high_gain_max_leo_pos[i] = np.argwhere(moving_avg_high_gain_profiles[i,:] >= max_amplitude_fraction).min()-1 +1
+        moving_avg_high_gain_max_leo_pos[i] = np.argwhere(moving_avg_high_gain_profiles[i,:] >= max_amplitude_fraction).min()-1
         moving_avg_high_gain_split_to_leo_pos[i] = moving_avg_high_gain_max_leo_pos[i] - mean_high_gain_split_pos
         moving_avg_high_gain_max_leo_amplitude_factor[i] = 1./ moving_avg_high_gain_profiles[i, np.round(moving_avg_high_gain_max_leo_pos[i]).astype(int)]
 
     #cleaning up
-    # moving_avg_high_gain_max_leo_amplitude_factor = np.where(moving_avg_high_gain_max_leo_pos < num_base_pts_2_avg,
-    #                                                         np.nan, moving_avg_high_gain_max_leo_amplitude_factor)
-    
     moving_avg_high_gain_max_leo_pos = np.where(moving_avg_high_gain_max_leo_pos < num_base_pts_2_avg, 
-                                                np.nan, moving_avg_high_gain_max_leo_pos)
-    
-    moving_avg_high_gain_split_to_leo_pos = np.where(moving_avg_high_gain_split_to_leo_pos < -20. ,
+                                                np.nan, moving_avg_high_gain_max_leo_pos)    
+    moving_avg_high_gain_split_to_leo_pos = np.where(moving_avg_high_gain_split_to_leo_pos < -30. ,
                                                    np.nan, moving_avg_high_gain_split_to_leo_pos)
+    moving_avg_high_gain_max_leo_amplitude_factor = np.where(moving_avg_high_gain_max_leo_pos < num_base_pts_2_avg,
+                                                         np.nan, moving_avg_high_gain_max_leo_amplitude_factor)
+
+    # leo_pos_unique = np.unique(moving_avg_high_gain_split_to_leo_pos)
+    # mean_leo_pos_unique = np.zeros_like(leo_pos_unique)
+    # mean_leo_pos_unique_num = np.zeros_like(leo_pos_unique)
+    # for i,pos in enumerate(leo_pos_unique):
+    #     bl = moving_avg_high_gain_split_to_leo_pos == pos
+    #     mean_leo_pos_unique[i] = np.nanmedian(moving_avg_high_gain_max_leo_amplitude_factor[bl])
+    #     mean_leo_pos_unique_num[i] = sum(bl)
 
     #moving average of beam width
     moving_high_gain_beam_width = np.lib.stride_tricks.sliding_window_view(my_high_gain_scatterers['PkFWHM_ch0'].values, 
@@ -173,20 +179,19 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     #moving_avg_high_gain_beam_width = np.nanmedian(moving_high_gain_beam_width,axis=1)
     moving_median_high_gain_beam_width = np.nanmedian(moving_high_gain_beam_width,axis=1)
     
-    #moving average of beam width
-    
+    #Moving leo_Base_ch0
     moving_high_gain_base = np.lib.stride_tricks.sliding_window_view(my_high_gain_scatterers['Base_ch0'].values, 
                                                                      moving_average_window, axis=0)
-    moving_median_high_gain_base = np.nanpercentile(moving_high_gain_base, 33,axis=1)
+    moving_median_high_gain_base = np.nanpercentile(moving_high_gain_base, 10,axis=1)
     
-    
+    #JB OK
+    #Moving c2c high gain
     moving_high_gain_c2c = np.lib.stride_tricks.sliding_window_view(high_gain_c2c, 
                                                                      moving_average_window, axis=0)
-    #JB OK
     moving_median_high_gain_c2c = np.nanmedian(moving_high_gain_c2c,axis=1)
     
     #JB LATER
-    #leo_FtMaxPosAmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan #will later be converted to int
+    #leo_FtMaxPosAmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan 
     #leo_FtMaxPosAmpFactor_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_max_leo_amplitude_factor
     
     #JB OK
@@ -212,8 +217,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     """
     
     output_ds = my_binary.copy()
-#    output_ds['leo_FtMaxPos_ch0'] = (('event_index'), leo_FtMaxPos_ch0) #same as leo_PkPos_ch0?
-#    output_ds['leo_FtMaxPosAmpFactor_ch0'] = (('event_index'), leo_FtMaxPosAmpFactor_ch0)
+    
+    output_ds['leo_AmpFactor_ch0'] = (('event_index'), np.zeros_like(leo_PkFWHM_ch0)+np.nanmean(moving_avg_high_gain_max_leo_amplitude_factor))
     output_ds['leo_PkFWHM_ch0'] = (('event_index'), leo_PkFWHM_ch0)
     
     output_ds['leo_Base_ch0'] = (('event_index'), leo_Base_ch0)
