@@ -80,8 +80,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
                                             event_index = only_scattering_high_gain)
     
     #numpy array for the normalized beam profiels
-    my_high_gain_profiles = np.zeros((my_high_gain_scatterers.dims['index'],
-                                    my_high_gain_scatterers.dims['columns'])) \
+    my_high_gain_profiles = np.zeros((my_high_gain_scatterers.sizes['index'],
+                                    my_high_gain_scatterers.sizes['columns'])) \
                                     * np.nan
     
     my_high_gain_profiles_ = np.zeros_like(my_high_gain_profiles)*np.nan
@@ -213,7 +213,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     WHAT IS NEEDED:
     * GAUSSIAN WIDTH FOR ALL PARTICLES - FROM PROFILES (DONE)
     * PEAK POSITION FOR ALL PARTICLES - FROM C2C (DONE)
-    * LAST BIN TO USE FOR LEO FIT (from split detector) 
+    * LAST BIN TO USE FOR LEO FIT (from split detector)  (DONE)
+    * do also for LG.
     """
     
     output_ds = my_binary.copy()
@@ -301,7 +302,7 @@ def leo_fit(my_binary,Globals=None):
     leo_PkHt_ch0 = np.zeros_like(my_binary['PkHt_ch0'].values)*np.nan
     leo_PkHt_ch0_ = np.zeros_like(my_binary['PkHt_ch0'].values)*np.nan
 
-    for i in range(my_binary.dims['event_index']):
+    for i in range(my_binary.sizes['event_index']):
         max_value = data_ch0[i,:].max() - data_ch0[i,:].min()
         #bins_ = bins[num_base_pts_2_avg:leo_fit_max_pos[i]]
         bins_ = bins[leo_fit_max_pos[i]-3:leo_fit_max_pos[i]]
@@ -322,6 +323,7 @@ def leo_fit(my_binary,Globals=None):
     output_ds['leo_FtAmp_ch0'] = (('index'), leo_PkHt_ch0_)
     output_ds['leo_FtAmp_ch0_'] = (('index'), leo_PkHt_ch0_)
     output_ds['leo_Base_ch0'] = (('index'), leo_base_ch0)
+    output_ds['leo_Base_ch0_'] = (('index'), leo_base_ch0_)
 
     
     return output_ds
