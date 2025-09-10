@@ -60,11 +60,13 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
         print("Number of scattering particles rejected for peak pos. = %d" % rejectFtPosTotal)
 
     PkHt_ch1 = input_ds['PkHt_ch1'].values
+    rejectMinIncandTotal = np.sum(PkHt_ch0 < Globals.IncanMinPeakHt1)
     PkHt_ch5 = input_ds['PkHt_ch5'].values
     width_ch1 = input_ds['PkEnd_ch1'].values - input_ds['PkStart_ch1'].values
     width_ch5 = input_ds['PkEnd_ch5'].values - input_ds['PkStart_ch5'].values
     width = np.where(np.isnan(width_ch1),width_ch5,width_ch1)
     accepted_incand = width >= Globals.IncanMinWidth
+    rejectIncandWidthTotal = width < Globals.IncanMinWidth
     accepted_incand = np.logical_and(accepted_incand,
                                      input_ds['PkHt_ch2'].values >= Globals.IncanMinPeakHt1)
     accepted_incand = np.logical_and(accepted_incand,
@@ -85,6 +87,15 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
                                         input_ds['PkPos_ch5'].values > Globals.IncanMinPeakPos,
                                         input_ds['PkPos_ch5'].values < Globals.IncanMaxPeakPos))
     accepted_incand = np.logical_or(unsat_incand, sat_incand)
+    numIncandFlag = np.sum(accepted_incand)
+    
+    if debug:
+        print("Number of incandescence particles accepted = %d" % numIncandFlag)
+        print("Number of incandescence particles rejected for min. peak height = %d" % rejectMinIncandTotal)
+        print("Number of incandescence particles rejected for peak width = %d" % rejectIncandWidthTotal)
+        #print("Number of incandescence particles rejected for fat peak = %d" % rejectFatPeakTotal)
+        #print("Number of incandescence particles rejected for peak pos. = %d" % rejectFtPosTotal)
+    
 
     Scat_not_sat = 1e-18 * (Globals.c0Scat1 + Globals.c1Scat1*PkHt_ch0 + Globals.c2Scat1*PkHt_ch0**2)
     Scat_sat = 1e-18 * (Globals.c0Scat2 + Globals.c1Scat2*PkHt_ch4 + Globals.c2Scat2*PkHt_ch4**2)
