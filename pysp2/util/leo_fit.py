@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import xarray as xr
 #from .peak_fit import _gaus, _do_fit_records
-from pysp2.util.peak_fit import _do_fit_records
+from pysp2.util.peak_fit import _do_fit_records, _gaus
 
 def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     """
@@ -229,9 +229,9 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
                                       np.nanmean(moving_avg_high_gain_max_leo_amplitude_factor))
     output_ds['leo_PkFWHM_ch0'] = (('event_index'), leo_PkFWHM_ch0)
     
-    output_ds['leo_Base_ch0'] = (('event_index'), leo_Base_ch0)
-    output_ds['leo_Base_ch0'] = output_ds['leo_Base_ch0'].interpolate_na(dim="event_index", 
-                                                        method="nearest", fill_value="extrapolate")
+    #output_ds['leo_Base_ch0'] = (('event_index'), leo_Base_ch0)
+    #output_ds['leo_Base_ch0'] = output_ds['leo_Base_ch0'].interpolate_na(dim="event_index", 
+    #                                                    method="nearest", fill_value="extrapolate")
     
     #distance from cross-to-centre (split point to laser maximum intensity). 
     #This comes from scattering only partilces
@@ -302,9 +302,9 @@ def leo_fit(my_binary,Globals=None):
     
     #mean of the first num_base_pts_2_avg points
     #leo_base_ch0 = np.mean(data_ch0[:, 0:num_base_pts_2_avg], axis=1)
-    leo_base_ch0 = my_binary['leo_Base_ch0'].values
+    #leo_base_ch0 = my_binary['leo_Base_ch0'].values
     data_ch0_sorted = np.sort(data_ch0[:, 0:num_base_pts_2_avg], axis=1)
-    leo_base_ch0_ = np.min(data_ch0_sorted[:, 0:int(num_base_pts_2_avg)], axis=1)
+    leo_base_ch0 = np.min(data_ch0_sorted[:, 0:int(num_base_pts_2_avg)], axis=1)
         
     leo_fit_max_pos = my_binary['leo_EndPos_ch0'].astype(int).values
     leo_AmpFactor_ch0 = my_binary['leo_AmpFactor_ch0'].values
@@ -312,7 +312,7 @@ def leo_fit(my_binary,Globals=None):
     leo_PkHt_ch0_ = np.zeros_like(my_binary['PkHt_ch0'].values)*np.nan
 
     for i in range(my_binary.sizes['event_index']):
-        max_value = data_ch0[i,:].max() - data_ch0[i,:].min()
+        #max_value = data_ch0[i,:].max() - data_ch0[i,:].min()
         #bins_ = bins[num_base_pts_2_avg:leo_fit_max_pos[i]]
         bins_ = bins[leo_fit_max_pos[i]-3:leo_fit_max_pos[i]]
         if len(bins_) < 2:
@@ -326,13 +326,13 @@ def leo_fit(my_binary,Globals=None):
             bins_[:], data_ch0_[:], p0=[data_ch0[i,:].max()], maxfev=100, 
             ftol=1e-5, method='lm' ) #, bounds=(0, 1e6)) #, method='lm'
         leo_PkHt_ch0[i] = leo_coeff[0]
-        leo_PkHt_ch0_[i] = (data_ch0[i, leo_fit_max_pos[i]] - leo_base_ch0_[i]) * leo_AmpFactor_ch0[i]
+        leo_PkHt_ch0_[i] = (data_ch0[i, leo_fit_max_pos[i]] - leo_base_ch0[i]) * leo_AmpFactor_ch0[i]
         
     output_ds = my_binary.copy()
     output_ds['leo_FtAmp_ch0'] = (('index'), leo_PkHt_ch0_)
     output_ds['leo_FtAmp_ch0_'] = (('index'), leo_PkHt_ch0_)
+    #output_ds['leo_Base_ch0'] = (('index'), leo_base_ch0)
     output_ds['leo_Base_ch0'] = (('index'), leo_base_ch0)
-    output_ds['leo_Base_ch0_'] = (('index'), leo_base_ch0_)
 
     
     return output_ds
