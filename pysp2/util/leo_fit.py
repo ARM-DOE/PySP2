@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.optimize import curve_fit
 import xarray as xr
-from .peak_fit import _gaus, _do_fit_records
-#from pysp2.util.peak_fit import _do_fit_records
+#from .peak_fit import _gaus, _do_fit_records
+from pysp2.util.peak_fit import _do_fit_records
 
 def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     """
@@ -40,9 +40,9 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
 
     """
         
-    num_base_pts_2_avg = 10
-    moving_average_window = 5
-    max_amplitude_fraction = 0.033
+    num_base_pts_2_avg = 10 #take from globals
+    moving_average_window = 5 #make an argument out of this
+    max_amplitude_fraction = 0.033 #make and argument out of this
     bins = my_binary['columns']
     
     # median_peak_width = my_binary['PkFWHM_ch0'].median().values / 2.35482
@@ -96,7 +96,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         
     high_gain_split_position = my_high_gain_scatterers['PkSplitPos_ch3'].values
     
-    #loop through all particle events (THIS CAN BE MADE SMARTER WITH MUCH OF THE CALCULATIONS BEFORE THE LOOP)
+    #loop through all particle events (THIS CAN BE MADE SMARTER WITH MUCH OF 
+    #THE CALCULATIONS BEFORE THE LOOP) --> TBD later
     for i in my_high_gain_scatterers['event_index']:
         data = my_high_gain_scatterers['Data_ch0'].sel(event_index=i).values
         #base level
@@ -110,7 +111,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         #normalize the profile to range [~0,1]
         profile = (data - base) / peak_height
         #insert the profile as it was recorded (no shifting due to PEAK POSITION or PSD POSITION)
-        my_high_gain_profiles_[i,:] = profile
+        #my_high_gain_profiles_[i,:] = profile
         #distance to the mean beam peak position
         if beam_position_from == 'peak maximum':
             peak_difference = mean_high_gain_max_peak_pos - peak_pos
@@ -153,7 +154,10 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         i_range = i_profile[i_max] - np.nanmin(i_profile[:i_max])
         moving_avg_high_gain_profiles[i,:] =  (i_profile - np.nanmin(i_profile[:i_max])) / i_range
         #interpolate here to get the exact position in fraction (not integer) :: which posiiton (float) is the 0.03 cross in
-        moving_avg_high_gain_max_leo_pos[i] = np.argwhere(moving_avg_high_gain_profiles[i,:] >= max_amplitude_fraction).min()-1
+        #and skip if it is the where the baseline is calculated
+        above_max_leo_pos = np.ndarray.flatten(np.argwhere(moving_avg_high_gain_profiles[i,:] >= max_amplitude_fraction))
+        moving_avg_high_gain_max_leo_pos[i] = above_max_leo_pos[above_max_leo_pos>num_base_pts_2_avg].min()-1
+        
         moving_avg_high_gain_split_to_leo_pos[i] = moving_avg_high_gain_max_leo_pos[i] - mean_high_gain_split_pos
         moving_avg_high_gain_max_leo_amplitude_factor[i] = 1./ moving_avg_high_gain_profiles[i, np.round(moving_avg_high_gain_max_leo_pos[i]).astype(int)]
 
@@ -198,6 +202,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     leo_PkFWHM_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
     leo_PkFWHM_ch0[iloc[:-moving_average_window+1]] = moving_median_high_gain_beam_width
     
+    #TAKE FROM ACTUAL PARTICLE TRACE WITH INCANDESENCE (NOT NEEDED IN ACTUAL LEO FIT?)
     leo_Base_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
     leo_Base_ch0[iloc[:-moving_average_window+1]] = moving_median_high_gain_base
     
@@ -215,24 +220,27 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     * PEAK POSITION FOR ALL PARTICLES - FROM C2C (DONE)
     * LAST BIN TO USE FOR LEO FIT (from split detector)  (DONE)
     * do also for LG.
+    * TAKE BASELINE SCAT FROM ACTUAL TRACERS IN LEO_FIT
     """
     
     output_ds = my_binary.copy()
     
-    output_ds['leo_AmpFactor_ch0'] = (('event_index'), np.zeros_like(leo_PkFWHM_ch0)+np.nanmean(moving_avg_high_gain_max_leo_amplitude_factor))
+    output_ds['leo_AmpFactor_ch0'] = (('event_index'), np.zeros_like(leo_PkFWHM_ch0) + 
+                                      np.nanmean(moving_avg_high_gain_max_leo_amplitude_factor))
     output_ds['leo_PkFWHM_ch0'] = (('event_index'), leo_PkFWHM_ch0)
     
     output_ds['leo_Base_ch0'] = (('event_index'), leo_Base_ch0)
     output_ds['leo_Base_ch0'] = output_ds['leo_Base_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
     
-    #distance from cross-to-centre (split point to laser maximum intensity). This comes from scattering only partilces
+    #distance from cross-to-centre (split point to laser maximum intensity). 
+    #This comes from scattering only partilces
     output_ds['leo_PkPos_ch0'] = (('event_index'), leo_c2c_ch0)
-    #interpolate to all particles (including and most importantly rBC particles)
+    #interpolate to all particles (including, and most importantly, rBC containing particles)
     output_ds['leo_PkPos_ch0'] = output_ds['leo_PkPos_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
-    #add split position to cross-to-centre distance to get location of the (estimated) location of the peak maximum
-    #This is needed for the LEO-fit.
+    #add split position to cross-to-centre distance to get location of the (estimated) 
+    #location of the peak maximum. This is needed for the LEO-fit.
     output_ds['leo_PkPos_ch0'] = output_ds['leo_PkPos_ch0'] + my_binary['PkSplitPos_ch3']
     
     #First add t_alpha_to_split data
@@ -240,7 +248,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     #interpolate to all particles
     output_ds['leo_EndPos_ch0'] = output_ds['leo_EndPos_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
-    #calculate the position at which the leo fits should end based on the split position (of all particles)
+    #calculate the position at which the leo fits should end based on the split position 
+    #(of all particles)
     output_ds['leo_EndPos_ch0'] = output_ds['leo_EndPos_ch0'] + output_ds['PkSplitPos_ch3']
     #cleaning up
     output_ds['leo_EndPos_ch0'].values = np.where(output_ds['leo_EndPos_ch0'].values < num_base_pts_2_avg,
