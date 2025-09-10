@@ -264,7 +264,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     moving_median_high_gain_base = np.nanpercentile(moving_high_gain_base, 10,axis=1)
     moving_median_low_gain_base = np.nanpercentile(moving_low_gain_base, 10,axis=1)
     
-    #Moving c2c high gain
+    #Moving cross to centre (c2c)
     moving_high_gain_c2c = np.lib.stride_tricks.sliding_window_view(high_gain_c2c, 
                                                                      moving_average_window, axis=0)
     moving_low_gain_c2c = np.lib.stride_tricks.sliding_window_view(low_gain_c2c, 
@@ -277,7 +277,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     #leo_FtMaxPosAmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan 
     #leo_FtMaxPosAmpFactor_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_max_leo_amplitude_factor
 
-    #HIT KOM DU
+    #HIT KOM DU_
     
     #JB OK
     leo_PkFWHM_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
