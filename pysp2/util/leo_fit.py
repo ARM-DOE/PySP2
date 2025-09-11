@@ -28,7 +28,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
            poistion. The maximum peak position is determied from the peak-height
            weighted average peak position.
            'split point' = construct the beam profile around the split position.
-           The split position is taken from the split detector. Not working yet.
+           The split position is taken from the split detector. Use this if split
+           detector is installed.
            
     Returns
     -------
@@ -274,8 +275,10 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     moving_median_low_gain_c2c = np.nanmedian(moving_low_gain_c2c,axis=1)
     
     #JB LATER
-    #leo_FtMaxPosAmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan 
-    #leo_FtMaxPosAmpFactor_ch0[iloc[:-moving_average_window+1]] = moving_avg_high_gain_max_leo_amplitude_factor
+    leo_AmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan 
+    leo_AmpFactor_ch0[iloc_high_gain[:-moving_average_window+1]] = moving_avg_high_gain_max_leo_amplitude_factor
+    leo_AmpFactor_ch4 = np.zeros(scatter_low_gain_accepted.shape)*np.nan 
+    leo_AmpFactor_ch4[iloc_low_gain[:-moving_average_window+1]] = moving_avg_low_gain_max_leo_amplitude_factor
 
     
     leo_PkFWHM_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
@@ -312,14 +315,15 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     
     output_ds = my_binary.copy()
     
-    output_ds['leo_AmpFactor_ch0'] = (('event_index'), np.zeros_like(leo_PkFWHM_ch0) + 
-                                      np.nanmean(moving_avg_high_gain_max_leo_amplitude_factor))
+    output_ds['leo_AmpFactor_ch0'] = (('event_index'), leo_AmpFactor_ch0)
+    output_ds['leo_AmpFactor_ch0'] = output_ds['leo_AmpFactor_ch0'].interpolate_na(dim="event_index", 
+                                                        method="nearest", fill_value="extrapolate")
     output_ds['leo_PkFWHM_ch0'] = (('event_index'), leo_PkFWHM_ch0)
-    output_ds['leo_AmpFactor_ch4'] = (('event_index'), np.zeros_like(leo_PkFWHM_ch4) + 
-                                      np.nanmean(moving_avg_low_gain_max_leo_amplitude_factor))
+    output_ds['leo_AmpFactor_ch4'] = (('event_index'), leo_AmpFactor_ch4)
+    output_ds['leo_AmpFactor_ch4'] = output_ds['leo_AmpFactor_ch4'].interpolate_na(dim="event_index", 
+                                                        method="nearest", fill_value="extrapolate")
     output_ds['leo_PkFWHM_ch4'] = (('event_index'), leo_PkFWHM_ch4)
 
-        
     #distance from cross-to-centre (split point to laser maximum intensity). 
     #This comes from scattering only partilces
     output_ds['leo_PkPos_ch0'] = (('event_index'), leo_c2c_ch0)
@@ -445,7 +449,6 @@ def leo_fit(my_binary,Globals=None):
         leo_PkHt_ch4[i] = leo_coeff[0]
         leo_PkHt_ch4[i] = (data_ch4[i, leo_fit_max_pos_ch4[i]] - leo_base_ch4[i]) * leo_AmpFactor_ch4[i]
 
-    
     output_ds = my_binary.copy()
     output_ds['leo_FtAmp_ch0'] = (('index'), leo_PkHt_ch0)
     output_ds['leo_FtAmp_ch4'] = (('index'), leo_PkHt_ch4)
