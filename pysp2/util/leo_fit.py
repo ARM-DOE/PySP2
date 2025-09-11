@@ -39,7 +39,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
              profile etc. These are needed for the actual leo_fit() function.
              All variables that are added to the xarray Dataset begin with 
              "leo_". These leo_ variables are available for all particles, hence
-             making the leo fit possible.
+             making the leo fit possible for incandesence particles as well.
              
     """
         
@@ -320,10 +320,10 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     output_ds['leo_AmpFactor_ch0'] = (('event_index'), leo_AmpFactor_ch0)
     output_ds['leo_AmpFactor_ch0'] = output_ds['leo_AmpFactor_ch0'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
-    output_ds['leo_PkFWHM_ch0'] = (('event_index'), leo_PkFWHM_ch0)
     output_ds['leo_AmpFactor_ch4'] = (('event_index'), leo_AmpFactor_ch4)
     output_ds['leo_AmpFactor_ch4'] = output_ds['leo_AmpFactor_ch4'].interpolate_na(dim="event_index", 
                                                         method="nearest", fill_value="extrapolate")
+    output_ds['leo_PkFWHM_ch0'] = (('event_index'), leo_PkFWHM_ch0)
     output_ds['leo_PkFWHM_ch4'] = (('event_index'), leo_PkFWHM_ch4)
 
     #distance from cross-to-centre (split point to laser maximum intensity). 
