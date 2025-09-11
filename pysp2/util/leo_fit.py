@@ -62,12 +62,12 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         my_binary['FtPos_ch0'].values > Globals.ScatMinPeakPos))
 
     scatter_low_gain_accepted = np.logical_and.reduce((
-        my_binary['PkFWHM_ch0'].values > Globals.ScatMinWidth,
-        my_binary['PkFWHM_ch0'].values < Globals.ScatMaxWidth,
-        my_binary['PkHt_ch0'].values > Globals.ScatMinPeakHt2,
-        my_binary['PkHt_ch0'].values < Globals.ScatMaxPeakHt2,
-        my_binary['FtPos_ch0'].values < Globals.ScatMaxPeakPos,
-        my_binary['FtPos_ch0'].values > Globals.ScatMinPeakPos))
+        my_binary['PkFWHM_ch4'].values > Globals.ScatMinWidth,
+        my_binary['PkFWHM_ch4'].values < Globals.ScatMaxWidth,
+        my_binary['PkHt_ch4'].values > Globals.ScatMinPeakHt2,
+        my_binary['PkHt_ch4'].values < Globals.ScatMaxPeakHt2,
+        my_binary['FtPos_ch4'].values < Globals.ScatMaxPeakPos,
+        my_binary['FtPos_ch4'].values > Globals.ScatMinPeakPos))
 
         
     #no incandesence signal = True
