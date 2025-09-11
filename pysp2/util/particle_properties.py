@@ -66,7 +66,7 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
     width_ch5 = input_ds['PkEnd_ch5'].values - input_ds['PkStart_ch5'].values
     width = np.where(np.isnan(width_ch1),width_ch5,width_ch1)
     accepted_incand = width >= Globals.IncanMinWidth
-    rejectIncandWidthTotal = width < Globals.IncanMinWidth
+    rejectIncandWidthTotal = np.sum(width < Globals.IncanMinWidth)
     accepted_incand = np.logical_and(accepted_incand,
                                      input_ds['PkHt_ch2'].values >= Globals.IncanMinPeakHt1)
     accepted_incand = np.logical_and(accepted_incand,
@@ -111,6 +111,8 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
                                             dims=['index'])
     output_ds['ScatDiaBC50'] = xr.DataArray(1000*(0.013416 + 25.066*(Scatter**0.18057)),
                                             dims=['index'])
+
+
 
     sootMass_not_sat = factor * 1e-3 * (
         Globals.c0Mass1 + Globals.c1Mass1*PkHt_ch1 + Globals.c2Mass1*PkHt_ch1**2)
