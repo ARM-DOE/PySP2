@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.optimize import curve_fit
 import xarray as xr
-#from .peak_fit import _gaus, _do_fit_records
-from pysp2.util.peak_fit import _do_fit_records, _gaus
+from .peak_fit import _gaus, _do_fit_records
+#from pysp2.util.peak_fit import _do_fit_records, _gaus
 
 def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     """
@@ -83,7 +83,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     
     #iloc = "event_index" and "index" with the scattering only particle events
     iloc_high_gain = np.argwhere(only_scattering_high_gain).flatten()
-    iloc_low_gain = np.argwhere(only_scattering_high_gain).flatten()
+    iloc_low_gain = np.argwhere(only_scattering_low_gain).flatten()
     
     print('High gain scattering particles for beam analysis :: ',
           np.sum(only_scattering_high_gain))
@@ -155,7 +155,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
             my_high_gain_profiles[i, :] = profile_ch0
 
     for i in my_low_gain_scatterers['event_index']:
-        data_ch4 = my_high_gain_scatterers['Data_ch4'].sel(event_index=i).values
+        data_ch4 = my_low_gain_scatterers['Data_ch4'].sel(event_index=i).values
         #base level
         base_ch4 = np.mean(data_ch4[0:num_base_pts_2_avg])
         #peak height
@@ -163,7 +163,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         #max peak position
         peak_pos_ch4 = data_ch4.argmax()
         #split position
-        split_pos_ch7 = my_high_gain_scatterers['PkSplitPos_ch7'].sel(event_index=i).values
+        split_pos_ch7 = my_low_gain_scatterers['PkSplitPos_ch7'].sel(event_index=i).values
         #normalize the profile to range [~0,1]
         profile_ch4 = (data_ch4 - base_ch4) / peak_height_ch4
         #insert the profile as it was recorded (no shifting due to PEAK POSITION or PSD POSITION)
