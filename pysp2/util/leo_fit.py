@@ -385,46 +385,73 @@ def leo_fit(my_binary,Globals=None):
     #split_to_peak_high_gain[~bl_only_scattering_particles_ch0] = np.nan
     
     #get the information about the gaussian fits
-    pos = my_binary['leo_PkPos_ch0'].values
+    pos_ch0 = my_binary['leo_PkPos_ch0'].values
+    pos_ch4 = my_binary['leo_PkPos_ch4'].values
+
     #amplitude = my_binary['PkHt_ch0'].values
-    width = my_binary['leo_PkFWHM_ch0'].values / 2.35482 #2*sqrt(2*log(2))
+    width_ch0 = my_binary['leo_PkFWHM_ch0'].values / 2.35482 #2*sqrt(2*log(2))
+    width_ch4 = my_binary['leo_PkFWHM_ch4'].values / 2.35482 #2*sqrt(2*log(2))
     data_ch0 = my_binary['Data_ch0'].values
+    data_ch4 = my_binary['Data_ch4'].values
     
     #mean of the first num_base_pts_2_avg points
     #leo_base_ch0 = np.mean(data_ch0[:, 0:num_base_pts_2_avg], axis=1)
     #leo_base_ch0 = my_binary['leo_Base_ch0'].values
     data_ch0_sorted = np.sort(data_ch0[:, 0:num_base_pts_2_avg], axis=1)
+    data_ch4_sorted = np.sort(data_ch4[:, 0:num_base_pts_2_avg], axis=1)
     leo_base_ch0 = np.min(data_ch0_sorted[:, 0:int(num_base_pts_2_avg)], axis=1)
-        
-    leo_fit_max_pos = my_binary['leo_EndPos_ch0'].astype(int).values
+    leo_base_ch4 = np.min(data_ch4_sorted[:, 0:int(num_base_pts_2_avg)], axis=1)
+    
+    leo_fit_max_pos_ch0 = my_binary['leo_EndPos_ch0'].astype(int).values
+    leo_fit_max_pos_ch4 = my_binary['leo_EndPos_ch4'].astype(int).values
     leo_AmpFactor_ch0 = my_binary['leo_AmpFactor_ch0'].values
+    leo_AmpFactor_ch4 = my_binary['leo_AmpFactor_ch4'].values
     leo_PkHt_ch0 = np.zeros_like(my_binary['PkHt_ch0'].values)*np.nan
-    leo_PkHt_ch0 = np.zeros_like(my_binary['PkHt_ch0'].values)*np.nan
+    leo_PkHt_ch4 = np.zeros_like(my_binary['PkHt_ch4'].values)*np.nan
 
+    #High gain
     for i in range(my_binary.sizes['event_index']):
         #max_value = data_ch0[i,:].max() - data_ch0[i,:].min()
         #bins_ = bins[num_base_pts_2_avg:leo_fit_max_pos[i]]
-        bins_ = bins[leo_fit_max_pos[i]-3:leo_fit_max_pos[i]]
+        bins_ = bins[leo_fit_max_pos_ch0[i]-3:leo_fit_max_pos_ch0[i]]
         if len(bins_) < 2:
             leo_PkHt_ch0[i] = np.nan
             continue
         #signals
-        data_ch0_ = data_ch0[i, num_base_pts_2_avg:leo_fit_max_pos[i]]
-        data_ch0_ = data_ch0[i, leo_fit_max_pos[i]-3:leo_fit_max_pos[i]]
+        data_ch0_ = data_ch0[i, num_base_pts_2_avg:leo_fit_max_pos_ch0[i]]
+        data_ch0_ = data_ch0[i, leo_fit_max_pos_ch0[i]-3:leo_fit_max_pos_ch0[i]]
         leo_coeff, var_matrix = curve_fit(
-            lambda x, a: _gaus(x, a, pos[i], width[i], leo_base_ch0[i]), 
+            lambda x, a: _gaus(x, a, pos_ch0[i], width_ch0[i], leo_base_ch0[i]), 
             bins_[:], data_ch0_[:], p0=[data_ch0[i,:].max()], maxfev=100, 
             ftol=1e-5, method='lm' ) #, bounds=(0, 1e6)) #, method='lm'
         leo_PkHt_ch0[i] = leo_coeff[0]
-        leo_PkHt_ch0[i] = (data_ch0[i, leo_fit_max_pos[i]] - leo_base_ch0[i]) * leo_AmpFactor_ch0[i]
-        
-    output_ds = my_binary.copy()
-    output_ds['leo_FtAmp_ch0'] = (('index'), leo_PkHt_ch0)
-    #output_ds['leo_FtAmp_ch0_'] = (('index'), leo_PkHt_ch0_)
-    #output_ds['leo_Base_ch0'] = (('index'), leo_base_ch0)
-    output_ds['leo_Base_ch0'] = (('index'), leo_base_ch0)
+        leo_PkHt_ch0[i] = (data_ch0[i, leo_fit_max_pos_ch0[i]] - leo_base_ch0[i]) * leo_AmpFactor_ch0[i]
+    
+    #Low gain
+    for i in range(my_binary.sizes['event_index']):
+        #max_value = data_ch0[i,:].max() - data_ch0[i,:].min()
+        #bins_ = bins[num_base_pts_2_avg:leo_fit_max_pos[i]]
+        bins_ = bins[leo_fit_max_pos_ch4[i]-3:leo_fit_max_pos_ch4[i]]
+        if len(bins_) < 2:
+            leo_PkHt_ch4[i] = np.nan
+            continue
+        #signals
+        data_ch4_ = data_ch4[i, num_base_pts_2_avg:leo_fit_max_pos_ch4[i]]
+        data_ch4_ = data_ch4[i, leo_fit_max_pos_ch4[i]-3:leo_fit_max_pos_ch4[i]]
+        leo_coeff, var_matrix = curve_fit(
+            lambda x, a: _gaus(x, a, pos_ch4[i], width_ch4[i], leo_base_ch4[i]), 
+            bins_[:], data_ch4_[:], p0=[data_ch4[i,:].max()], maxfev=100, 
+            ftol=1e-5, method='lm' ) #, bounds=(0, 1e6)) #, method='lm'
+        leo_PkHt_ch4[i] = leo_coeff[0]
+        leo_PkHt_ch4[i] = (data_ch4[i, leo_fit_max_pos_ch4[i]] - leo_base_ch4[i]) * leo_AmpFactor_ch4[i]
 
     
+    output_ds = my_binary.copy()
+    output_ds['leo_FtAmp_ch0'] = (('index'), leo_PkHt_ch0)
+    output_ds['leo_FtAmp_ch4'] = (('index'), leo_PkHt_ch4)
+    output_ds['leo_Base_ch0'] = (('index'), leo_base_ch0)
+    output_ds['leo_Base_ch4'] = (('index'), leo_base_ch4)
+
     return output_ds
 
 #my_binary = pysp2.util.beam_shape(my_binary, beam_position_from='peak maximum', Globals=global_settings)
