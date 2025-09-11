@@ -33,12 +33,13 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
            
     Returns
     -------
-    coeff : numpy array with gaussian fit [amplitude, peakpos, width, base] 
-            of the beam shape profile.
-    beam_profile : numpy array with the beam profile calculated from the mean
-                   of all the profiles. The array has as many data points as 
-                   the input data.
-
+    my_binary : xarray Dataset
+             Dataset with additional statistics and information about the 
+             laser beam profile, splitpoint positions relative to the beam 
+             profile etc. These are needed for the actual leo_fit() function.
+             All variables that are added to the xarray Dataset begin with 
+             leo_ and are available for all particles.  
+             
     """
         
     num_base_pts_2_avg = 10 #take from globals
@@ -457,4 +458,3 @@ def leo_fit(my_binary,Globals=None):
 
     return output_ds
 
-#my_binary = pysp2.util.beam_shape(my_binary, beam_position_from='peak maximum', Globals=global_settings)
