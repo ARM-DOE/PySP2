@@ -38,7 +38,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
              laser beam profile, splitpoint positions relative to the beam 
              profile etc. These are needed for the actual leo_fit() function.
              All variables that are added to the xarray Dataset begin with 
-             leo_ and are available for all particles.  
+             "leo_". These leo_ variables are available for all particles, hence
+             making the leo fit possible.
              
     """
         
