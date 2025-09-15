@@ -376,20 +376,6 @@ def leo_fit(my_binary,Globals=None):
     num_base_pts_2_avg = 10
     #max_amplitude_fraction = 0.03
     
-    # bl_scattering_ok = my_binary['ScatRejectKey'].values == 0
-    # bl_only_scattering_particles = np.logical_and(bl_scattering_ok, 
-    #                                               my_binary['PkHt_ch1'].values < Globals.IncanMinPeakHt1)
-
-    # #Particles that only scatter light and ch0 not saturated 
-    # bl_only_scattering_particles_ch0 = np.logical_and(my_binary['PkHt_ch0'].values < Globals.ScatMaxPeakHt1,
-    #                                                   bl_only_scattering_particles)
-    
-    #split to peak height difference (in bins) for scattering only particles
-    #split_to_peak_high_gain = my_binary['PkPos_ch0'].values - my_binary['PkSplitPos_ch3'].values
-    #For particles with inandesence signal, set to NaN since the peak needn't 
-    #be where the laser intensity is the highest, so se to NaN
-    #split_to_peak_high_gain[~bl_only_scattering_particles_ch0] = np.nan
-    
     #get the information about the gaussian fits
     pos_ch0 = my_binary['leo_PkPos_ch0'].values
     pos_ch4 = my_binary['leo_PkPos_ch4'].values
