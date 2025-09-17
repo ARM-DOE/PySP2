@@ -112,7 +112,20 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
     output_ds['ScatDiaBC50'] = xr.DataArray(1000*(0.013416 + 25.066*(Scatter**0.18057)),
                                             dims=['index'])
 
-
+    #leo stuff
+    if 'leo_FtAmp_ch0' and 'leo_FtAmp_ch4' in list(input_ds.variables):
+        print('adding LEO information to the data.')
+        #accepted_leo_scat_not_sat = accepted_incand
+        leo_PkHt_ch0 = input_ds['leo_FtAmp_ch0']
+        leo_PkHt_ch4 = input_ds['leo_FtAmp_ch4']
+        leo_Scat_not_sat = 1e-18 * (Globals.c0Scat1 + Globals.c1Scat1*leo_PkHt_ch0 + Globals.c2Scat1*leo_PkHt_ch0**2)
+        leo_Scat_sat = 1e-18 * (Globals.c0Scat2 + Globals.c1Scat2*leo_PkHt_ch4 + Globals.c2Scat2*leo_PkHt_ch4**2)
+        leo_Scatter = np.where(PkHt_ch0 < Globals.ScatMaxPeakHt1, leo_Scat_not_sat, leo_Scat_sat)
+        #only for inandesence particles
+        #leo_Scatter = np.where(accepted_incand, leo_Scatter, np.nan)
+        output_ds['leo_ScatDiaSO4'] = xr.DataArray(1000 * (-0.015256 + 16.835 * leo_Scatter ** 0.15502),
+                                               dims=['index'])
+    
 
     sootMass_not_sat = factor * 1e-3 * (
         Globals.c0Mass1 + Globals.c1Mass1*PkHt_ch1 + Globals.c2Mass1*PkHt_ch1**2)
