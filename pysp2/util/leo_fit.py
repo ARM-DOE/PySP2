@@ -138,6 +138,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         peak_pos_ch0 = data_ch0.argmax()
         #split position
         split_pos_ch3 = my_high_gain_scatterers['PkSplitPos_ch3'].sel(event_index=i).values
+        if split_pos_ch3 > peak_pos_ch0:
+            continue
         #normalize the profile to range [~0,1]
         profile_ch0 = (data_ch0 - base_ch0) / peak_height_ch0
         #insert the profile as it was recorded (no shifting due to PEAK POSITION or PSD POSITION)
@@ -167,6 +169,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         peak_pos_ch4 = data_ch4.argmax()
         #split position
         split_pos_ch7 = my_low_gain_scatterers['PkSplitPos_ch7'].sel(event_index=i).values
+        if split_pos_ch7 > peak_pos_ch4:
+            continue
         #normalize the profile to range [~0,1]
         profile_ch4 = (data_ch4 - base_ch4) / peak_height_ch4
         #insert the profile as it was recorded (no shifting due to PEAK POSITION or PSD POSITION)
@@ -436,6 +440,10 @@ def leo_fit(my_binary,Globals=None):
             ftol=1e-5, method='lm' ) #, bounds=(0, 1e6)) #, method='lm'
         leo_PkHt_ch4[i] = leo_coeff[0]
         leo_PkHt_ch4[i] = (data_ch4[i, leo_fit_max_pos_ch4[i]] - leo_base_ch4[i]) * leo_AmpFactor_ch4[i]
+    
+    #Only positive values, negative values are set to nan.
+    leo_PkHt_ch0 = np.where(leo_PkHt_ch0>0, leo_PkHt_ch0, np.nan)
+    leo_PkHt_ch4 = np.where(leo_PkHt_ch4>0, leo_PkHt_ch4, np.nan)
 
     output_ds = my_binary.copy()
     output_ds['leo_FtAmp_ch0'] = (('index'), leo_PkHt_ch0)
