@@ -46,7 +46,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     num_base_pts_2_avg = 10 #take from globals
     moving_average_window = 5 #make an argument out of this
     max_amplitude_fraction = 0.033 #make and argument out of this
-    bins = my_binary['columns']
+    #bins = my_binary['columns']
     
     # median_peak_width = my_binary['PkFWHM_ch0'].median().values / 2.35482
     # median_peak_pos = my_binary['FtPos_ch0'].median().values
@@ -264,12 +264,12 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     moving_median_low_gain_beam_width = np.nanmedian(moving_low_gain_beam_width,axis=1)
     
     #Moving leo_Base
-    moving_high_gain_base = np.lib.stride_tricks.sliding_window_view(my_high_gain_scatterers['Base_ch0'].values, 
-                                                                     moving_average_window, axis=0)
-    moving_low_gain_base = np.lib.stride_tricks.sliding_window_view(my_low_gain_scatterers['Base_ch4'].values, 
-                                                                     moving_average_window, axis=0)
-    moving_median_high_gain_base = np.nanpercentile(moving_high_gain_base, 10,axis=1)
-    moving_median_low_gain_base = np.nanpercentile(moving_low_gain_base, 10,axis=1)
+    #moving_high_gain_base = np.lib.stride_tricks.sliding_window_view(my_high_gain_scatterers['Base_ch0'].values, 
+    #                                                                 moving_average_window, axis=0)
+    #moving_low_gain_base = np.lib.stride_tricks.sliding_window_view(my_low_gain_scatterers['Base_ch4'].values, 
+    #                                                                 moving_average_window, axis=0)
+    #moving_median_high_gain_base = np.nanpercentile(moving_high_gain_base, 10,axis=1)
+    #moving_median_low_gain_base = np.nanpercentile(moving_low_gain_base, 10,axis=1)
     
     #Moving cross to centre (c2c)
     moving_high_gain_c2c = np.lib.stride_tricks.sliding_window_view(high_gain_c2c, 
@@ -293,10 +293,10 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     leo_PkFWHM_ch4[iloc_low_gain[:-moving_average_window+1]] = moving_median_low_gain_beam_width
 
     #TAKE FROM ACTUAL PARTICLE TRACE WITH INCANDESENCE (NOT NEEDED IN ACTUAL LEO FIT?)
-    leo_Base_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
-    leo_Base_ch0[iloc_high_gain[:-moving_average_window+1]] = moving_median_high_gain_base
-    leo_Base_ch4 = np.zeros(scatter_low_gain_accepted.shape)*np.nan
-    leo_Base_ch4[iloc_low_gain[:-moving_average_window+1]] = moving_median_low_gain_base
+    #leo_Base_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
+    #leo_Base_ch0[iloc_high_gain[:-moving_average_window+1]] = moving_median_high_gain_base
+    #leo_Base_ch4 = np.zeros(scatter_low_gain_accepted.shape)*np.nan
+    #leo_Base_ch4[iloc_low_gain[:-moving_average_window+1]] = moving_median_low_gain_base
     
     #JB OK
     leo_c2c_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
