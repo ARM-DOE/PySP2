@@ -94,17 +94,17 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
           np.sum(only_scattering_low_gain))
     
     #make an xarray of the purely scattering particles
-    my_high_gain_scatterers = my_binary.sel(index = only_scattering_high_gain,
-                                            event_index = only_scattering_high_gain)
-    my_low_gain_scatterers = my_binary.sel(index = only_scattering_low_gain,
-                                            event_index = only_scattering_low_gain)
+    my_high_gain_scatterers = my_binary.sel(event_index = only_scattering_high_gain)#,
+                                            #index = only_scattering_high_gain()
+    my_low_gain_scatterers = my_binary.sel(event_index = only_scattering_low_gain)#,
+                                           #index = only_scattering_low_gain)
 
     
     #numpy array for the normalized beam profiels
-    my_high_gain_profiles = np.zeros((my_high_gain_scatterers.sizes['index'],
+    my_high_gain_profiles = np.zeros((my_high_gain_scatterers.sizes['event_index'], #was index
                                     my_high_gain_scatterers.sizes['columns'])) \
                                     * np.nan
-    my_low_gain_profiles = np.zeros((my_low_gain_scatterers.sizes['index'],
+    my_low_gain_profiles = np.zeros((my_low_gain_scatterers.sizes['event_index'], #was index
                                     my_low_gain_scatterers.sizes['columns'])) \
                                     * np.nan
     
