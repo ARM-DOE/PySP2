@@ -500,7 +500,7 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199,
                          'IncanMassEnsemble': IncanMassEnsemble,
                          'ScatNumEnsembleBC': ScatNumEnsembleBC,
                          'NumFracBC': NumFracBC})
-    if leo_fit:
+    if leo_fits:
         #Make the DataArray with differently named size dimensions 
         leo_IncandScatNumEnsemble = xr.DataArray(leo_IncandScatNumEnsemble, dims=('time', 'incand_bins', 'leo_bins'))
         leo_IncandScatNumEnsemble.attrs["long_name"] = "2D incandesence size (black carbon core) and leo size (shell) \
