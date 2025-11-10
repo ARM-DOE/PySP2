@@ -8,10 +8,10 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
     """
     
     Calculates the beam shape needed to determine the laser intensity profile
-    used for leading-edge-only fits. The beam position is first determined
-    from the position of the peak. The beam profile is then calculated by
-    positioning all the peaks to that position. The beam shape is then the mean
-    of all the normalized profiles arround that position.
+    used for leading-edge-only fits. The beam position is by default determined
+    from the position of the peak relative to the split point. The beam profile 
+    is then calculated by positioning all the peaks to that position. The beam 
+    shape is then the mean of all the normalized profiles arround that position.
     
     Parameters
     ----------
@@ -24,12 +24,12 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
         signal limits.
         
     beam_position_from : str
-           'peak maximum' = construct the beam profile arround the maximum peak
-           poistion. The maximum peak position is determied from the peak-height
-           weighted average peak position.
            'split point' = construct the beam profile around the split position.
            The split position is taken from the split detector. Use this if split
            detector is installed.
+           'peak maximum' = construct the beam profile arround the maximum peak
+           poistion. The maximum peak position is determied from the peak-height
+           weighted average peak position.
            
     Returns
     -------
