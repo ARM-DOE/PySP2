@@ -55,7 +55,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None,
         
     num_base_pts_2_avg = 10
     
-    scatter_high_gain_accepted = np.logical_and.reduce((
+    scatter_ch0_accepted = np.logical_and.reduce((
         my_binary['PkFWHM_ch0'].values > Globals.ScatMinWidth,
         my_binary['PkFWHM_ch0'].values < Globals.ScatMaxWidth,
         my_binary['PkHt_ch0'].values > Globals.ScatMinPeakHt1,
@@ -63,7 +63,7 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None,
         my_binary['FtPos_ch0'].values < Globals.ScatMaxPeakPos,
         my_binary['FtPos_ch0'].values > Globals.ScatMinPeakPos))
 
-    scatter_low_gain_accepted = np.logical_and.reduce((
+    scatter_ch4_accepted = np.logical_and.reduce((
         my_binary['PkFWHM_ch4'].values > Globals.ScatMinWidth,
         my_binary['PkFWHM_ch4'].values < Globals.ScatMaxWidth,
         my_binary['PkHt_ch4'].values > Globals.ScatMinPeakHt2,
@@ -77,49 +77,45 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None,
         my_binary['PkHt_ch5'].values < Globals.IncanMinPeakHt2)
     
     #Particles that only scatter light
-    only_scattering_high_gain = np.logical_and.reduce((scatter_high_gain_accepted,
+    only_scattering_ch0 = np.logical_and.reduce((scatter_ch0_accepted,
                                                        no_incand_trigged))
-    only_scattering_low_gain = np.logical_and.reduce((scatter_low_gain_accepted,
+    only_scattering_ch4 = np.logical_and.reduce((scatter_ch4_accepted,
                                                        no_incand_trigged))
     
-    #iloc = "event_index" and "index" with the scattering only particle events
-    iloc_high_gain = np.argwhere(only_scattering_high_gain).flatten()
-    iloc_low_gain = np.argwhere(only_scattering_low_gain).flatten()
+    iloc_ch0 = np.argwhere(only_scattering_ch0).flatten()
+    iloc_ch4 = np.argwhere(only_scattering_ch4).flatten()
     
     print('High gain scattering particles for beam analysis :: ',
-          np.sum(only_scattering_high_gain))
+          np.sum(only_scattering_ch0))
     print('Low gain scattering particles for beam analysis :: ',
-          np.sum(only_scattering_low_gain))
+          np.sum(only_scattering_ch4))
     
     #make an xarray of the purely scattering particles
-    my_high_gain_scatterers = my_binary.sel(event_index = only_scattering_high_gain)#,
-                                            #index = only_scattering_high_gain()
-    my_low_gain_scatterers = my_binary.sel(event_index = only_scattering_low_gain)#,
-                                           #index = only_scattering_low_gain)
-
+    my_ch0_scatterers = my_binary.sel(event_index = only_scattering_ch0)
+    my_ch4_scatterers = my_binary.sel(event_index = only_scattering_ch4)
     
     #numpy array for the normalized beam profiels
-    my_high_gain_profiles = np.zeros((my_high_gain_scatterers.sizes['event_index'], #was index
-                                    my_high_gain_scatterers.sizes['columns'])) \
+    my_ch0_profiles = np.zeros((my_ch0_scatterers.sizes['event_index'], #was index
+                                    my_ch0_scatterers.sizes['columns'])) \
                                     * np.nan
-    my_low_gain_profiles = np.zeros((my_low_gain_scatterers.sizes['event_index'], #was index
-                                    my_low_gain_scatterers.sizes['columns'])) \
+    my_ch4_profiles = np.zeros((my_ch4_scatterers.sizes['event_index'], #was index
+                                    my_ch4_scatterers.sizes['columns'])) \
                                     * np.nan
         
-    mean_high_gain_max_peak_pos = int(np.nanmean(my_high_gain_scatterers['PkPos_ch0'].values))
-    mean_high_gain_split_pos_float = np.nanmean(my_high_gain_scatterers['PkSplitPos_ch3'].values)
-    mean_high_gain_split_pos = np.round(mean_high_gain_split_pos_float).astype(np.int32)
-    mean_low_gain_max_peak_pos = int(np.nanmean(my_low_gain_scatterers['PkPos_ch4'].values))
-    mean_low_gain_split_pos_float = np.nanmean(my_low_gain_scatterers['PkSplitPos_ch7'].values)
-    mean_low_gain_split_pos = np.round(mean_low_gain_split_pos_float).astype(np.int32)
+    mean_ch0_max_peak_pos = int(np.nanmean(my_ch0_scatterers['PkPos_ch0'].values))
+    mean_ch0_split_pos_float = np.nanmean(my_ch0_scatterers['PkSplitPos_ch3'].values)
+    mean_ch0_split_pos = np.round(mean_ch0_split_pos_float).astype(np.int32)
+    mean_ch4_max_peak_pos = int(np.nanmean(my_ch4_scatterers['PkPos_ch4'].values))
+    mean_ch4_split_pos_float = np.nanmean(my_ch4_scatterers['PkSplitPos_ch7'].values)
+    mean_ch4_split_pos = np.round(mean_ch4_split_pos_float).astype(np.int32)
 
     #cross to center
-    high_gain_c2c = my_high_gain_scatterers['FtPos_ch0'].values - my_high_gain_scatterers['PkSplitPos_ch3'].values
-    low_gain_c2c = my_low_gain_scatterers['FtPos_ch4'].values - my_low_gain_scatterers['PkSplitPos_ch7'].values
+    ch0_c2c = my_ch0_scatterers['FtPos_ch0'].values - my_ch0_scatterers['PkSplitPos_ch3'].values
+    ch4_c2c = my_ch4_scatterers['FtPos_ch4'].values - my_ch4_scatterers['PkSplitPos_ch7'].values
         
     #loop through all particle events
-    for i in my_high_gain_scatterers['event_index']:
-        data_ch0 = my_high_gain_scatterers['Data_ch0'].sel(event_index=i).values
+    for i in my_ch0_scatterers['event_index']:
+        data_ch0 = my_ch0_scatterers['Data_ch0'].sel(event_index=i).values
         #base level
         base_ch0 = np.mean(data_ch0[0:num_base_pts_2_avg])
         #peak height
@@ -127,28 +123,28 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None,
         #max peak position
         peak_pos_ch0 = data_ch0.argmax()
         #split position
-        split_pos_ch3 = my_high_gain_scatterers['PkSplitPos_ch3'].sel(event_index=i).values
+        split_pos_ch3 = my_ch0_scatterers['PkSplitPos_ch3'].sel(event_index=i).values
         if split_pos_ch3 > peak_pos_ch0:
             continue
         #normalize the profile to range [~0,1]
         profile_ch0 = (data_ch0 - base_ch0) / peak_height_ch0
         #distance to the mean beam peak position
         if beam_position_from == 'peak maximum':
-            peak_difference_ch0 = mean_high_gain_max_peak_pos - peak_pos_ch0
+            peak_difference_ch0 = mean_ch0_max_peak_pos - peak_pos_ch0
         elif beam_position_from == 'split point':
-            peak_difference_ch0 = mean_high_gain_split_pos - split_pos_ch3
+            peak_difference_ch0 = mean_ch0_split_pos - split_pos_ch3
         #insert so that the peak is at the right position (accounts for 
         #particles travelling at different speeds)
         if peak_difference_ch0 > 0:
-            my_high_gain_profiles[i, peak_difference_ch0:] = profile_ch0[:len(data_ch0) - 
+            my_ch0_profiles[i, peak_difference_ch0:] = profile_ch0[:len(data_ch0) - 
                                                                 peak_difference_ch0]
         elif peak_difference_ch0 < 0:
-            my_high_gain_profiles[i, :len(data_ch0)+peak_difference_ch0] = profile_ch0[-peak_difference_ch0:]
+            my_ch0_profiles[i, :len(data_ch0)+peak_difference_ch0] = profile_ch0[-peak_difference_ch0:]
         else:
-            my_high_gain_profiles[i, :] = profile_ch0
+            my_ch0_profiles[i, :] = profile_ch0
 
-    for i in my_low_gain_scatterers['event_index']:
-        data_ch4 = my_low_gain_scatterers['Data_ch4'].sel(event_index=i).values
+    for i in my_ch4_scatterers['event_index']:
+        data_ch4 = my_ch4_scatterers['Data_ch4'].sel(event_index=i).values
         #base level
         base_ch4 = np.mean(data_ch4[0:num_base_pts_2_avg])
         #peak height
@@ -156,131 +152,127 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None,
         #max peak position
         peak_pos_ch4 = data_ch4.argmax()
         #split position
-        split_pos_ch7 = my_low_gain_scatterers['PkSplitPos_ch7'].sel(event_index=i).values
+        split_pos_ch7 = my_ch4_scatterers['PkSplitPos_ch7'].sel(event_index=i).values
         if split_pos_ch7 > peak_pos_ch4:
             continue
         #normalize the profile to range [~0,1]
         profile_ch4 = (data_ch4 - base_ch4) / peak_height_ch4
         #insert the profile as it was recorded (no shifting due to PEAK POSITION or PSD POSITION)
-        #my_high_gain_profiles_[i,:] = profile
         #distance to the mean beam peak position
         if beam_position_from == 'peak maximum':
-            peak_difference_ch4 = mean_low_gain_max_peak_pos - peak_pos_ch4
+            peak_difference_ch4 = mean_ch4_max_peak_pos - peak_pos_ch4
         elif beam_position_from == 'split point':
-            peak_difference_ch4 = mean_low_gain_split_pos - split_pos_ch7
+            peak_difference_ch4 = mean_ch4_split_pos - split_pos_ch7
         #insert so that the peak is at the right position (accounts for 
         #particles travelling at different speeds)
         if peak_difference_ch4 > 0:
-            my_low_gain_profiles[i, peak_difference_ch4:] = profile_ch4[:len(data_ch4) - 
+            my_ch4_profiles[i, peak_difference_ch4:] = profile_ch4[:len(data_ch4) - 
                                                                 peak_difference_ch4]
         elif peak_difference_ch4 < 0:
-            my_low_gain_profiles[i, :len(data_ch4)+peak_difference_ch4] = profile_ch4[-peak_difference_ch4:]
+            my_ch4_profiles[i, :len(data_ch4)+peak_difference_ch4] = profile_ch4[-peak_difference_ch4:]
         else:
-            my_low_gain_profiles[i, :] = profile_ch4
+            my_ch4_profiles[i, :] = profile_ch4
 
 
     #MOVING AVERAGE OF THE BEAM PROFILE TO FIND THE DISTANCE BETWEEN THE SPLIT POINT AND THE POINT IN THE 
     #LASER BEAM WHERE PARTICLES CAN START TO EVAPORATE
     
     #moving average of the beam shape with a window of moving_average_window
-    moving_high_gain_profile_window = np.lib.stride_tricks.sliding_window_view(my_high_gain_profiles, 
+    moving_ch0_profile_window = np.lib.stride_tricks.sliding_window_view(my_ch0_profiles, 
                                                                      moving_average_window, axis=0)
-    moving_avg_high_gain_profiles_ = np.nanmedian(moving_high_gain_profile_window,axis=2)
-    moving_low_gain_profile_window = np.lib.stride_tricks.sliding_window_view(my_low_gain_profiles, 
+    moving_avg_ch0_profiles_ = np.nanmedian(moving_ch0_profile_window,axis=2)
+    moving_ch4_profile_window = np.lib.stride_tricks.sliding_window_view(my_ch4_profiles, 
                                                                      moving_average_window, axis=0)
-    moving_avg_low_gain_profiles_ = np.nanmedian(moving_low_gain_profile_window,axis=2)
+    moving_avg_ch4_profiles_ = np.nanmedian(moving_ch4_profile_window,axis=2)
     
-    moving_avg_high_gain_profiles = np.zeros_like(moving_avg_high_gain_profiles_) * np.nan
-    moving_avg_high_gain_split_to_leo_pos = np.zeros(moving_avg_high_gain_profiles_.shape[0]) * np.nan
-    moving_avg_high_gain_max_leo_pos = np.zeros(moving_avg_high_gain_profiles_.shape[0]) * np.nan
+    moving_avg_ch0_profiles = np.zeros_like(moving_avg_ch0_profiles_) * np.nan
+    moving_avg_ch0_split_to_leo_pos = np.zeros(moving_avg_ch0_profiles_.shape[0]) * np.nan
+    moving_avg_ch0_max_leo_pos = np.zeros(moving_avg_ch0_profiles_.shape[0]) * np.nan
 
-    moving_avg_low_gain_profiles = np.zeros_like(moving_avg_low_gain_profiles_) * np.nan
-    moving_avg_low_gain_split_to_leo_pos = np.zeros(moving_avg_low_gain_profiles_.shape[0]) * np.nan
-    moving_avg_low_gain_max_leo_pos = np.zeros(moving_avg_low_gain_profiles_.shape[0]) * np.nan
+    moving_avg_ch4_profiles = np.zeros_like(moving_avg_ch4_profiles_) * np.nan
+    moving_avg_ch4_split_to_leo_pos = np.zeros(moving_avg_ch4_profiles_.shape[0]) * np.nan
+    moving_avg_ch4_max_leo_pos = np.zeros(moving_avg_ch4_profiles_.shape[0]) * np.nan
 
-    moving_avg_high_gain_max_leo_amplitude_factor = np.zeros(moving_avg_high_gain_profiles_.shape[0]) * np.nan
-    moving_avg_low_gain_max_leo_amplitude_factor = np.zeros(moving_avg_low_gain_profiles_.shape[0]) * np.nan
+    moving_avg_ch0_max_leo_amplitude_factor = np.zeros(moving_avg_ch0_profiles_.shape[0]) * np.nan
+    moving_avg_ch4_max_leo_amplitude_factor = np.zeros(moving_avg_ch4_profiles_.shape[0]) * np.nan
 
-    for i in range(moving_avg_high_gain_profiles_.shape[0]):
-        i_profile = moving_avg_high_gain_profiles_[i,:]
+    for i in range(moving_avg_ch0_profiles_.shape[0]):
+        i_profile = moving_avg_ch0_profiles_[i,:]
         i_max = np.nanargmax(i_profile)
         i_range = i_profile[i_max] - np.nanmin(i_profile[:i_max])
-        moving_avg_high_gain_profiles[i,:] =  (i_profile - np.nanmin(i_profile[:i_max])) / i_range
+        moving_avg_ch0_profiles[i,:] =  (i_profile - np.nanmin(i_profile[:i_max])) / i_range
         #interpolate here to get the exact position in fraction (not integer) :: which posiiton (float) is the 0.03 cross in
         #and skip if it is the where the baseline is calculated
-        above_max_leo_pos = np.ndarray.flatten(np.argwhere(moving_avg_high_gain_profiles[i,:] >= max_amplitude_fraction))
-        moving_avg_high_gain_max_leo_pos[i] = above_max_leo_pos[above_max_leo_pos>num_base_pts_2_avg].min()-1
+        above_max_leo_pos = np.ndarray.flatten(np.argwhere(moving_avg_ch0_profiles[i,:] >= max_amplitude_fraction))
+        moving_avg_ch0_max_leo_pos[i] = above_max_leo_pos[above_max_leo_pos>num_base_pts_2_avg].min()-1
         
-        moving_avg_high_gain_split_to_leo_pos[i] = moving_avg_high_gain_max_leo_pos[i] - mean_high_gain_split_pos
-        moving_avg_high_gain_max_leo_amplitude_factor[i] = 1./ moving_avg_high_gain_profiles[i, np.round(moving_avg_high_gain_max_leo_pos[i]).astype(int)]
+        moving_avg_ch0_split_to_leo_pos[i] = moving_avg_ch0_max_leo_pos[i] - mean_ch0_split_pos
+        moving_avg_ch0_max_leo_amplitude_factor[i] = 1./ moving_avg_ch0_profiles[i, np.round(moving_avg_ch0_max_leo_pos[i]).astype(int)]
 
-    for i in range(moving_avg_low_gain_profiles_.shape[0]):
-        i_profile = moving_avg_low_gain_profiles_[i,:]
+    for i in range(moving_avg_ch4_profiles_.shape[0]):
+        i_profile = moving_avg_ch4_profiles_[i,:]
         i_max = np.nanargmax(i_profile)
         i_range = i_profile[i_max] - np.nanmin(i_profile[:i_max])
-        moving_avg_low_gain_profiles[i,:] =  (i_profile - np.nanmin(i_profile[:i_max])) / i_range
+        moving_avg_ch4_profiles[i,:] =  (i_profile - np.nanmin(i_profile[:i_max])) / i_range
         #interpolate here to get the exact position in fraction (not integer) :: which posiiton (float) is the 0.03 cross in
         #and skip if it is the where the baseline is calculated
-        above_max_leo_pos = np.ndarray.flatten(np.argwhere(moving_avg_low_gain_profiles[i,:] >= max_amplitude_fraction))
-        moving_avg_low_gain_max_leo_pos[i] = above_max_leo_pos[above_max_leo_pos>num_base_pts_2_avg].min()-1
+        above_max_leo_pos = np.ndarray.flatten(np.argwhere(moving_avg_ch4_profiles[i,:] >= max_amplitude_fraction))
+        moving_avg_ch4_max_leo_pos[i] = above_max_leo_pos[above_max_leo_pos>num_base_pts_2_avg].min()-1
         
-        moving_avg_low_gain_split_to_leo_pos[i] = moving_avg_low_gain_max_leo_pos[i] - mean_low_gain_split_pos
-        moving_avg_low_gain_max_leo_amplitude_factor[i] = 1./ moving_avg_low_gain_profiles[i, np.round(moving_avg_low_gain_max_leo_pos[i]).astype(int)]
+        moving_avg_ch4_split_to_leo_pos[i] = moving_avg_ch4_max_leo_pos[i] - mean_ch4_split_pos
+        moving_avg_ch4_max_leo_amplitude_factor[i] = 1./ moving_avg_ch4_profiles[i, np.round(moving_avg_ch4_max_leo_pos[i]).astype(int)]
 
     #cleaning up
-    moving_avg_high_gain_max_leo_pos = np.where(moving_avg_high_gain_max_leo_pos < num_base_pts_2_avg, 
-                                                np.nan, moving_avg_high_gain_max_leo_pos)    
-    moving_avg_high_gain_split_to_leo_pos = np.where(moving_avg_high_gain_split_to_leo_pos < -30. ,
-                                                   np.nan, moving_avg_high_gain_split_to_leo_pos)
-    moving_avg_high_gain_max_leo_amplitude_factor = np.where(moving_avg_high_gain_max_leo_pos < num_base_pts_2_avg,
-                                                         np.nan, moving_avg_high_gain_max_leo_amplitude_factor)
+    moving_avg_ch0_max_leo_pos = np.where(moving_avg_ch0_max_leo_pos < num_base_pts_2_avg, 
+                                                np.nan, moving_avg_ch0_max_leo_pos)    
+    moving_avg_ch0_split_to_leo_pos = np.where(moving_avg_ch0_split_to_leo_pos < -30. ,
+                                                   np.nan, moving_avg_ch0_split_to_leo_pos)
+    moving_avg_ch0_max_leo_amplitude_factor = np.where(moving_avg_ch0_max_leo_pos < num_base_pts_2_avg,
+                                                         np.nan, moving_avg_ch0_max_leo_amplitude_factor)
 
-    moving_avg_low_gain_max_leo_pos = np.where(moving_avg_low_gain_max_leo_pos < num_base_pts_2_avg, 
-                                                np.nan, moving_avg_low_gain_max_leo_pos)    
-    moving_avg_low_gain_split_to_leo_pos = np.where(moving_avg_low_gain_split_to_leo_pos < -30. ,
-                                                   np.nan, moving_avg_low_gain_split_to_leo_pos)
-    moving_avg_low_gain_max_leo_amplitude_factor = np.where(moving_avg_low_gain_max_leo_pos < num_base_pts_2_avg,
-                                                         np.nan, moving_avg_low_gain_max_leo_amplitude_factor)
+    moving_avg_ch4_max_leo_pos = np.where(moving_avg_ch4_max_leo_pos < num_base_pts_2_avg, 
+                                                np.nan, moving_avg_ch4_max_leo_pos)    
+    moving_avg_ch4_split_to_leo_pos = np.where(moving_avg_ch4_split_to_leo_pos < -30. ,
+                                                   np.nan, moving_avg_ch4_split_to_leo_pos)
+    moving_avg_ch4_max_leo_amplitude_factor = np.where(moving_avg_ch4_max_leo_pos < num_base_pts_2_avg,
+                                                         np.nan, moving_avg_ch4_max_leo_amplitude_factor)
 
-    
     #moving average of beam width
-    moving_high_gain_beam_width = np.lib.stride_tricks.sliding_window_view(my_high_gain_scatterers['PkFWHM_ch0'].values, 
+    moving_ch0_beam_width = np.lib.stride_tricks.sliding_window_view(my_ch0_scatterers['PkFWHM_ch0'].values, 
                                                                      moving_average_window, axis=0)
-    moving_low_gain_beam_width = np.lib.stride_tricks.sliding_window_view(my_low_gain_scatterers['PkFWHM_ch4'].values, 
+    moving_ch4_beam_width = np.lib.stride_tricks.sliding_window_view(my_ch4_scatterers['PkFWHM_ch4'].values, 
                                                                      moving_average_window, axis=0)
-    moving_median_high_gain_beam_width = np.nanmedian(moving_high_gain_beam_width,axis=1)
-    moving_median_low_gain_beam_width = np.nanmedian(moving_low_gain_beam_width,axis=1)
+    moving_median_ch0_beam_width = np.nanmedian(moving_ch0_beam_width,axis=1)
+    moving_median_ch4_beam_width = np.nanmedian(moving_ch4_beam_width,axis=1)
         
     #Moving cross to centre (c2c)
-    moving_high_gain_c2c = np.lib.stride_tricks.sliding_window_view(high_gain_c2c, 
+    moving_ch0_c2c = np.lib.stride_tricks.sliding_window_view(ch0_c2c, 
                                                                      moving_average_window, axis=0)
-    moving_low_gain_c2c = np.lib.stride_tricks.sliding_window_view(low_gain_c2c, 
+    moving_ch4_c2c = np.lib.stride_tricks.sliding_window_view(ch4_c2c, 
                                                                      moving_average_window, axis=0)
 
-    moving_median_high_gain_c2c = np.nanmedian(moving_high_gain_c2c,axis=1)
-    moving_median_low_gain_c2c = np.nanmedian(moving_low_gain_c2c,axis=1)
+    moving_median_ch0_c2c = np.nanmedian(moving_ch0_c2c,axis=1)
+    moving_median_ch4_c2c = np.nanmedian(moving_ch4_c2c,axis=1)
     
-    leo_AmpFactor_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan 
-    leo_AmpFactor_ch0[iloc_high_gain[:-moving_average_window+1]] = moving_avg_high_gain_max_leo_amplitude_factor
-    leo_AmpFactor_ch4 = np.zeros(scatter_low_gain_accepted.shape)*np.nan 
-    leo_AmpFactor_ch4[iloc_low_gain[:-moving_average_window+1]] = moving_avg_low_gain_max_leo_amplitude_factor
+    leo_AmpFactor_ch0 = np.zeros(scatter_ch0_accepted.shape)*np.nan 
+    leo_AmpFactor_ch0[iloc_ch0[:-moving_average_window+1]] = moving_avg_ch0_max_leo_amplitude_factor
+    leo_AmpFactor_ch4 = np.zeros(scatter_ch4_accepted.shape)*np.nan 
+    leo_AmpFactor_ch4[iloc_ch4[:-moving_average_window+1]] = moving_avg_ch4_max_leo_amplitude_factor
 
+    leo_PkFWHM_ch0 = np.zeros(scatter_ch0_accepted.shape)*np.nan
+    leo_PkFWHM_ch0[iloc_ch0[:-moving_average_window+1]] = moving_median_ch0_beam_width
+    leo_PkFWHM_ch4 = np.zeros(scatter_ch4_accepted.shape)*np.nan
+    leo_PkFWHM_ch4[iloc_ch4[:-moving_average_window+1]] = moving_median_ch4_beam_width
     
-    leo_PkFWHM_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
-    leo_PkFWHM_ch0[iloc_high_gain[:-moving_average_window+1]] = moving_median_high_gain_beam_width
-    leo_PkFWHM_ch4 = np.zeros(scatter_low_gain_accepted.shape)*np.nan
-    leo_PkFWHM_ch4[iloc_low_gain[:-moving_average_window+1]] = moving_median_low_gain_beam_width
+    leo_c2c_ch0 = np.zeros(scatter_ch0_accepted.shape)*np.nan
+    leo_c2c_ch0[iloc_ch0[:-moving_average_window+1]] = moving_median_ch0_c2c
+    leo_c2c_ch4 = np.zeros(scatter_ch4_accepted.shape)*np.nan
+    leo_c2c_ch4[iloc_ch4[:-moving_average_window+1]] = moving_median_ch4_c2c
     
-    leo_c2c_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
-    leo_c2c_ch0[iloc_high_gain[:-moving_average_window+1]] = moving_median_high_gain_c2c
-    leo_c2c_ch4 = np.zeros(scatter_low_gain_accepted.shape)*np.nan
-    leo_c2c_ch4[iloc_low_gain[:-moving_average_window+1]] = moving_median_low_gain_c2c
-    
-    leo_split_to_leo_ch0 = np.zeros(scatter_high_gain_accepted.shape)*np.nan
-    leo_split_to_leo_ch0[iloc_high_gain[:-moving_average_window+1]] = moving_avg_high_gain_split_to_leo_pos
-    leo_split_to_leo_ch4 = np.zeros(scatter_low_gain_accepted.shape)*np.nan
-    leo_split_to_leo_ch4[iloc_low_gain[:-moving_average_window+1]] = moving_avg_low_gain_split_to_leo_pos
-    
+    leo_split_to_leo_ch0 = np.zeros(scatter_ch0_accepted.shape)*np.nan
+    leo_split_to_leo_ch0[iloc_ch0[:-moving_average_window+1]] = moving_avg_ch0_split_to_leo_pos
+    leo_split_to_leo_ch4 = np.zeros(scatter_ch4_accepted.shape)*np.nan
+    leo_split_to_leo_ch4[iloc_ch4[:-moving_average_window+1]] = moving_avg_ch4_split_to_leo_pos
     
     output_ds = my_binary.copy()
     
