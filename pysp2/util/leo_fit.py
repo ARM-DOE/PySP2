@@ -55,7 +55,6 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None,
         
     num_base_pts_2_avg = 10
     
-    
     scatter_high_gain_accepted = np.logical_and.reduce((
         my_binary['PkFWHM_ch0'].values > Globals.ScatMinWidth,
         my_binary['PkFWHM_ch0'].values < Globals.ScatMaxWidth,
@@ -397,9 +396,11 @@ def leo_fit(my_binary,Globals=None):
         leo_PkHt_ch4[i] = leo_coeff[0]
         leo_PkHt_ch4[i] = (data_ch4[i, leo_fit_max_pos_ch4[i]] - leo_base_ch4[i]) * leo_AmpFactor_ch4[i]
     
-    #Only positive values, negative values are set to nan.
-    leo_PkHt_ch0 = np.where(leo_PkHt_ch0>0, leo_PkHt_ch0, np.nan)
-    leo_PkHt_ch4 = np.where(leo_PkHt_ch4>0, leo_PkHt_ch4, np.nan)
+    #Only positive and finite values
+    leo_PkHt_ch0 = np.where(leo_PkHt_ch0 > 0, leo_PkHt_ch0, np.nan)
+    leo_PkHt_ch4 = np.where(leo_PkHt_ch4 > 0, leo_PkHt_ch4, np.nan)
+    leo_PkHt_ch0 = np.where(leo_PkHt_ch0 < np.inf, leo_PkHt_ch0, np.nan)
+    leo_PkHt_ch4 = np.where(leo_PkHt_ch4 < np.inf, leo_PkHt_ch4, np.nan)
 
     output_ds = my_binary.copy()
     output_ds['leo_FtAmp_ch0'] = (('index'), leo_PkHt_ch0)
