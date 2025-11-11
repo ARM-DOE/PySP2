@@ -2,9 +2,10 @@ import numpy as np
 from scipy.optimize import curve_fit
 import xarray as xr
 from .peak_fit import _gaus, _do_fit_records
-#from pysp2.util.peak_fit import _do_fit_records, _gaus
 
-def beam_shape(my_binary, beam_position_from='split point', Globals=None):
+
+def beam_shape(my_binary, beam_position_from='split point', Globals=None,
+               moving_average_window = 5, max_amplitude_fraction = 0.033):
     """
     
     Calculates the beam shape needed to determine the laser intensity profile
@@ -31,6 +32,15 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
            poistion. The maximum peak position is determied from the peak-height
            position.
            
+    moving_average_window : int
+           Number of beam profiles to use to calculate the shape of the laser
+           beam. This is done using scattering only partilces.
+    
+    max_amplitude_fraction : float
+           How much of the signal amplitude to use for the leading edge. The 
+           amplitude is normalized to be between 0 and 1 so a 
+           max_amplitude_fraction of 0.03 means that 3% of the signal is used.
+           
     Returns
     -------
     my_binary : xarray Dataset
@@ -43,11 +53,8 @@ def beam_shape(my_binary, beam_position_from='split point', Globals=None):
              
     """
         
-    num_base_pts_2_avg = 10 #take from globals
-    moving_average_window = 5 #make an argument out of this
-    max_amplitude_fraction = 0.033 #make and argument out of this
-    #bins = my_binary['columns']
-        
+    num_base_pts_2_avg = 10
+    
     
     scatter_high_gain_accepted = np.logical_and.reduce((
         my_binary['PkFWHM_ch0'].values > Globals.ScatMinWidth,
@@ -335,21 +342,17 @@ def leo_fit(my_binary,Globals=None):
     bins = my_binary['columns'].astype('float').values
     #number of points at the beginning to use for base line average
     num_base_pts_2_avg = 10
-    #max_amplitude_fraction = 0.03
     
     #get the information about the gaussian fits
     pos_ch0 = my_binary['leo_PkPos_ch0'].values
     pos_ch4 = my_binary['leo_PkPos_ch4'].values
 
-    #amplitude = my_binary['PkHt_ch0'].values
     width_ch0 = my_binary['leo_PkFWHM_ch0'].values / 2.35482 #2*sqrt(2*log(2))
     width_ch4 = my_binary['leo_PkFWHM_ch4'].values / 2.35482 #2*sqrt(2*log(2))
     data_ch0 = my_binary['Data_ch0'].values
     data_ch4 = my_binary['Data_ch4'].values
     
     #mean of the first num_base_pts_2_avg points
-    #leo_base_ch0 = np.mean(data_ch0[:, 0:num_base_pts_2_avg], axis=1)
-    #leo_base_ch0 = my_binary['leo_Base_ch0'].values
     data_ch0_sorted = np.sort(data_ch0[:, 0:num_base_pts_2_avg], axis=1)
     data_ch4_sorted = np.sort(data_ch4[:, 0:num_base_pts_2_avg], axis=1)
     leo_base_ch0 = np.min(data_ch0_sorted[:, 0:int(num_base_pts_2_avg)], axis=1)
@@ -364,8 +367,6 @@ def leo_fit(my_binary,Globals=None):
 
     #High gain
     for i in range(my_binary.sizes['event_index']):
-        #max_value = data_ch0[i,:].max() - data_ch0[i,:].min()
-        #bins_ = bins[num_base_pts_2_avg:leo_fit_max_pos[i]]
         bins_ = bins[leo_fit_max_pos_ch0[i]-3:leo_fit_max_pos_ch0[i]]
         if len(bins_) < 2:
             leo_PkHt_ch0[i] = np.nan
@@ -382,8 +383,6 @@ def leo_fit(my_binary,Globals=None):
     
     #Low gain
     for i in range(my_binary.sizes['event_index']):
-        #max_value = data_ch0[i,:].max() - data_ch0[i,:].min()
-        #bins_ = bins[num_base_pts_2_avg:leo_fit_max_pos[i]]
         bins_ = bins[leo_fit_max_pos_ch4[i]-3:leo_fit_max_pos_ch4[i]]
         if len(bins_) < 2:
             leo_PkHt_ch4[i] = np.nan
