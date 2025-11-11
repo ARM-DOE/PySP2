@@ -24,6 +24,8 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None, leo_fits=F
     Globals: DMTGlobals structure or None
         DMTGlobals structure containing calibration coefficients. Set to
         None to use default values for MOSAiC.
+    leo_fits: boolean
+        Default is False. If True, LEO-fits will be calculated as well. 
 
     Returns
     -------
@@ -98,8 +100,6 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None, leo_fits=F
         print("Number of incandescence particles accepted = %d" % numIncandFlag)
         print("Number of incandescence particles rejected for min. peak height = %d" % rejectMinIncandTotal)
         print("Number of incandescence particles rejected for peak width = %d" % rejectIncandWidthTotal)
-        #print("Number of incandescence particles rejected for fat peak = %d" % rejectFatPeakTotal)
-        #print("Number of incandescence particles rejected for peak pos. = %d" % rejectFtPosTotal)
     
 
     Scat_not_sat = 1e-18 * (Globals.c0Scat1 + Globals.c1Scat1*PkHt_ch0 + Globals.c2Scat1*PkHt_ch0**2)
