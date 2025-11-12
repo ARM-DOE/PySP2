@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import dask.bag as db
-from multiprocessing import Pool
+from multiprocessing import Pool,get_context
 from itertools import repeat
 
 from scipy.optimize import curve_fit
@@ -176,17 +176,16 @@ def gaussian_fit(my_ds, config, parallel=False, num_records=None):
         proc_records = the_bag.map(fit_record).compute()
     #use multiprocessing.Pool to do the curve fits in parallel
     elif parallel == 'multiprocessing':
-        with Pool() as pool:
+        with get_context("fork").Pool() as pool:
             proc_records = pool.starmap(_do_fit_records, 
                                         zip(repeat(my_ds), range(num_records), 
-                                        repeat(num_trig_pts)))
+                                        repeat(num_trig_pts)), chunksize=2000)
     #else, no parallelism
     else:
         proc_records = []
         for i in range(num_records):
             proc_records.append(_do_fit_records(my_ds, i, num_trig_pts))
         
-
     FtAmp = np.stack([x[0] for x in proc_records])
     FtPos = np.stack([x[1] for x in proc_records])
     Base = np.stack([x[2] for x in proc_records])
@@ -604,3 +603,4 @@ def _gaussian_sat_fit(my_ds, record_number):
                   'height': height, 'error': error}
 
     return fit_coeffs
+

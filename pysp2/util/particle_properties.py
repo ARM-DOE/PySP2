@@ -3,10 +3,12 @@ import xarray as xr
 import datetime
 import pandas as pd
 import warnings
+from .leo_fit import beam_shape, leo_fit
+
 
 from .DMTGlobals import DMTGlobals
 
-def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
+def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None, leo_fits=False):
     """
     Calculates the scattering and incandescence diameters/BC masses for each particle.
 
@@ -22,6 +24,8 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
     Globals: DMTGlobals structure or None
         DMTGlobals structure containing calibration coefficients. Set to
         None to use default values for MOSAiC.
+    leo_fits: boolean
+        Default is False. If True, LEO-fits will be calculated as well. 
 
     Returns
     -------
@@ -34,6 +38,9 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
     rejectFtPosTotal = 0
     if Globals is None:
         Globals = DMTGlobals()
+    if leo_fits:
+        input_ds = beam_shape(input_ds, beam_position_from='split point', Globals=Globals)
+        input_ds = leo_fit(input_ds, Globals=Globals)
 
     PkHt_ch0 = np.nanmax(np.stack([input_ds['PkHt_ch0'].values, input_ds['FtAmp_ch0'].values]), axis=0)
     PkHt_ch4 = np.nanmax(np.stack([input_ds['PkHt_ch4'].values, input_ds['FtAmp_ch4'].values]), axis=0)
@@ -60,11 +67,13 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
         print("Number of scattering particles rejected for peak pos. = %d" % rejectFtPosTotal)
 
     PkHt_ch1 = input_ds['PkHt_ch1'].values
+    rejectMinIncandTotal = np.sum(PkHt_ch0 < Globals.IncanMinPeakHt1)
     PkHt_ch5 = input_ds['PkHt_ch5'].values
     width_ch1 = input_ds['PkEnd_ch1'].values - input_ds['PkStart_ch1'].values
     width_ch5 = input_ds['PkEnd_ch5'].values - input_ds['PkStart_ch5'].values
     width = np.where(np.isnan(width_ch1),width_ch5,width_ch1)
     accepted_incand = width >= Globals.IncanMinWidth
+    rejectIncandWidthTotal = np.sum(width < Globals.IncanMinWidth)
     accepted_incand = np.logical_and(accepted_incand,
                                      input_ds['PkHt_ch2'].values >= Globals.IncanMinPeakHt1)
     accepted_incand = np.logical_and(accepted_incand,
@@ -85,6 +94,13 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
                                         input_ds['PkPos_ch5'].values > Globals.IncanMinPeakPos,
                                         input_ds['PkPos_ch5'].values < Globals.IncanMaxPeakPos))
     accepted_incand = np.logical_or(unsat_incand, sat_incand)
+    numIncandFlag = np.sum(accepted_incand)
+    
+    if debug:
+        print("Number of incandescence particles accepted = %d" % numIncandFlag)
+        print("Number of incandescence particles rejected for min. peak height = %d" % rejectMinIncandTotal)
+        print("Number of incandescence particles rejected for peak width = %d" % rejectIncandWidthTotal)
+    
 
     Scat_not_sat = 1e-18 * (Globals.c0Scat1 + Globals.c1Scat1*PkHt_ch0 + Globals.c2Scat1*PkHt_ch0**2)
     Scat_sat = 1e-18 * (Globals.c0Scat2 + Globals.c1Scat2*PkHt_ch4 + Globals.c2Scat2*PkHt_ch4**2)
@@ -101,6 +117,16 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
     output_ds['ScatDiaBC50'] = xr.DataArray(1000*(0.013416 + 25.066*(Scatter**0.18057)),
                                             dims=['index'])
 
+    if leo_fits:
+        leo_PkHt_ch0 = input_ds['leo_FtAmp_ch0']
+        leo_PkHt_ch4 = input_ds['leo_FtAmp_ch4']
+        leo_Scat_not_sat = 1e-18 * (Globals.c0Scat1 + Globals.c1Scat1*leo_PkHt_ch0 + Globals.c2Scat1*leo_PkHt_ch0**2)
+        leo_Scat_sat = 1e-18 * (Globals.c0Scat2 + Globals.c1Scat2*leo_PkHt_ch4 + Globals.c2Scat2*leo_PkHt_ch4**2)
+        leo_Scatter = np.where(PkHt_ch0 < Globals.ScatMaxPeakHt1, leo_Scat_not_sat, leo_Scat_sat)
+        #leo_Scatter = np.where(accepted_incand, leo_Scatter, np.nan)
+        output_ds['leo_ScatDiaSO4'] = xr.DataArray(1000 * (-0.015256 + 16.835 * leo_Scatter ** 0.15502),
+                                               dims=['index'])
+    
     sootMass_not_sat = factor * 1e-3 * (
         Globals.c0Mass1 + Globals.c1Mass1*PkHt_ch1 + Globals.c2Mass1*PkHt_ch1**2)
     sootDiam_not_sat = (sootMass_not_sat/(0.5236e-9*Globals.densityBC))**(1./3.)
@@ -122,7 +148,8 @@ def calc_diams_masses(input_ds, debug=True, factor=1.0, Globals=None):
     return output_ds
 
 
-def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_interval=10,deadtime_correction=False):
+def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, 
+                 avg_interval=10,deadtime_correction=False, leo_fits=False):
     """
     Processes the Scattering and BC mass size distributions:
 
@@ -219,7 +246,9 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
     MassScat2total = np.zeros_like(time_bins[:-1])
     MassIncand2 = np.zeros_like(time_bins[:-1])
     MassIncand2Sat = np.zeros_like(time_bins[:-1])
-    
+    if leo_fits:
+        leo_IncandScatNumEnsemble = np.zeros((len(time_bins[:-1]), num_bins, num_bins))
+
     for t in range(len(time_bins) - 1):
         parts_time = np.logical_and(
             time_wave >= time_bins[t], time_wave <= time_bins[t + 1])
@@ -262,6 +291,25 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
         np.add.at(IncanMassEnsemble[t,:], ind, np.multiply(
             OneOfEvery[the_particles_incan], sootMass[the_particles_incan]))
         
+        if leo_fits:
+            leo_ScatDiaSO4 = particle_ds['leo_ScatDiaSO4'].values / 1000.
+            leo_scatter_accept = ~np.isnan(leo_ScatDiaSO4)
+            
+            the_particles = np.logical_and.reduce((parts_time, incand_accept, leo_scatter_accept))
+            # Remove oversize particles (incand)
+            the_particles = np.logical_and.reduce(
+                (the_particles, SizeIncandOnly < SpecSizeBins[-1] + deltaSize / 2))
+            # Remove oversize particles (leo scatter size)
+            the_particles = np.logical_and.reduce(
+                (the_particles, leo_ScatDiaSO4 < SpecSizeBins[-1] + deltaSize / 2))
+            ind_leo = np.searchsorted(SpecSizeBins+deltaSize / 2, 
+                                  leo_ScatDiaSO4[the_particles], side='right')
+            ind_incan = np.searchsorted(SpecSizeBins+deltaSize / 2, 
+                                  SizeIncandOnly[the_particles], side='right')
+            
+            #axis 0 = time, axis 1 incandesence, axis 2 leo size
+            np.add.at(leo_IncandScatNumEnsemble[t,:,:], (ind_incan,ind_leo), OneOfEvery[the_particles])
+
         scat_parts = np.logical_and(scatter_accept, parts_time)
         incan_parts = np.logical_and(incand_accept, parts_time)
         #ConcIncanCycle = OneOfEvery * np.sum(incan_parts)
@@ -335,6 +383,8 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
             ScatMassEnsembleBC[t, :] = ScatMassEnsembleBC[t, :] / FlowCycle #Not in use, always zero
             ScatNumEnsemble[t, :] = ScatNumEnsemble[t, :] / FlowCycle
             ScatMassEnsemble[t, :] = ScatMassEnsemble[t, :] / FlowCycle
+            if leo_fits:
+                leo_IncandScatNumEnsemble[t,:,:] = leo_IncandScatNumEnsemble[t,:,:] / FlowCycle
 
 
     base_time = pd.Timestamp('1904-01-01')
@@ -450,5 +500,29 @@ def process_psds(particle_ds, hk_ds, config, deltaSize=0.005, num_bins=199, avg_
                          'IncanMassEnsemble': IncanMassEnsemble,
                          'ScatNumEnsembleBC': ScatNumEnsembleBC,
                          'NumFracBC': NumFracBC})
+    if leo_fits:
+        #Make the DataArray with differently named size dimensions 
+        leo_IncandScatNumEnsemble = xr.DataArray(leo_IncandScatNumEnsemble, dims=('time', 'incand_bins', 'leo_bins'))
+        leo_IncandScatNumEnsemble.attrs["long_name"] = "2D incandesence size (black carbon core) and leo size (shell) \
+            number size distributions. Dimensions are (time,incandesence size, leo size)"
+        leo_IncandScatNumEnsemble.attrs["standard_name"] = "2D core / shell size number size distributions"
+        leo_IncandScatNumEnsemble.attrs["units"] = "cm-3 per bin"
+        
+        #Add new dimensions (xarray want's different dimension names although the dimensions are the 
+        #same)
+        IncandSizeBins = xr.DataArray(SpecSizeBins, dims=('incand_bins'))
+        IncandSizeBins.attrs["long_name"] = "Incandesence (core) size bin centers"
+        IncandSizeBins.attrs["standard_name"] = "particle_diameter"
+        IncandSizeBins.attrs["units"] = "um"
+        
+        LeoSizeBins = xr.DataArray(SpecSizeBins, dims=('leo_bins'))
+        LeoSizeBins.attrs["long_name"] = "Leo (shell) size bin centers"
+        LeoSizeBins.attrs["standard_name"] = "particle_diameter"
+        LeoSizeBins.attrs["units"] = "um"
+        
+        #add the dimensions to the Dataset
+        psd_ds = psd_ds.expand_dims(dim={'incand_bins': IncandSizeBins, 'leo_bins': LeoSizeBins})
+        #add the 2D (core,shell) variable 
+        psd_ds['leo_IncandScatNumEnsemble'] = leo_IncandScatNumEnsemble
 
     return psd_ds
