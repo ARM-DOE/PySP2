@@ -49,7 +49,7 @@ Example for plotting a wave in a .sp2b file
     Processing record 5000
     /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:78: RuntimeWarning: Mean of empty slice
       ratio = np.nanmean(
-    5877 records processed in 5.966410398483276 s
+    5877 records processed in 5.951277494430542 s
     <xarray.Dataset> Size: 41MB
     Dimensions:               (event_index: 5877, columns: 100)
     Dimensions without coordinates: event_index, columns
@@ -92,7 +92,7 @@ Example for plotting a wave in a .sp2b file
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.456 seconds)
+   **Total running time of the script:** (0 minutes 6.443 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_read_sp2b.py:
