@@ -360,12 +360,12 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="example-on-plotting-particle-concentration-data-timeseries">
 <span id="sphx-glr-source-auto-examples-plot-psd-py"></span><h1>Example on plotting particle concentration data timeseries<a class="headerlink" href="#example-on-plotting-particle-concentration-data-timeseries" title="Link to this heading">#</a></h1>
-<img src="../../_images/sphx_glr_plot_psd_001.png" srcset="../../_images/sphx_glr_plot_psd_001.png" alt="plot psd" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:470: RuntimeWarning: divide by zero encountered in divide
+<img src="../../_images/sphx_glr_plot_psd_001.png" srcset="../../_images/sphx_glr_plot_psd_001.png" alt="plot psd" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:469: RuntimeWarning: divide by zero encountered in divide
   peak2area = np.max(data2, axis=1)/denominator
 Processing record 0
-/home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:384: OptimizeWarning: Covariance of the parameters could not be estimated
+/home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:383: OptimizeWarning: Covariance of the parameters could not be estimated
   coeff, var_matrix = curve_fit(_gaus, bins_fit, data_fit, p0=p0, method=&#39;lm&#39;, maxfev=40, ftol=1e-3)
-/home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:564: OptimizeWarning: Covariance of the parameters could not be estimated
+/home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:563: OptimizeWarning: Covariance of the parameters could not be estimated
   coeff, var_matrix = curve_fit(_gaus, bins_fit, temp1_fit, p0=p0, method=&#39;lm&#39;, maxfev=50, ftol=1e-3)
 Processing record 1000
 Processing record 2000
@@ -374,16 +374,19 @@ Processing record 4000
 Processing record 5000
 /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:78: RuntimeWarning: Mean of empty slice
   ratio = np.nanmean(
-5877 records processed in 5.923705816268921 s
-/home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:38: RuntimeWarning: All-NaN slice encountered
+5877 records processed in 5.9968156814575195 s
+/home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:45: RuntimeWarning: All-NaN slice encountered
   PkHt_ch0 = np.nanmax(np.stack([input_ds[&#39;PkHt_ch0&#39;].values, input_ds[&#39;FtAmp_ch0&#39;].values]), axis=0)
-/home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:39: RuntimeWarning: All-NaN slice encountered
+/home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:46: RuntimeWarning: All-NaN slice encountered
   PkHt_ch4 = np.nanmax(np.stack([input_ds[&#39;PkHt_ch4&#39;].values, input_ds[&#39;FtAmp_ch4&#39;].values]), axis=0)
 Number of scattering particles accepted = 4799
 Number of scattering particles rejected for min. peak height = 11
 Number of scattering particles rejected for peak width = 16
 Number of scattering particles rejected for fat peak = 0
 Number of scattering particles rejected for peak pos. = 91
+Number of incandescence particles accepted = 599
+Number of incandescence particles rejected for min. peak height = 6
+Number of incandescence particles rejected for peak width = 4221
 </pre></div>
 </div>
 <div class="line-block">
@@ -404,7 +407,7 @@ Number of scattering particles rejected for peak pos. = 91
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.143 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.374 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-source-auto-examples-plot-psd-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8f9868698b6bf55d9900f3cbb41a4e00/plot_psd.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_psd.ipynb</span></code></a></p>

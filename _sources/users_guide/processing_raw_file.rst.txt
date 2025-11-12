@@ -13,7 +13,7 @@ Processing a raw .sp2b file is as easy as:
 
 .. code-block:: python
 
-    waveforms = pysp2.io.read_sp2b(file_name)
+    waveforms = pysp2.io.read_sp2(file_name)
 
 Where file_name is the name of the file you want to read. The output is an
 xarray Dataset containing the waveforms in each channel for each particle. The
