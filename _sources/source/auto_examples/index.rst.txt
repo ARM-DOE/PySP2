@@ -19,7 +19,7 @@ Here are examples on how to use PySP2.
   .. image:: /source/auto_examples/images/thumb/sphx_glr_plot_hk_thumb.png
     :alt:
 
-  :ref:`sphx_glr_source_auto_examples_plot_hk.py`
+  :doc:`/source/auto_examples/plot_hk`
 
 .. raw:: html
 
@@ -36,7 +36,7 @@ Here are examples on how to use PySP2.
   .. image:: /source/auto_examples/images/thumb/sphx_glr_plot_read_sp2b_thumb.png
     :alt:
 
-  :ref:`sphx_glr_source_auto_examples_plot_read_sp2b.py`
+  :doc:`/source/auto_examples/plot_read_sp2b`
 
 .. raw:: html
 
@@ -53,7 +53,7 @@ Here are examples on how to use PySP2.
   .. image:: /source/auto_examples/images/thumb/sphx_glr_plot_psd_thumb.png
     :alt:
 
-  :ref:`sphx_glr_source_auto_examples_plot_psd.py`
+  :doc:`/source/auto_examples/plot_psd`
 
 .. raw:: html
 

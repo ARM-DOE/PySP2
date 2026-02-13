@@ -38,7 +38,7 @@ Example for plotting number of particles in housekeeping data
     <xarray.Dataset> Size: 32MB
     Dimensions:                    (time: 86400)
     Coordinates:
-      * time                       (time) datetime64[ns] 691kB 2019-12-16T00:00:0...
+      * time                       (time) datetime64[us] 691kB 2019-12-16T00:00:0...
     Data variables: (12/46)
         Time                       (time) float64 691kB 0.609 1.622 ... 8.64e+04
         Sample Flow LFE            (time) float64 691kB 119.7 120.3 ... 119.2 121.0
@@ -80,7 +80,7 @@ Example for plotting number of particles in housekeeping data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.968 seconds)
+   **Total running time of the script:** (0 minutes 2.354 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_hk.py:
