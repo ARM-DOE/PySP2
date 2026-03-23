@@ -49,10 +49,11 @@ Example on plotting particle concentration data timeseries
     Processing record 5000
     /home/runner/work/PySP2/PySP2/pysp2/util/peak_fit.py:78: RuntimeWarning: Mean of empty slice
       ratio = np.nanmean(
-    5877 records processed in 5.978640556335449 s
-    /home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:45: RuntimeWarning: All-NaN slice encountered
+    5877 records processed in 5.982020854949951 s
+    Warning: Using DMTGlobal as default. To avoid this warning,               define Globals!=None as input variable to function call calc_diams_massess()
+    /home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:47: RuntimeWarning: All-NaN slice encountered
       PkHt_ch0 = np.nanmax(np.stack([input_ds['PkHt_ch0'].values, input_ds['FtAmp_ch0'].values]), axis=0)
-    /home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:46: RuntimeWarning: All-NaN slice encountered
+    /home/runner/work/PySP2/PySP2/pysp2/util/particle_properties.py:48: RuntimeWarning: All-NaN slice encountered
       PkHt_ch4 = np.nanmax(np.stack([input_ds['PkHt_ch4'].values, input_ds['FtAmp_ch4'].values]), axis=0)
     Number of scattering particles accepted = 4799
     Number of scattering particles rejected for min. peak height = 11
@@ -62,6 +63,7 @@ Example on plotting particle concentration data timeseries
     Number of incandescence particles accepted = 599
     Number of incandescence particles rejected for min. peak height = 6
     Number of incandescence particles rejected for peak width = 4221
+    Warning: Using DMTGlobal as default. To avoid this warning,               define Globals!=None as input variable to function call process_psds()
 
 
 
@@ -89,7 +91,7 @@ Example on plotting particle concentration data timeseries
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.030 seconds)
+   **Total running time of the script:** (0 minutes 9.060 seconds)
 
 
 .. _sphx_glr_download_source_auto_examples_plot_psd.py:
