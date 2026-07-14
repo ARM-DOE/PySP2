@@ -3,7 +3,7 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)
 
 from pysp2.util.normalized_derivative_method import MLEConfig, mle_tau_moteki_kondo, compute_d2_moteki_kondo
-from pysp2.util.normalized_derivative_method import compute_sigma_moteki_kondo
+from pysp2.util.normalized_derivative_method import compute_sigma_moteki_kondo, compute_normalized_incident_irradiance_moteki_kondo
 event=152
 my_sp2b = pysp2.io.read_sp2(pysp2.testing.EXAMPLE_SP2B_PSL, arm_convention=False)
 my_ini = pysp2.io.read_config(pysp2.testing.EXAMPLE_INI_PSL)
@@ -96,9 +96,16 @@ def test_ndm_moteki_kondo():
     # example: use the best sigma value from your analysis, divided by 4.29193 to convert FWTM value of
     # 18.51*np.sqrt(np.log(10)/np.log(2)) to sigma where 18.51 is the average FWHM in us
     sigma_best = (33.7366*0.4)/4.29193
+    print(sigma_ds['sigma_hat'].values)
 
     np.testing.assert_allclose(
          sigma_ds['sigma_hat'].values,
          sigma_best,
          atol=0.12,  # absolute tolerance = 1.5 microseconds
-     )
+    )
+    
+    I_norm = compute_normalized_incident_irradiance_moteki_kondo(
+        sigma_out=sigma_ds,
+    )
+
+    print(I_norm)

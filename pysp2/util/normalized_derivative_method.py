@@ -966,6 +966,84 @@ def compute_sigma_moteki_kondo(
     )
     return out
 
+def compute_normalized_incident_irradiance_moteki_kondo(
+    sigma_out: xr.Dataset,
+    *,
+    t_vals: Optional[Union[np.ndarray, xr.DataArray]] = None,
+    sample_dim: str = "time",
+) -> xr.DataArray:
+    """
+    Compute the normalized incident irradiance I(t)/I0 using the Moteki & Kondo
+    Gaussian beam model:
+
+        I(t) / I0 = exp(-(t - tau_best)^2 / (2 * sigma_hat^2))    [Eq. (1)]
+
+    Parameters
+    ----------
+    sigma_out : xr.Dataset
+        Output from compute_sigma_moteki_kondo(...). Must contain at least:
+        - sigma_hat
+        - tau_best
+        and ideally fit_start / fit_stop.
+    h : float, optional
+        Sampling interval. Required if `t` is not provided.
+    t : array-like, optional
+        Explicit time axis to evaluate on. If provided, this is used directly.
+    n_samples : int, optional
+        If `t` is not provided, use this many samples starting at 0 with spacing `h`.
+        If omitted, and `fit_start` / `fit_stop` are present in sigma_out, the function
+        evaluates only over the fitted window [fit_start, fit_stop).
+    sample_dim : str, default "sample"
+        Name of the returned sample dimension.
+
+    Returns
+    -------
+    xr.DataArray
+        Normalized incident irradiance I/I0 evaluated on the chosen time axis.
+    """
+    if "sigma_hat" not in sigma_out:
+        raise ValueError("sigma_out must contain 'sigma_hat'.")
+    if "tau_best" not in sigma_out:
+        raise ValueError("sigma_out must contain 'tau_best'.")
+
+    sigma_hat = float(np.asarray(sigma_out["sigma_hat"].values))
+    tau_best = float(np.asarray(sigma_out["tau_best"].values))
+
+    if not np.isfinite(sigma_hat) or sigma_hat <= 0:
+        raise ValueError(f"Invalid sigma_hat={sigma_hat}.")
+    if not np.isfinite(tau_best):
+        raise ValueError(f"Invalid tau_best={tau_best}.")
+
+    # Default SP2 waveform time axis:
+    # 100 samples spanning 0–39.6 µs at 0.4 µs spacing.
+    if t_vals is None:
+        t_vals = np.arange(0.0, 40.0, 0.4)
+    else:
+        t_vals = np.asarray(
+            t_vals.data if isinstance(t_vals, xr.DataArray) else t_vals,
+            dtype=float,
+        )
+
+        if t_vals.ndim != 1:
+            raise ValueError("t_vals must be one-dimensional.")
+
+    # Moteki & Kondo Eq. (1): normalized irradiance profile.
+    i_norm = np.exp(-((t_vals - tau_best) ** 2) / (2.0 * sigma_hat ** 2))
+
+    out = xr.DataArray(
+        i_norm,
+        dims=(sample_dim,),
+        coords={sample_dim: t_vals},
+        name="I_over_I0",
+        attrs={
+            "long_name": "Normalized incident irradiance I/I0",
+            "description": "Gaussian incident irradiance normalized by its peak I0",
+            "tau_best": tau_best,
+            "sigma_hat": sigma_hat,
+        },
+    )
+    return out
+
 def plot_incident_irradiance(
     S: xr.Dataset,
     ds: xr.Dataset,
@@ -981,38 +1059,8 @@ def plot_incident_irradiance(
 ):
     """
     Plot normalized derivative S'(t)/S(t), expected I'(t)/I(t), and optionally
-    the scattering signal, all against the same bins-based time axis.
-
-    Parameters
-    ----------
-    S : xr.Dataset
-        Original scattering signal dataset.
-    ds : xr.Dataset
-        Dataset containing the normalized derivative.
-    record_no : int
-        Event index to plot.
-    chn : int
-        Channel number (0 or 4).
-    plot_scattering_signal : bool
-        If True, overlay the scattering signal on a secondary y-axis.
-    sigma_ds : xr.Dataset, optional
-        Output of compute_sigma_moteki_kondo(). If provided, tau/sigma are
-        taken from sigma_ds["tau_best"] and sigma_ds["sigma_hat"].
-    tau : float, optional
-        Beam-center time in seconds.
-    sigma : float, optional
-        Gaussian width in seconds.
-    h : float
-        Sampling interval in seconds.
-    time_units : {"us", "s"}
-        Units for the x-axis.
-    show_fit_window : bool
-        If True, shade the fitted leading-edge window when available.
-
-    Returns
-    -------
-    ax : matplotlib Axes
-        Primary axes object.
+    the scattering signal and normalized incident irradiance, all against the
+    same bins-based time axis.
     """
     if chn not in [0, 4]:
         raise ValueError("Channel number must be 0 or 4.")
@@ -1068,15 +1116,18 @@ def plot_incident_irradiance(
     # Expected I'/I line from Moteki & Kondo.
     i_ratio_expected = -(t_plot - tau_plot) / (sigma_plot ** 2)
 
+    # Normalized incident irradiance I(t)/I0 from Eq. (1).
+    i_norm = np.exp(-((t_plot - tau_plot) ** 2) / (2.0 * sigma_plot ** 2))
+
     plt.rcParams["font.family"] = "Times New Roman"
-    plt.rcParams["mathtext.fontset"] = "stix"   
+    plt.rcParams["mathtext.fontset"] = "stix"
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # Normalized derivative.
     line1, = ax.plot(
         t_plot,
-        y_norm,  # Scale for visibility
-        'o',
+        y_norm,
+        "o",
         color="blue",
         label=f"{ch_name} (Normalized dS/dt)",
         linewidth=1.2,
@@ -1095,8 +1146,10 @@ def plot_incident_irradiance(
     ax.set_xlabel(x_label)
     ax.set_ylim(-1.0, 1.0)
     ax.set_xlim(t_plot[10], t_plot[-30])
-    ax.set_ylabel(r"Normalized Derivative ($\rm \mu s^{-1}$)", 
-                  color="blue")
+    ax.set_ylabel(
+        r"Normalized Derivative ($\rm \mu s^{-1}$)",
+        color="blue",
+    )
     ax.grid(True, alpha=0.3)
     ax.tick_params(axis="y", colors="blue")
 
@@ -1116,7 +1169,7 @@ def plot_incident_irradiance(
             label="Fit window",
         )
 
-    # Optional scattering signal overlay.
+    # Optional scattering signal overlay + normalized incident irradiance on the right axis.
     if plot_scattering_signal:
         ax2 = ax.twinx()
         y_scatter_shifted = y_scatter - np.nanmin(y_scatter)
@@ -1129,9 +1182,19 @@ def plot_incident_irradiance(
             linewidth=1.2,
             label=f"{ch_name} (Scattering Signal)",
         )
-        ax2.set_ylabel("Scattering Signal (baseline shifted)")
 
-        lines = [line1,line2, line3]
+        line4, = ax2.plot(
+            t_plot,
+            i_norm,
+            color="red",
+            linestyle="-",
+            linewidth=2.0,
+            label=r"Normalized incident irradiance $I(t)/I_0$",
+        )
+
+        ax2.set_ylabel("Scattering Signal (baseline shifted) / $I/I_0$")
+
+        lines = [line1, line2, line3, line4]
         labels = [l.get_label() for l in lines]
         ax.legend(lines, labels, loc="best", fontsize=10)
     else:
@@ -1140,7 +1203,7 @@ def plot_incident_irradiance(
     ax.set_title(
         f"Normalized Derivative, Expected I'(t)/I(t), and Scattering Signal - "
         f"Channel {chn} Record {record_no}",
-        pad=20,  # increase space between title and plot
+        pad=20,
     )
 
     return ax
