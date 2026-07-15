@@ -15,6 +15,7 @@ matplotlib.use("Agg")
 
 my_sp2b = pysp2.io.read_sp2(pysp2.testing.EXAMPLE_SP2B_PSL, arm_convention=False)
 my_ini = pysp2.io.read_config(pysp2.testing.EXAMPLE_INI_PSL)
+#event = 213
 event = 152
 
 @pytest.mark.mpl_image_compare(tolerance=10)
@@ -100,6 +101,7 @@ def test_plot_incident_irradiance():
         sigma_ds=sigma_ds,
         time_units="us",
     )
+
     fig = ax.figure
     
     return fig

@@ -1183,11 +1183,13 @@ def plot_incident_irradiance(
             label=f"{ch_name} (Scattering Signal)",
         )
 
+        # TODO multiplying by the max of the scattering signal will not work
+        #      for evaporative particles
         line4, = ax2.plot(
             t_plot,
-            i_norm,
+            i_norm * np.nanmax(y_scatter_shifted),
             color="red",
-            linestyle="-",
+            linestyle="--",
             linewidth=2.0,
             label=r"Normalized incident irradiance $I(t)/I_0$",
         )
