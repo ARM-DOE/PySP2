@@ -993,7 +993,7 @@ def compute_normalized_incident_irradiance_moteki_kondo(
         If `t` is not provided, use this many samples starting at 0 with spacing `h`.
         If omitted, and `fit_start` / `fit_stop` are present in sigma_out, the function
         evaluates only over the fitted window [fit_start, fit_stop).
-    sample_dim : str, default "sample"
+    sample_dim : str, default "time"
         Name of the returned sample dimension.
 
     Returns
