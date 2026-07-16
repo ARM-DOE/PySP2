@@ -968,7 +968,6 @@ def compute_sigma_moteki_kondo(
 
 def compute_normalized_incident_irradiance_moteki_kondo(
     sigma_out: xr.Dataset,
-    *,
     t_vals: Optional[Union[np.ndarray, xr.DataArray]] = None,
     sample_dim: str = "time",
 ) -> xr.DataArray:
