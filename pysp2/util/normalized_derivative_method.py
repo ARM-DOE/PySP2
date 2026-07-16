@@ -985,14 +985,9 @@ def compute_normalized_incident_irradiance_moteki_kondo(
         - sigma_hat
         - tau_best
         and ideally fit_start / fit_stop.
-    h : float, optional
-        Sampling interval. Required if `t` is not provided.
-    t : array-like, optional
-        Explicit time axis to evaluate on. If provided, this is used directly.
-    n_samples : int, optional
-        If `t` is not provided, use this many samples starting at 0 with spacing `h`.
-        If omitted, and `fit_start` / `fit_stop` are present in sigma_out, the function
-        evaluates only over the fitted window [fit_start, fit_stop).
+    t_vals : 1D array-like, optional
+        Explicit time axis (same units as tau_best and sigma_hat). If None, 
+        defaults to 0–39.6 µs at 0.4 µs spacing.
     sample_dim : str, default "time"
         Name of the returned sample dimension.
 
@@ -1006,8 +1001,8 @@ def compute_normalized_incident_irradiance_moteki_kondo(
     if "tau_best" not in sigma_out:
         raise ValueError("sigma_out must contain 'tau_best'.")
 
-    sigma_hat = float(np.asarray(sigma_out["sigma_hat"].values))
-    tau_best = float(np.asarray(sigma_out["tau_best"].values))
+    sigma_hat = float(np.asarray(sigma_out["sigma_hat"].item()))
+    tau_best = float(np.asarray(sigma_out["tau_best"].item()))
 
     if not np.isfinite(sigma_hat) or sigma_hat <= 0:
         raise ValueError(f"Invalid sigma_hat={sigma_hat}.")
