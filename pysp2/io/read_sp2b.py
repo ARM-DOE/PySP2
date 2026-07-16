@@ -2,6 +2,7 @@ import xarray as xr
 import struct
 import numpy as np
 import platform
+import zipfile
 
 from datetime import datetime, timezone
 
@@ -153,3 +154,163 @@ def read_sp2(file_name, debug=False, arm_convention=True):
         return my_ds
     else:
         return None
+
+
+def read_sp2xr(file_name, debug=False):
+    """
+    Loads a binary SP2-XR raw data file and returns all of the waveforms
+    into an xarray Dataset.
+
+    The SP2-XR file format differs from the original SP2:
+    each record carries its own (rows, cols) header instead of a single
+    file-level header, the waveform samples are stored as 4-byte integers
+    (rather than 2-byte) and only two detector channels are written
+    (ch0 = scattering, ch1 = incandescence). The time encoding is the
+    same as the SP2 (TimeDiv10000 * 10000 + TimeRemainder, in seconds
+    since 1904-01-01).
+
+    Parameters
+    ----------
+    file_name: str
+        The name of the .sp2b file (or a .zip containing the .sp2b) to read.
+    debug: bool
+        Set to true for verbose output.
+
+    Returns
+    -------
+    dataset: xarray.Dataset
+        The xarray Dataset containing the raw SP2-XR waveforms for each
+        particle. Variable names mirror read_sp2() (Data_ch0, Data_ch1,
+        Flag, EventIndex, time, ...).
+    """
+
+    if file_name.lower().endswith(".zip"):
+        with zipfile.ZipFile(file_name, "r") as zf:
+            inner = zf.namelist()[0]
+            my_data = zf.read(inner)
+    else:
+        my_data = open(file_name, "rb").read()
+
+    if len(my_data) == 0:
+        return None
+
+    # Pre-scan: locate the start byte of every record and verify shape consistency
+    record_starts = []
+    pos = 0
+    numSamples = None
+    numChannels = None
+
+    while pos + 8 <= len(my_data):
+        rows, cols = struct.unpack(">2I", my_data[pos:pos + 8])
+        # rows == 0 marks an explicit end-of-data marker
+        if rows == 0:
+            break
+
+        if numSamples is None:
+            numSamples, numChannels = rows, cols
+        elif (rows, cols) != (numSamples, numChannels):
+            raise ValueError(
+                "SP2-XR records with varying waveform dimensions are not "
+                "supported (record %d: (%d, %d) vs first (%d, %d))." %
+                (len(record_starts), rows, cols, numSamples, numChannels))
+
+        wave_bytes = rows * cols * 4
+        # waveform + Flag(2) + 7 floats(28) + 2 doubles(16) + array_2_dim(4)
+        meta_end = pos + 8 + wave_bytes + 2 + 28 + 16 + 4
+        if meta_end > len(my_data):
+            break
+        a2_dim = struct.unpack(">I", my_data[meta_end - 4:meta_end])[0]
+        rec_end = meta_end + a2_dim * 4
+        if rec_end > len(my_data):
+            break
+
+        record_starts.append(pos)
+        pos = rec_end
+
+    numRecords = len(record_starts)
+    if numRecords == 0:
+        return None
+
+    if debug:
+        print("Loaded file with numRecords = %d, numChannels = %d, "
+              "numSamples = %d" % (numRecords, numChannels, numSamples))
+
+    DataWave = np.zeros((numRecords, numChannels, numSamples), dtype='int32')
+    Flag = np.zeros(numRecords, dtype='int32')
+    TimeWave = np.zeros(numRecords, dtype='float32')
+    Res1 = np.zeros(numRecords, dtype='float32')
+    EventIndex = np.zeros(numRecords, dtype='float32')
+    TimeDiv10000 = np.zeros(numRecords, dtype='float32')
+    TimeRemainder = np.zeros(numRecords, dtype='float32')
+    Res5 = np.zeros(numRecords, dtype='float32')
+    Res6 = np.zeros(numRecords, dtype='float32')
+    Res7 = np.zeros(numRecords, dtype='float64')
+    Res8 = np.zeros(numRecords, dtype='float64')
+
+    wave_bytes = numSamples * numChannels * 4
+    wave_fmt = ">" + "i" * (numSamples * numChannels)
+
+    for i, start in enumerate(record_starts):
+        # Skip the per-record (rows, cols) header
+        p = start + 8
+
+        # Waveform: interleaved (ch0[0], ch1[0], ch0[1], ch1[1], ...)
+        raw = np.array(struct.unpack(wave_fmt, my_data[p:p + wave_bytes]),
+                       dtype='int32')
+        # Reshape (numSamples, numChannels) then transpose to (numChannels, numSamples)
+        DataWave[i] = raw.reshape(numSamples, numChannels).T
+        p += wave_bytes
+
+        Flag[i] = struct.unpack(">H", my_data[p:p + 2])[0]
+        p += 2
+
+        floats = struct.unpack(">7f", my_data[p:p + 28])
+        TimeWave[i] = floats[0]
+        Res1[i] = floats[1]
+        EventIndex[i] = floats[2]
+        TimeDiv10000[i] = floats[3]
+        TimeRemainder[i] = floats[4]
+        Res5[i] = floats[5]
+        Res6[i] = floats[6]
+        p += 28
+
+        doubles = struct.unpack(">2d", my_data[p:p + 16])
+        Res7[i] = doubles[0]
+        Res8[i] = doubles[1]
+
+    # Reconstruct UTC datetime exactly like read_sp2()
+    UTCtime = TimeDiv10000.astype('float64') * 10000 + TimeRemainder.astype('float64')
+    diff_epoch_1904 = (
+        datetime(1970, 1, 1) - datetime(1904, 1, 1)).total_seconds()
+    UTCdatetime = np.array([
+        datetime.fromtimestamp(
+            x - diff_epoch_1904, tz=timezone.utc).replace(tzinfo=None)
+        for x in UTCtime])
+
+    # Build xarray Dataset
+    Flag_da = xr.DataArray(Flag, dims={'event_index': EventIndex})
+    Res1_da = xr.DataArray(Res1, dims={'event_index': EventIndex})
+    Res5_da = xr.DataArray(Res5, dims={'event_index': EventIndex})
+    Res6_da = xr.DataArray(Res6, dims={'event_index': EventIndex})
+    Res7_da = xr.DataArray(Res7, dims={'event_index': EventIndex})
+    Res8_da = xr.DataArray(Res8, dims={'event_index': EventIndex})
+    Time = xr.DataArray(UTCdatetime, dims={'event_index': EventIndex})
+    EventInd = xr.DataArray(EventIndex, dims={'event_index': EventIndex})
+    DateTimeWaveUTC = xr.DataArray(UTCtime, dims={'event_index': EventIndex})
+    TimeWave_da = xr.DataArray(TimeWave, dims={'event_index': EventIndex})
+
+    my_ds = xr.Dataset({
+        'time': Time, 'Flag': Flag_da,
+        'Res1': Res1_da, 'Res5': Res5_da, 'Res6': Res6_da,
+        'Res7': Res7_da, 'Res8': Res8_da,
+        'EventIndex': EventInd,
+        'DateTimeWaveUTC': DateTimeWaveUTC,
+        'TimeWave': TimeWave_da})
+
+    columns = np.arange(numSamples)
+    for ch in range(numChannels):
+        my_ds['Data_ch' + str(ch)] = xr.DataArray(
+            DataWave[:, ch, :],
+            dims={'event_index': EventIndex, 'columns': columns})
+
+    return my_ds
