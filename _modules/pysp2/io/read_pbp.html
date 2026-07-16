@@ -1,0 +1,599 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pysp2.io.read_pbp &#8212; PySP2 1.7.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/act-theme.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=030dc6f6"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pysp2/io/read_pbp';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../../../_static/doc_shared.js?v=55e339d8"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.7.0" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PySP2 1.7.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributors_guide/index.html">
+    Contributor’s Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../users_guide/index.html">
+    User’s Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../source/auto_examples/index.html">
+    <no title>
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developers_guide/index.html">
+    Developer Reference Manual
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributors_guide/index.html">
+    Contributor’s Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../users_guide/index.html">
+    User’s Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../source/auto_examples/index.html">
+    <no title>
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developers_guide/index.html">
+    Developer Reference Manual
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">pysp2.io.read_pbp</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pysp2.io.read_pbp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Python module for reading SP2-XR Particle-by-Particle (PbP) files.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.read_hk</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_sp2xr_hk_file</span><span class="p">,</span> <span class="n">_attach_sp2xr_calibration_attrs</span>
+
+
+<span class="c1"># SP2-XR PbP column names mapped to PySP2-style equivalents. Variables on the</span>
+<span class="c1"># right are intended to look like the output of pysp2.util.gaussian_fit() so</span>
+<span class="c1"># that downstream calibration utilities can be used with SP2-XR data.</span>
+<span class="n">_PBP_RENAME_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Scatter relPeak&#39;</span><span class="p">:</span> <span class="s1">&#39;PkHt_ch0&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Scatter Peak Time&#39;</span><span class="p">:</span> <span class="s1">&#39;PkPos_ch0&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Scatter FWHM&#39;</span><span class="p">:</span> <span class="s1">&#39;PkFWHM_ch0&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Scatter Transit Time&#39;</span><span class="p">:</span> <span class="s1">&#39;ScatTransitTime&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Incand relPeak&#39;</span><span class="p">:</span> <span class="s1">&#39;PkHt_ch1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Incand Peak Time&#39;</span><span class="p">:</span> <span class="s1">&#39;PkPos_ch1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Incand FWHM&#39;</span><span class="p">:</span> <span class="s1">&#39;PkFWHM_ch1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Incand Transit Time&#39;</span><span class="p">:</span> <span class="s1">&#39;IncTransitTime&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Incand Delay&#39;</span><span class="p">:</span> <span class="s1">&#39;IncanDelay&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Particle Flags&#39;</span><span class="p">:</span> <span class="s1">&#39;ParticleFlags&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Particle Time Stamp&#39;</span><span class="p">:</span> <span class="s1">&#39;ParticleTimeStamp&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Packet Time Stamp&#39;</span><span class="p">:</span> <span class="s1">&#39;PacketTimeStamp&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Time (sec)&#39;</span><span class="p">:</span> <span class="s1">&#39;TimeWave&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Dropped Records&#39;</span><span class="p">:</span> <span class="s1">&#39;DroppedRecords&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Record Count&#39;</span><span class="p">:</span> <span class="s1">&#39;RecordCount&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Record Size&#39;</span><span class="p">:</span> <span class="s1">&#39;RecordSize&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_matching_hk_file</span><span class="p">(</span><span class="n">pbp_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Locate the SP2-XR HK file that corresponds to a PbP file.</span>
+
+<span class="sd">    There is one HK file per acquisition session (always named ``_x0001``),</span>
+<span class="sd">    while a session may produce many PbP files (``_x0001``, ``_x0002``, ...).</span>
+<span class="sd">    Both .csv and .zip variants are checked.</span>
+
+<span class="sd">    Returns None if no candidate exists on disk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;PbP&#39;</span><span class="p">,</span> <span class="s1">&#39;hk&#39;</span><span class="p">,</span> <span class="n">pbp_path</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(_x)\d</span><span class="si">{4}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\g&lt;1&gt;0001&#39;</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\.(csv|zip)$&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;.zip&#39;</span><span class="p">):</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="n">ext</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="read_sp2xr_pbp">
+<a class="viewcode-back" href="../../../developers_guide/generated/pysp2.io.read_sp2xr_pbp.html#pysp2.io.read_sp2xr_pbp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_sp2xr_pbp</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">keep_firmware_calibration</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a SP2-XR Particle-by-Particle (PbP) CSV or ZIP file into an</span>
+<span class="sd">    xarray Dataset.</span>
+
+<span class="sd">    The SP2-XR firmware performs peak fitting on-board, so the PbP file</span>
+<span class="sd">    already contains per-particle peak heights, positions, FWHMs, transit</span>
+<span class="sd">    times, and pre-calibrated optical diameter / BC mass. This reader</span>
+<span class="sd">    maps the peak-fit outputs to PySP2-style names (PkHt_ch0, PkHt_ch1,</span>
+<span class="sd">    ...) so that the dataset can be fed into PySP2 calibration utilities</span>
+<span class="sd">    (e.g. pysp2.util.calc_diams_masses) with appropriate SP2-XR</span>
+<span class="sd">    coefficients.</span>
+
+<span class="sd">    By default, the pre-calibrated &#39;Scatter Size (nm)&#39; and &#39;Incand Mass</span>
+<span class="sd">    (fg)&#39; columns are dropped to encourage recalibration with consistent</span>
+<span class="sd">    curves. Pass keep_firmware_calibration=True to retain them as</span>
+<span class="sd">    &#39;firmware_ScatterSize_nm&#39; and &#39;firmware_IncandMass_fg&#39;; in that case</span>
+<span class="sd">    the scattering / incandescence calibration CSVs (&#39;*_Scatt_*.csv&#39; and</span>
+<span class="sd">    &#39;*_Incan_*.csv&#39;) are auto-located alongside the PbP file and attached</span>
+<span class="sd">    as dataset attributes for provenance.</span>
+
+<span class="sd">    Absolute particle datetimes are derived from the matching SP2-XR HK</span>
+<span class="sd">    file, which is auto-located in the same directory. Each acquisition</span>
+<span class="sd">    session writes one HK file (always ``_x0001``) and one or more PbP</span>
+<span class="sd">    files; the HK provides the wall-clock reference that converts the</span>
+<span class="sd">    PbP instrument seconds to UTC. If no matching HK file is found, a</span>
+<span class="sd">    warning is emitted and the dataset is returned without an absolute</span>
+<span class="sd">    &#39;time&#39; coordinate.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_name: str</span>
+<span class="sd">        Path to the PbP CSV or ZIP file.</span>
+<span class="sd">    keep_firmware_calibration: bool</span>
+<span class="sd">        If True, retain the SP2-XR firmware&#39;s &#39;Scatter Size (nm)&#39; and</span>
+<span class="sd">        &#39;Incand Mass (fg)&#39; as &#39;firmware_ScatterSize_nm&#39; and</span>
+<span class="sd">        &#39;firmware_IncandMass_fg&#39;. Default False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pbp_ds: xarray.Dataset</span>
+<span class="sd">        Per-particle data indexed by &#39;event_index&#39;. Variable names follow</span>
+<span class="sd">        PySP2 conventions for peak fit outputs (PkHt_ch0, PkHt_ch1,</span>
+<span class="sd">        PkFWHM_ch0, ...), with SP2-XR-specific columns kept under</span>
+<span class="sd">        descriptive names (ScatTransitTime, IncTransitTime, IncanDelay,</span>
+<span class="sd">        ParticleFlags).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># pandas handles both .csv and .zip transparently</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+    <span class="c1"># Drop the &#39;Reserved&#39; column (always empty) and, by default, the</span>
+    <span class="c1"># firmware-calibrated diameter / mass.</span>
+    <span class="n">drop_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Reserved&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_firmware_calibration</span><span class="p">:</span>
+        <span class="n">drop_cols</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;Scatter Size (nm)&#39;</span><span class="p">,</span> <span class="s1">&#39;Incand Mass (fg)&#39;</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">drop_cols</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
+
+    <span class="n">rename_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_PBP_RENAME_MAP</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">keep_firmware_calibration</span><span class="p">:</span>
+        <span class="n">rename_map</span><span class="p">[</span><span class="s1">&#39;Scatter Size (nm)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;firmware_ScatterSize_nm&#39;</span>
+        <span class="n">rename_map</span><span class="p">[</span><span class="s1">&#39;Incand Mass (fg)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;firmware_IncandMass_fg&#39;</span>
+    <span class="c1"># The packet-level &#39;Flag&#39; shares its name with the per-particle flag</span>
+    <span class="c1"># column; rename it explicitly to avoid the collision.</span>
+    <span class="k">if</span> <span class="s1">&#39;Flag&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">rename_map</span><span class="p">[</span><span class="s1">&#39;Flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;PacketFlag&#39;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">rename_map</span><span class="p">)</span>
+
+    <span class="c1"># Use a monotonic event_index as the primary dimension, consistent</span>
+    <span class="c1"># with read_sp2()/read_sp2xr().</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;event_index&#39;</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;EventIndex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;event_index&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Attach calibration curve provenance only when the firmware-calibrated</span>
+    <span class="c1"># size / mass columns are retained.</span>
+    <span class="k">if</span> <span class="n">keep_firmware_calibration</span><span class="p">:</span>
+        <span class="n">_attach_sp2xr_calibration_attrs</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+    <span class="c1"># Auto-locate the matching HK file to derive absolute datetimes.</span>
+    <span class="c1"># The filename itself cannot be trusted: it always encodes the session</span>
+    <span class="c1"># start time, so PbP files past _x0001 would be off by the duration</span>
+    <span class="c1"># of the preceding files. The HK file provides the only safe anchor.</span>
+    <span class="n">hk_file_name</span> <span class="o">=</span> <span class="n">_find_matching_hk_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">hk_file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;No matching SP2-XR HK file found next to </span><span class="si">%r</span><span class="s2">; &quot;</span>
+            <span class="s2">&quot;returning relative instrument seconds only. &quot;</span>
+            <span class="s2">&quot;Place the HK file alongside the PbP file (with &#39;_x0001&#39;) to &quot;</span>
+            <span class="s2">&quot;get absolute particle datetimes.&quot;</span> <span class="o">%</span> <span class="n">file_name</span><span class="p">,</span>
+            <span class="ne">UserWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ds</span>
+
+    <span class="n">hk_ds</span> <span class="o">=</span> <span class="n">read_sp2xr_hk_file</span><span class="p">(</span><span class="n">hk_file_name</span><span class="p">)</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="c1"># After read_sp2xr_hk_file strips the unit suffix, the HK &#39;Time (sec)&#39;</span>
+    <span class="c1"># column is exposed as &#39;Time&#39;.</span>
+    <span class="n">hk_first_sec</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">delta_sec</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;ParticleTimeStamp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">hk_first_sec</span>
+    <span class="n">time_values</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">delta_sec</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">assign_coords</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;event_index&#39;</span><span class="p">,</span> <span class="n">time_values</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">ds</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022, Robert Jackson.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

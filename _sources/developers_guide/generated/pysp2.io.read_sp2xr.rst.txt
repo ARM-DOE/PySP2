@@ -1,0 +1,6 @@
+﻿pysp2.io.read\_sp2xr
+====================
+
+.. currentmodule:: pysp2.io
+
+.. autofunction:: read_sp2xr

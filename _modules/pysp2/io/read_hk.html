@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -39,10 +39,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/act-theme.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=030dc6f6"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -365,10 +365,17 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">act</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">glob</span><span class="w"> </span><span class="kn">import</span> <span class="n">glob</span>
+
+<span class="c1"># Regex for SP2-XR firmware-computed PSD bin columns. The number of bins per</span>
+<span class="c1"># channel is not assumed; it is determined from however many columns match</span>
+<span class="c1"># the pattern in the file at read time.</span>
+<span class="n">_SP2XR_BIN_COL_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?P&lt;channel&gt;Scatter|Incand) Bin (?P&lt;idx&gt;\d+)$&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="read_hk_file">
 <a class="viewcode-back" href="../../../developers_guide/generated/pysp2.io.read_hk_file.html#pysp2.io.read_hk_file">[docs]</a>
@@ -407,6 +414,251 @@
             <span class="k">continue</span>
 
     <span class="k">return</span> <span class="n">my_df</span></div>
+
+
+
+<div class="viewcode-block" id="read_sp2xr_hk_file">
+<a class="viewcode-back" href="../../../developers_guide/generated/pysp2.io.read_sp2xr_hk_file.html#pysp2.io.read_sp2xr_hk_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_sp2xr_hk_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This procedure will read in an SP2-XR housekeeping file (.csv or .zip)</span>
+<span class="sd">    and store the timeseries data into an xarray Dataset.</span>
+
+<span class="sd">    The SP2-XR housekeeping file uses comma-separated values (rather than</span>
+<span class="sd">    tab-separated like the original SP2). The &#39;Time Stamp (UTC sec)&#39; column</span>
+<span class="sd">    is used to build the time coordinate, sharing the same 1904-01-01 epoch</span>
+<span class="sd">    as the original SP2 &#39;Timestamp&#39; column.</span>
+
+<span class="sd">    The SP2-XR firmware-computed PSD bin columns (named like &#39;Scatter Bin N&#39;</span>
+<span class="sd">    and &#39;Incand Bin N&#39;) are excluded from the output to keep the variable</span>
+<span class="sd">    set similar to read_hk_file(). Use read_sp2xr_hk_psd() to access them</span>
+<span class="sd">    as a 2D dataset.</span>
+
+<span class="sd">    The retained &#39;Scattering Mass Conc&#39; and &#39;Incand Mass Conc&#39; columns are</span>
+<span class="sd">    firmware-computed using the on-board calibration curves. To preserve</span>
+<span class="sd">    provenance, the calibration CSV files alongside the HK file (matching</span>
+<span class="sd">    &#39;*_Scatt_*.csv&#39; and &#39;*_Incan_*.csv&#39;) are auto-located and attached as</span>
+<span class="sd">    dataset attributes; a warning is emitted for any missing file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_name: str</span>
+<span class="sd">        The file name to read in (.csv or .zip).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    hk_ds: xarray.Dataset</span>
+<span class="sd">        The housekeeping information as an xarray Dataset indexed by time,</span>
+<span class="sd">        with the firmware-computed PSD bin columns removed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">my_df</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Parse time from the UTC seconds column (same 1904 epoch as SP2)</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;1904-01-01&#39;</span><span class="p">)</span>
+    <span class="n">my_df</span> <span class="o">=</span> <span class="n">my_df</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span><span class="p">})</span>
+    <span class="n">my_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">start_time</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">my_df</span><span class="p">[</span><span class="s1">&#39;Time Stamp (UTC sec)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="p">])</span>
+    <span class="n">my_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;datetime&quot;</span>
+    <span class="n">my_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;long_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Time [SP2-XR time]&quot;</span>
+
+    <span class="c1"># Drop firmware-computed PSD bin columns</span>
+    <span class="n">bin_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">my_df</span><span class="o">.</span><span class="n">data_vars</span>
+                <span class="k">if</span> <span class="n">_SP2XR_BIN_COL_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))]</span>
+    <span class="k">if</span> <span class="n">bin_vars</span><span class="p">:</span>
+        <span class="n">my_df</span> <span class="o">=</span> <span class="n">my_df</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">(</span><span class="n">bin_vars</span><span class="p">)</span>
+
+    <span class="c1"># Extract units from column names following the &quot;Name (units)&quot; convention</span>
+    <span class="k">for</span> <span class="nb">vars</span> <span class="ow">in</span> <span class="n">my_df</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">splits</span> <span class="o">=</span> <span class="nb">vars</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">my_df</span><span class="p">[</span><span class="nb">vars</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units</span>
+            <span class="n">my_df</span><span class="p">[</span><span class="nb">vars</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;long_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">vars</span>
+            <span class="n">my_df</span> <span class="o">=</span> <span class="n">my_df</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="nb">vars</span><span class="p">:</span> <span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]})</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+    <span class="c1"># Attach calibration curve provenance (used by the firmware to derive</span>
+    <span class="c1"># the retained Mass Conc columns).</span>
+    <span class="n">_attach_sp2xr_calibration_attrs</span><span class="p">(</span><span class="n">my_df</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">my_df</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_sp2xr_calibration_files</span><span class="p">(</span><span class="n">hk_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Locate the SP2-XR scattering and incandescence calibration CSVs that</span>
+<span class="sd">    sit alongside an HK file. The convention is filenames containing</span>
+<span class="sd">    &#39;_Scatt_&#39; (scattering) and &#39;_Incan_&#39; (incandescence) in the same</span>
+<span class="sd">    directory as the HK file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (scatt_path, incan_path): tuple</span>
+<span class="sd">        Each element is the absolute path to the calibration CSV, or None</span>
+<span class="sd">        if no matching file is present.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">hk_path</span><span class="p">))</span>
+    <span class="n">scatt</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s1">&#39;*_Scatt_*.csv&#39;</span><span class="p">)))</span>
+    <span class="n">incan</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s1">&#39;*_Incan_*.csv&#39;</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">scatt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scatt</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">incan</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">incan</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_sp2xr_calibration_curve</span><span class="p">(</span><span class="n">csv_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a SP2-XR calibration CSV (no header, two columns: physical value</span>
+<span class="sd">    and instrument signal). Empty trailing rows are dropped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_attach_sp2xr_calibration_attrs</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Auto-locate scattering and incandescence calibration CSVs alongside</span>
+<span class="sd">    file_path and attach them as dataset attributes. Emits a UserWarning</span>
+<span class="sd">    for each calibration file that cannot be found.</span>
+
+<span class="sd">    Attached attributes (when available):</span>
+<span class="sd">        ScatCalibrationFile, ScatCalibration_Diameter_nm,</span>
+<span class="sd">        ScatCalibration_Signal,</span>
+<span class="sd">        IncanCalibrationFile, IncanCalibration_Mass_fg,</span>
+<span class="sd">        IncanCalibration_Signal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scatt_cal</span><span class="p">,</span> <span class="n">incan_cal</span> <span class="o">=</span> <span class="n">_find_sp2xr_calibration_files</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">scatt_cal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">diam_nm</span><span class="p">,</span> <span class="n">signal</span> <span class="o">=</span> <span class="n">_load_sp2xr_calibration_curve</span><span class="p">(</span><span class="n">scatt_cal</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;ScatCalibrationFile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scatt_cal</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;ScatCalibration_Diameter_nm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">diam_nm</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;ScatCalibration_Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;No SP2-XR scattering calibration file (&#39;*_Scatt_*.csv&#39;) found &quot;</span>
+            <span class="s2">&quot;next to </span><span class="si">%r</span><span class="s2">; ScatCalibration_* attributes will not be attached.&quot;</span>
+            <span class="o">%</span> <span class="n">file_path</span><span class="p">,</span>
+            <span class="ne">UserWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">incan_cal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mass_fg</span><span class="p">,</span> <span class="n">signal</span> <span class="o">=</span> <span class="n">_load_sp2xr_calibration_curve</span><span class="p">(</span><span class="n">incan_cal</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;IncanCalibrationFile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">incan_cal</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;IncanCalibration_Mass_fg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass_fg</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;IncanCalibration_Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;No SP2-XR incandescence calibration file (&#39;*_Incan_*.csv&#39;) &quot;</span>
+            <span class="s2">&quot;found next to </span><span class="si">%r</span><span class="s2">; IncanCalibration_* attributes will not be &quot;</span>
+            <span class="s2">&quot;attached.&quot;</span> <span class="o">%</span> <span class="n">file_path</span><span class="p">,</span>
+            <span class="ne">UserWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="read_sp2xr_hk_psd">
+<a class="viewcode-back" href="../../../developers_guide/generated/pysp2.io.read_sp2xr_hk_psd.html#pysp2.io.read_sp2xr_hk_psd">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_sp2xr_hk_psd</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the SP2-XR firmware-computed PSD histograms from a HK file.</span>
+
+<span class="sd">    The on-board firmware accumulates per-second particle counts into</span>
+<span class="sd">    size/mass bins (&#39;Scatter Bin N&#39; for scattering size, &#39;Incand Bin N&#39;</span>
+<span class="sd">    for incandescence mass) using its own calibration. This procedure</span>
+<span class="sd">    extracts those columns into a 2D dataset shaped (time, num_bins),</span>
+<span class="sd">    matching the convention used by pysp2.util.process_psds() for</span>
+<span class="sd">    PySP2-computed distributions (ScatNumEnsemble, IncanNumEnsemble).</span>
+
+<span class="sd">    Calibration curves for scattering diameter and incandescence mass are</span>
+<span class="sd">    auto-located alongside the HK file (files matching &#39;*_Scatt_*.csv&#39; and</span>
+<span class="sd">    &#39;*_Incan_*.csv&#39; respectively) and attached as dataset attributes when</span>
+<span class="sd">    present. A warning is issued for any missing calibration file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_name: str</span>
+<span class="sd">        The HK file name to read in (.csv or .zip).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    psd_ds: xarray.Dataset</span>
+<span class="sd">        Dataset with dimensions (time, num_bins) and data variables</span>
+<span class="sd">        ScatNumEnsemble and IncanNumEnsemble (raw counts per bin per</span>
+<span class="sd">        time). Sample volume must be applied to convert to concentration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">my_df</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;1904-01-01&#39;</span><span class="p">)</span>
+    <span class="n">my_df</span> <span class="o">=</span> <span class="n">my_df</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span><span class="p">})</span>
+    <span class="n">my_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">start_time</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">my_df</span><span class="p">[</span><span class="s1">&#39;Time Stamp (UTC sec)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="p">])</span>
+    <span class="n">my_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;datetime&quot;</span>
+    <span class="n">my_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;long_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Time [SP2-XR time]&quot;</span>
+
+    <span class="c1"># Discover bin columns dynamically (do not assume a fixed bin count)</span>
+    <span class="n">scat_cols</span><span class="p">,</span> <span class="n">incan_cols</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">my_df</span><span class="o">.</span><span class="n">data_vars</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">_SP2XR_BIN_COL_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;idx&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Scatter&#39;</span><span class="p">:</span>
+            <span class="n">scat_cols</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">incan_cols</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">scat_cols</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">incan_cols</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;No SP2-XR firmware PSD bin columns (&#39;Scatter Bin N&#39;, &quot;</span>
+            <span class="s2">&quot;&#39;Incand Bin N&#39;) found in </span><span class="si">%r</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">file_name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stack</span><span class="p">(</span><span class="n">cols_by_idx</span><span class="p">):</span>
+        <span class="n">ordered</span> <span class="o">=</span> <span class="p">[</span><span class="n">cols_by_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cols_by_idx</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">my_df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ordered</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">note</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Raw particle counts per bin per time. To get concentration in &#39;</span>
+            <span class="s1">&#39;cts/cm^3 divide by the sample volume per record &#39;</span>
+            <span class="s1">&#39;(Sample Flow Controller Read (vccm) / 60).&#39;</span><span class="p">)</span>
+
+    <span class="n">psd_ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">my_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]})</span>
+
+    <span class="k">if</span> <span class="n">scat_cols</span><span class="p">:</span>
+        <span class="n">psd_ds</span><span class="p">[</span><span class="s1">&#39;ScatNumEnsemble&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">_stack</span><span class="p">(</span><span class="n">scat_cols</span><span class="p">),</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;num_bins&#39;</span><span class="p">),</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;long_name&#39;</span><span class="p">:</span>
+                    <span class="s1">&#39;Scattering number distribution (SP2-XR firmware, raw counts)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;standard_name&#39;</span><span class="p">:</span> <span class="s1">&#39;scattering_number_distribution&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;count&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;SP2-XR firmware on-board calculation&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="n">note</span><span class="p">,</span>
+            <span class="p">})</span>
+
+    <span class="k">if</span> <span class="n">incan_cols</span><span class="p">:</span>
+        <span class="n">psd_ds</span><span class="p">[</span><span class="s1">&#39;IncanNumEnsemble&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">_stack</span><span class="p">(</span><span class="n">incan_cols</span><span class="p">),</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;num_bins&#39;</span><span class="p">),</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;long_name&#39;</span><span class="p">:</span>
+                    <span class="s1">&#39;Incandescence number distribution (SP2-XR firmware, raw counts)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;standard_name&#39;</span><span class="p">:</span> <span class="s1">&#39;incandescence_number_distribution&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;count&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;SP2-XR firmware on-board calculation&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="n">note</span><span class="p">,</span>
+            <span class="p">})</span>
+
+    <span class="n">psd_ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;SP2-XR firmware&#39;</span>
+
+    <span class="n">_attach_sp2xr_calibration_attrs</span><span class="p">(</span><span class="n">psd_ds</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">psd_ds</span></div>
 
 
 
@@ -490,8 +742,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -525,7 +777,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -39,10 +39,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/act-theme.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../_static/documentation_options.js?v=030dc6f6"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -361,6 +361,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 
@@ -515,6 +516,169 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
+
+
+<div class="viewcode-block" id="read_sp2xr">
+<a class="viewcode-back" href="../../../developers_guide/generated/pysp2.io.read_sp2xr.html#pysp2.io.read_sp2xr">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_sp2xr</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads a binary SP2-XR raw data file and returns all of the waveforms</span>
+<span class="sd">    into an xarray Dataset.</span>
+
+<span class="sd">    The SP2-XR file format differs from the original SP2:</span>
+<span class="sd">    each record carries its own (rows, cols) header instead of a single</span>
+<span class="sd">    file-level header, the waveform samples are stored as 4-byte integers</span>
+<span class="sd">    (rather than 2-byte) and only two detector channels are written</span>
+<span class="sd">    (ch0 = scattering, ch1 = incandescence). The time encoding is the</span>
+<span class="sd">    same as the SP2 (TimeDiv10000 * 10000 + TimeRemainder, in seconds</span>
+<span class="sd">    since 1904-01-01).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_name: str</span>
+<span class="sd">        The name of the .sp2b file (or a .zip containing the .sp2b) to read.</span>
+<span class="sd">    debug: bool</span>
+<span class="sd">        Set to true for verbose output.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dataset: xarray.Dataset</span>
+<span class="sd">        The xarray Dataset containing the raw SP2-XR waveforms for each</span>
+<span class="sd">        particle. Variable names mirror read_sp2() (Data_ch0, Data_ch1,</span>
+<span class="sd">        Flag, EventIndex, time, ...).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.zip&quot;</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zf</span><span class="p">:</span>
+            <span class="n">inner</span> <span class="o">=</span> <span class="n">zf</span><span class="o">.</span><span class="n">namelist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">my_data</span> <span class="o">=</span> <span class="n">zf</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">my_data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Pre-scan: locate the start byte of every record and verify shape consistency</span>
+    <span class="n">record_starts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">numSamples</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">numChannels</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">while</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_data</span><span class="p">):</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&gt;2I&quot;</span><span class="p">,</span> <span class="n">my_data</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">8</span><span class="p">])</span>
+        <span class="c1"># rows == 0 marks an explicit end-of-data marker</span>
+        <span class="k">if</span> <span class="n">rows</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">numSamples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">numSamples</span><span class="p">,</span> <span class="n">numChannels</span> <span class="o">=</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">numSamples</span><span class="p">,</span> <span class="n">numChannels</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;SP2-XR records with varying waveform dimensions are not &quot;</span>
+                <span class="s2">&quot;supported (record </span><span class="si">%d</span><span class="s2">: (</span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">) vs first (</span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">)).&quot;</span> <span class="o">%</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">record_starts</span><span class="p">),</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">numSamples</span><span class="p">,</span> <span class="n">numChannels</span><span class="p">))</span>
+
+        <span class="n">wave_bytes</span> <span class="o">=</span> <span class="n">rows</span> <span class="o">*</span> <span class="n">cols</span> <span class="o">*</span> <span class="mi">4</span>
+        <span class="c1"># waveform + Flag(2) + 7 floats(28) + 2 doubles(16) + array_2_dim(4)</span>
+        <span class="n">meta_end</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">+</span> <span class="n">wave_bytes</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">28</span> <span class="o">+</span> <span class="mi">16</span> <span class="o">+</span> <span class="mi">4</span>
+        <span class="k">if</span> <span class="n">meta_end</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_data</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="n">a2_dim</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&gt;I&quot;</span><span class="p">,</span> <span class="n">my_data</span><span class="p">[</span><span class="n">meta_end</span> <span class="o">-</span> <span class="mi">4</span><span class="p">:</span><span class="n">meta_end</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">rec_end</span> <span class="o">=</span> <span class="n">meta_end</span> <span class="o">+</span> <span class="n">a2_dim</span> <span class="o">*</span> <span class="mi">4</span>
+        <span class="k">if</span> <span class="n">rec_end</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_data</span><span class="p">):</span>
+            <span class="k">break</span>
+
+        <span class="n">record_starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">rec_end</span>
+
+    <span class="n">numRecords</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">record_starts</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">numRecords</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded file with numRecords = </span><span class="si">%d</span><span class="s2">, numChannels = </span><span class="si">%d</span><span class="s2">, &quot;</span>
+              <span class="s2">&quot;numSamples = </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">numChannels</span><span class="p">,</span> <span class="n">numSamples</span><span class="p">))</span>
+
+    <span class="n">DataWave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">numChannels</span><span class="p">,</span> <span class="n">numSamples</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+    <span class="n">Flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+    <span class="n">TimeWave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+    <span class="n">Res1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+    <span class="n">EventIndex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+    <span class="n">TimeDiv10000</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+    <span class="n">TimeRemainder</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+    <span class="n">Res5</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+    <span class="n">Res6</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+    <span class="n">Res7</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+    <span class="n">Res8</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">numRecords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+
+    <span class="n">wave_bytes</span> <span class="o">=</span> <span class="n">numSamples</span> <span class="o">*</span> <span class="n">numChannels</span> <span class="o">*</span> <span class="mi">4</span>
+    <span class="n">wave_fmt</span> <span class="o">=</span> <span class="s2">&quot;&gt;&quot;</span> <span class="o">+</span> <span class="s2">&quot;i&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">numSamples</span> <span class="o">*</span> <span class="n">numChannels</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">record_starts</span><span class="p">):</span>
+        <span class="c1"># Skip the per-record (rows, cols) header</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">8</span>
+
+        <span class="c1"># Waveform: interleaved (ch0[0], ch1[0], ch0[1], ch1[1], ...)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">wave_fmt</span><span class="p">,</span> <span class="n">my_data</span><span class="p">[</span><span class="n">p</span><span class="p">:</span><span class="n">p</span> <span class="o">+</span> <span class="n">wave_bytes</span><span class="p">]),</span>
+                       <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+        <span class="c1"># Reshape (numSamples, numChannels) then transpose to (numChannels, numSamples)</span>
+        <span class="n">DataWave</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">numSamples</span><span class="p">,</span> <span class="n">numChannels</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">p</span> <span class="o">+=</span> <span class="n">wave_bytes</span>
+
+        <span class="n">Flag</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&gt;H&quot;</span><span class="p">,</span> <span class="n">my_data</span><span class="p">[</span><span class="n">p</span><span class="p">:</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">p</span> <span class="o">+=</span> <span class="mi">2</span>
+
+        <span class="n">floats</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&gt;7f&quot;</span><span class="p">,</span> <span class="n">my_data</span><span class="p">[</span><span class="n">p</span><span class="p">:</span><span class="n">p</span> <span class="o">+</span> <span class="mi">28</span><span class="p">])</span>
+        <span class="n">TimeWave</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">floats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Res1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">floats</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">EventIndex</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">floats</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">TimeDiv10000</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">floats</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">TimeRemainder</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">floats</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">Res5</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">floats</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        <span class="n">Res6</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">floats</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+        <span class="n">p</span> <span class="o">+=</span> <span class="mi">28</span>
+
+        <span class="n">doubles</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&gt;2d&quot;</span><span class="p">,</span> <span class="n">my_data</span><span class="p">[</span><span class="n">p</span><span class="p">:</span><span class="n">p</span> <span class="o">+</span> <span class="mi">16</span><span class="p">])</span>
+        <span class="n">Res7</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">doubles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Res8</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">doubles</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Reconstruct UTC datetime exactly like read_sp2()</span>
+    <span class="n">UTCtime</span> <span class="o">=</span> <span class="n">TimeDiv10000</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10000</span> <span class="o">+</span> <span class="n">TimeRemainder</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+    <span class="n">diff_epoch_1904</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">datetime</span><span class="p">(</span><span class="mi">1970</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1904</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+    <span class="n">UTCdatetime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span>
+            <span class="n">x</span> <span class="o">-</span> <span class="n">diff_epoch_1904</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">UTCtime</span><span class="p">])</span>
+
+    <span class="c1"># Build xarray Dataset</span>
+    <span class="n">Flag_da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">Flag</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+    <span class="n">Res1_da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">Res1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+    <span class="n">Res5_da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">Res5</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+    <span class="n">Res6_da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">Res6</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+    <span class="n">Res7_da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">Res7</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+    <span class="n">Res8_da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">Res8</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+    <span class="n">Time</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">UTCdatetime</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+    <span class="n">EventInd</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">EventIndex</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+    <span class="n">DateTimeWaveUTC</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">UTCtime</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+    <span class="n">TimeWave_da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">TimeWave</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">})</span>
+
+    <span class="n">my_ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span>
+        <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span> <span class="s1">&#39;Flag&#39;</span><span class="p">:</span> <span class="n">Flag_da</span><span class="p">,</span>
+        <span class="s1">&#39;Res1&#39;</span><span class="p">:</span> <span class="n">Res1_da</span><span class="p">,</span> <span class="s1">&#39;Res5&#39;</span><span class="p">:</span> <span class="n">Res5_da</span><span class="p">,</span> <span class="s1">&#39;Res6&#39;</span><span class="p">:</span> <span class="n">Res6_da</span><span class="p">,</span>
+        <span class="s1">&#39;Res7&#39;</span><span class="p">:</span> <span class="n">Res7_da</span><span class="p">,</span> <span class="s1">&#39;Res8&#39;</span><span class="p">:</span> <span class="n">Res8_da</span><span class="p">,</span>
+        <span class="s1">&#39;EventIndex&#39;</span><span class="p">:</span> <span class="n">EventInd</span><span class="p">,</span>
+        <span class="s1">&#39;DateTimeWaveUTC&#39;</span><span class="p">:</span> <span class="n">DateTimeWaveUTC</span><span class="p">,</span>
+        <span class="s1">&#39;TimeWave&#39;</span><span class="p">:</span> <span class="n">TimeWave_da</span><span class="p">})</span>
+
+    <span class="n">columns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">numSamples</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numChannels</span><span class="p">):</span>
+        <span class="n">my_ds</span><span class="p">[</span><span class="s1">&#39;Data_ch&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ch</span><span class="p">)]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">DataWave</span><span class="p">[:,</span> <span class="n">ch</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;event_index&#39;</span><span class="p">:</span> <span class="n">EventIndex</span><span class="p">,</span> <span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="n">columns</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">my_ds</span></div>
+
 </pre></div>
 
                 </article>
@@ -544,8 +708,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -579,7 +743,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>
