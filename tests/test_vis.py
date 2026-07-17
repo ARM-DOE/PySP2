@@ -100,6 +100,7 @@ def test_plot_incident_irradiance():
         sigma_ds=sigma_ds,
         time_units="us",
     )
+
     fig = ax.figure
     
     return fig

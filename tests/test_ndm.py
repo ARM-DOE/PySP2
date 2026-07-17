@@ -3,7 +3,7 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)
 
 from pysp2.util.normalized_derivative_method import MLEConfig, mle_tau_moteki_kondo, compute_d2_moteki_kondo
-from pysp2.util.normalized_derivative_method import compute_sigma_moteki_kondo
+from pysp2.util.normalized_derivative_method import compute_sigma_moteki_kondo, compute_normalized_incident_irradiance_moteki_kondo
 event=152
 my_sp2b = pysp2.io.read_sp2(pysp2.testing.EXAMPLE_SP2B_PSL, arm_convention=False)
 my_ini = pysp2.io.read_config(pysp2.testing.EXAMPLE_INI_PSL)
@@ -77,7 +77,7 @@ def test_ndm_moteki_kondo():
     np.testing.assert_allclose(
         tau_best,
         tau_val_true,
-        atol=0.3,  # absolute tolerance = 5e-7
+        atol=0.3,  # absolute tolerance = 0.3 microseconds
     )
 
     sigma_ds = compute_sigma_moteki_kondo(
@@ -94,11 +94,29 @@ def test_ndm_moteki_kondo():
     )
 
     # example: use the best sigma value from your analysis, divided by 4.29193 to convert FWTM value of
-    # 18.51*np.sqrt(np.log(10)/np.log(2)) to sigma where 18.51 is the average FWHM in us
+    # 18.51*np.sqrt(np.log(10)/np.log(2)) to sigma where 33.7366 is the average FWHM in us
     sigma_best = (33.7366*0.4)/4.29193
 
     np.testing.assert_allclose(
          sigma_ds['sigma_hat'].values,
          sigma_best,
          atol=0.12,  # absolute tolerance = 1.5 microseconds
-     )
+    )
+    
+    # Test the normalized irradiance function 
+    I_norm = compute_normalized_incident_irradiance_moteki_kondo(
+        sigma_out=sigma_ds,
+    )
+
+    y_scatter_background_shifted = (
+        my_binary['Data_ch0'].isel(event_index=event).values - 
+        np.nanmin(my_binary['Data_ch0'].isel(event_index=event).values)
+    )
+
+    # test for peak area only
+    for i in range(15,75):
+        np.testing.assert_allclose(
+            (I_norm * np.nanmax(y_scatter_background_shifted))[i],
+            y_scatter_background_shifted[i],
+            atol=4500,  # absolute tolerance ~ 10% of the max scattering signal value
+        )
