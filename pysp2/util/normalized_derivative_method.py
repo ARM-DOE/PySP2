@@ -1055,6 +1055,37 @@ def plot_incident_irradiance(
     Plot normalized derivative S'(t)/S(t), expected I'(t)/I(t), and optionally
     the scattering signal and normalized incident irradiance, all against the
     same bins-based time axis.
+
+    Parameters
+    ----------
+    S : xr.Dataset
+        Dataset containing the normalized derivative S'(t)/S(t).
+    ds : xr.Dataset
+        Dataset containing the scattering signal S(t).
+    record_no : int
+        Event index to plot.
+    chn : int, default 0
+        Channel number (0 or 4) to select the appropriate data variable.
+    plot_scattering_signal : bool, default True
+        If True, overlay the scattering signal and normalized incident irradiance.
+    sigma_ds : xr.Dataset, optional
+        Dataset containing sigma_hat and tau_best for the event. If provided,
+        these values will be used for plotting the expected I'/I line.
+    tau : float, optional
+        If sigma_ds is not provided, tau must be supplied for plotting the expected I'/I line.
+    sigma : float, optional
+        If sigma_ds is not provided, sigma must be supplied for plotting the expected I'/I line.
+    h : float, default 0.4
+        Time bin width in microseconds.
+    time_units : str, default "us"
+        Time units for the x-axis. Must be either "us" (microseconds) or "s" (seconds).
+    show_fit_window : bool, default True
+        If True and sigma_ds is provided, shade the fit window region on the plot.
+
+    Returns
+    -------
+    axes : matplotlib.axes.Axes
+        The axes object containing the plot.
     """
     if chn not in [0, 4]:
         raise ValueError("Channel number must be 0 or 4.")
