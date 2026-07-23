@@ -1244,7 +1244,7 @@ def plot_scattering_cross_section(
     ch: Optional[str] = None,
     event_dim: str = "event_index",
     S_sample_dim: Optional[str] = None,
-    calibration_constant: float = 1.0,
+    calibration_constant: float = (1.22e-17/2.44),  # (m²/2.44 mV)
     h: float = 0.4,
     time_units: str = "us",
     show_fit_window: bool = True,
@@ -1255,7 +1255,7 @@ def plot_scattering_cross_section(
 
     The cross section is computed as:
 
-        ΔC_sca(t) = calibration_constant * S(t) / (I(t)/I0)
+        ΔC_sca(t) = calibration_constant * S(t) / I(t)
 
     where I(t)/I0 is obtained from compute_normalized_incident_irradiance_moteki_kondo(...).
 
@@ -1278,8 +1278,9 @@ def plot_scattering_cross_section(
         Event dimension name.
     S_sample_dim : str, optional
         Sample dimension in S.
-    calibration_constant : float, default 1.0
+    calibration_constant : float, default 1.22e-17  # (m²/2.44 mV)
         Scale factor applied to S / (I/I0).
+        Default value from Moteki & Kondo (2008).
     h : float, default 0.4e-6
         Sampling interval in seconds.
     time_units : {"us", "s"}, default "us"
@@ -1354,7 +1355,7 @@ def plot_scattering_cross_section(
         t_plot = t
         x_label = r"Time ($\rm \mu$s)"
     elif time_units == "s":
-        t_plot = t * 1e-6
+        t_plot = t * 1e6
         x_label = r"Time (s)"
     else:
         raise ValueError("time_units must be 'us' or 's'.")
@@ -1362,7 +1363,7 @@ def plot_scattering_cross_section(
     if time_units == "us":
         t_vals_for_irradiance = t_plot * 1e-6
     else:
-        t_vals_for_irradiance = t_plot
+        t_vals_for_irradiance = t_plot 
 
     # Required sigma/tau outputs.
     if "tau_best" not in sigma_ds:
@@ -1377,7 +1378,7 @@ def plot_scattering_cross_section(
         raise ValueError(
             f"Invalid tau_best/sigma_hat: tau_best={tau_best}, sigma_hat={sigma_hat}"
         )
-
+    
     # Compute normalized incident irradiance using the existing function.
     i_norm_da = compute_normalized_incident_irradiance_moteki_kondo(
         sigma_out=sigma_ds,
@@ -1436,6 +1437,7 @@ def plot_scattering_cross_section(
     ax.set_xlabel(x_label)
     ax.set_ylabel(r"Scaled $\Delta C_{\mathrm{sca}}$ (a.u.)")
     ax.grid(True, alpha=0.3)
+    ax.set_xlim(t_plot[10], t_plot[-30])
     ax.legend(loc="best", fontsize=10)
     ax.set_title(
         f"Differential Scattering Cross Section - Channel {chn} Record {record_no}",
