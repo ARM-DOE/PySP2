@@ -111,8 +111,7 @@ def test_plot_scattering_cross_section():
 
     my_binary = pysp2.util.gaussian_fit(my_sp2b, my_ini, parallel=False, baseline_to_zero=True)
     dSdt = pysp2.util.central_difference(my_binary, normalize=True, baseline_to_zero=True)
-    print("dSdt dimensions:", dSdt.dims)
-
+    # print("dSdt dimensions:", dSdt.dims)
     cfg = MLEConfig(
     h=0.4,           # example: 0.4 microseconds
     sigma_bar= 18.5*0.4,  # example; use your measured average width
