@@ -1234,3 +1234,208 @@ def plot_incident_irradiance(
     )
 
     return ax
+
+def plot_scattering_cross_section(
+    S: Union[xr.DataArray, xr.Dataset],
+    sigma_ds: xr.Dataset,
+    record_no: int,
+    *,
+    chn: int = 0,
+    ch: Optional[str] = None,
+    event_dim: str = "event_index",
+    S_sample_dim: Optional[str] = None,
+    calibration_constant: float = (1.22e-17/2.44),  # (m²/2.44 mV)
+    h: float = 0.4,
+    time_units: str = "us",
+    show_fit_window: bool = True,
+) -> plt.Figure:
+    """
+    Plot the differential scattering cross section (scaled by calibration_constant)
+    computed from the Moteki & Kondo tau/sigma result for one event.
+
+    The cross section is computed as:
+
+        ΔC_sca(t) = calibration_constant * S(t) / I(t)
+
+    where I(t)/I0 is obtained from compute_normalized_incident_irradiance_moteki_kondo(...).
+
+    Parameters
+    ----------
+    S : xr.DataArray or xr.Dataset
+        Scattering signal.
+    sigma_ds : xr.Dataset
+        Output from the Moteki & Kondo sigma/tau workflow. Must contain:
+        - sigma_hat
+        - tau_best
+        and ideally fit_start / fit_stop.
+    record_no : int
+        Event index to plot.
+    chn : int, default 0
+        Channel number (0 or 4).
+    ch : str, optional
+        Variable name to select when S is a Dataset.
+    event_dim : str, default "event_index"
+        Event dimension name.
+    S_sample_dim : str, optional
+        Sample dimension in S.
+    calibration_constant : float, default 1.22e-17  # (m²/2.44 mV)
+        Scale factor applied to S / (I/I0).
+        Default value from Moteki & Kondo (2008).
+    h : float, default 0.4e-6
+        Sampling interval in seconds.
+    time_units : {"us", "s"}, default "us"
+        Units for the x-axis.
+    show_fit_window : bool, default True
+        Shade the fitted window if fit_start / fit_stop are present.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The figure object.
+    """
+    if chn not in [0, 4]:
+        raise ValueError("Channel number must be 0 or 4.")
+
+    ch_name = f"Data_ch{chn}"
+
+    # Convert S to DataArray if needed.
+    if isinstance(S, xr.Dataset):
+        if ch is not None:
+            if ch not in S.data_vars:
+                raise ValueError(f"{ch!r} not found in S.data_vars={list(S.data_vars)}")
+            S_da = S[ch]
+        else:
+            if ch_name in S.data_vars:
+                S_da = S[ch_name]
+            elif len(S.data_vars) == 1:
+                S_da = S[next(iter(S.data_vars))]
+            else:
+                raise ValueError(
+                    f"S is a Dataset with multiple variables. Provide ch. "
+                    f"Available: {list(S.data_vars)}"
+                )
+    elif isinstance(S, xr.DataArray):
+        S_da = S
+    else:
+        raise TypeError("S must be an xarray DataArray or Dataset.")
+
+    if event_dim not in S_da.dims:
+        raise ValueError(f"{event_dim!r} not found in S.dims={S_da.dims}")
+
+    # Infer sample dimension if needed.
+    if S_sample_dim is None:
+        non_event_dims = [d for d in S_da.dims if d != event_dim]
+        if len(non_event_dims) != 1:
+            raise ValueError(
+                f"Could not infer S sample dim. Non-event dims in S: {non_event_dims}"
+            )
+        S_sample_dim = non_event_dims[0]
+
+    # Validate event index.
+    if record_no < 0 or record_no >= S_da.sizes[event_dim]:
+        raise ValueError(
+            f"record_no must be in [0, {S_da.sizes[event_dim] - 1}], got {record_no}"
+        )
+
+    # Select the requested event.
+    s_event = np.asarray(
+        S_da.rename({S_sample_dim: "sample"})
+        .sel({event_dim: record_no})
+        .values,
+        dtype=float,
+    )
+
+    n_samples = s_event.size
+    if n_samples == 0:
+        raise ValueError("Selected event has no samples.")
+
+    # Use the same bins convention as plot_incident_irradiance.
+    t = np.arange(n_samples, dtype=float) * h
+    if time_units == "us":
+        t_plot = t
+        x_label = r"Time ($\rm \mu$s)"
+    elif time_units == "s":
+        t_plot = t * 1e6
+        x_label = r"Time (s)"
+    else:
+        raise ValueError("time_units must be 'us' or 's'.")
+
+    if time_units == "us":
+        t_vals_for_irradiance = t_plot 
+    else:
+        t_vals_for_irradiance = t_plot * 1e6
+
+    # Required sigma/tau outputs.
+    if "tau_best" not in sigma_ds:
+        raise ValueError("sigma_ds must contain 'tau_best'.")
+    if "sigma_hat" not in sigma_ds:
+        raise ValueError("sigma_ds must contain 'sigma_hat'.")
+
+    tau_best = float(np.asarray(sigma_ds["tau_best"].values))
+    sigma_hat = float(np.asarray(sigma_ds["sigma_hat"].values))
+
+    if not np.isfinite(tau_best) or not np.isfinite(sigma_hat) or sigma_hat <= 0:
+        raise ValueError(
+            f"Invalid tau_best/sigma_hat: tau_best={tau_best}, sigma_hat={sigma_hat}"
+        )
+    
+    # Compute normalized incident irradiance using the existing function.
+    i_norm_da = compute_normalized_incident_irradiance_moteki_kondo(
+        sigma_out=sigma_ds,
+        t_vals=t_vals_for_irradiance,
+        sample_dim="sample",
+    )
+
+    i_norm = np.asarray(i_norm_da.values, dtype=float)
+
+    if i_norm.shape != s_event.shape:
+        raise ValueError(
+            f"Incident irradiance length {i_norm.shape} does not match "
+            f"signal length {s_event.shape}."
+        )
+
+    # Differential scattering cross section, scaled.
+    with np.errstate(divide="ignore", invalid="ignore"):
+        delta_csca = calibration_constant * (s_event / i_norm)
+        delta_csca[~np.isfinite(delta_csca)] = np.nan
+
+    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["mathtext.fontset"] = "stix"
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    ax.plot(
+        t_plot,
+        delta_csca,
+        color="black",
+        linewidth=1.8,
+        label=r"$\Delta C_{\mathrm{sca}}(t)$",
+    )
+
+    if show_fit_window and "fit_start" in sigma_ds and "fit_stop" in sigma_ds:
+        fit_start = int(np.asarray(sigma_ds["fit_start"].values))
+        fit_stop = int(np.asarray(sigma_ds["fit_stop"].values))
+        fit_start = max(0, min(fit_start, n_samples - 1))
+        fit_stop = max(fit_start + 1, min(fit_stop, n_samples))
+
+        ax.axvspan(
+            t_plot[fit_start],
+            t_plot[fit_stop - 1],
+            color="gray",
+            alpha=0.15,
+            label="Fit window",
+        )
+
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(r"$\Delta C_{\mathrm{sca}}$ (m²)")
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim(1e-14,1e-11)
+    ax.set_yscale("log")
+    ax.set_xlim(t_plot[10], t_plot[-30])
+    ax.legend(loc="best", fontsize=10)
+    ax.set_title(
+        f"Differential Scattering Cross Section - Channel {chn} Record {record_no}",
+        pad=14,
+    )
+
+    return fig
