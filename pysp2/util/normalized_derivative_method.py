@@ -1361,9 +1361,9 @@ def plot_scattering_cross_section(
         raise ValueError("time_units must be 'us' or 's'.")
 
     if time_units == "us":
-        t_vals_for_irradiance = t_plot * 1e-6
-    else:
         t_vals_for_irradiance = t_plot 
+    else:
+        t_vals_for_irradiance = t_plot * 1e6
 
     # Required sigma/tau outputs.
     if "tau_best" not in sigma_ds:
@@ -1412,14 +1412,6 @@ def plot_scattering_cross_section(
         label=r"$\Delta C_{\mathrm{sca}}(t)$",
     )
 
-    ax.axvline(
-        x=(tau_best) if time_units == "us" else tau_best*1e6,
-        color="red",
-        linestyle="--",
-        linewidth=1.5,
-        label=r"$\tau_{\mathrm{best}}$",
-    )
-
     if show_fit_window and "fit_start" in sigma_ds and "fit_stop" in sigma_ds:
         fit_start = int(np.asarray(sigma_ds["fit_start"].values))
         fit_stop = int(np.asarray(sigma_ds["fit_stop"].values))
@@ -1435,8 +1427,10 @@ def plot_scattering_cross_section(
         )
 
     ax.set_xlabel(x_label)
-    ax.set_ylabel(r"Scaled $\Delta C_{\mathrm{sca}}$ (a.u.)")
+    ax.set_ylabel(r"$\Delta C_{\mathrm{sca}}$ (m²)")
     ax.grid(True, alpha=0.3)
+    ax.set_ylim(1e-14,1e-11)
+    ax.set_yscale("log")
     ax.set_xlim(t_plot[10], t_plot[-30])
     ax.legend(loc="best", fontsize=10)
     ax.set_title(
