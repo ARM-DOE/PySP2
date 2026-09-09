@@ -1482,7 +1482,11 @@ def plot_d2(
     if d2_np.ndim != 1:
         raise ValueError("d2 must be a 1D array or DataArray.")
 
-    k = np.arange(d2_np.size)
+    k = (
+         np.asarray(d2["k"].values)
+         if isinstance(d2, xr.DataArray) and "k" in d2.coords
+         else np.arange(d2_np.size)
+     )
 
     finite = np.isfinite(d2_np)
     if not np.any(finite):
@@ -1507,14 +1511,14 @@ def plot_d2(
 
     if highlight_kbest:
         ax.axvline(
-            kbest,
+            k[kbest],
             color="red",
             linestyle="--",
             linewidth=1.5,
-            label=rf"$k_{{\mathrm{{best}}}}={kbest}$",
+            label=rf"$k_{{\mathrm{{best}}}}={k[kbest]}$",
         )
         ax.scatter(
-            [kbest],
+            [k[kbest]],
             [d2_np[kbest]],
             color="red",
             s=40,
