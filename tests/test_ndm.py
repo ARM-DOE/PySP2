@@ -33,8 +33,8 @@ def test_ndm_moteki_kondo():
 
     cfg = MLEConfig(
     h=0.4,           # example: 0.4 microseconds
-    sigma_bar= 18.5*0.4,  # example; use your measured average width
-    delta_sigma=1.2*0.4, # example; use your measured width std dev
+    sigma_bar= (18.5/ 2.35482 )*0.4,  # example; use your measured average width
+    delta_sigma=(1.2/ 2.35482 )*0.4, # example; use your measured width std dev
     A1=0.37*2.44,
     A2=(1.6e-2)*2.44**(1/2),
     A3=6.2e-4,

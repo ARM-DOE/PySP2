@@ -1439,3 +1439,112 @@ def plot_scattering_cross_section(
     )
 
     return fig
+
+def plot_d2(
+    d2: Union[xr.DataArray, np.ndarray],
+    *,
+    threshold: Optional[float] = None,
+    title: Optional[str] = None,
+    xlabel: str = "k",
+    ylabel: str = r"Statistical distance $d^2$",
+    log_scale: bool = True,
+    highlight_kbest: bool = True,
+) -> plt.Figure:
+    """
+    Plot the Moteki & Kondo statistical distance d^2(k) for one event.
+
+    Parameters
+    ----------
+    d2 : xr.DataArray or np.ndarray
+        Computed d^2 values, typically output from compute_d2_moteki_kondo(...).
+        Expected shape is 1D over k.
+    threshold : float, optional
+        Optional horizontal acceptance threshold line (for example, a chi-square
+        cutoff or your empirical threshold).
+    title : str, optional
+        Custom plot title. If omitted, a default title is used.
+    xlabel : str, default "k"
+        x-axis label.
+    ylabel : str, default r"Statistical distance $d^2$"
+        y-axis label.
+    log_scale : bool, default True
+        If True, use a logarithmic y-axis.
+    highlight_kbest : bool, default True
+        If True, mark the minimum finite d^2 value with a red vertical line.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The created figure.
+    """
+    d2_np = np.asarray(d2.data if isinstance(d2, xr.DataArray) else d2, dtype=float)
+
+    if d2_np.ndim != 1:
+        raise ValueError("d2 must be a 1D array or DataArray.")
+
+    k = (
+         np.asarray(d2["k"].values)
+         if isinstance(d2, xr.DataArray) and "k" in d2.coords
+         else np.arange(d2_np.size)
+     )
+
+    finite = np.isfinite(d2_np)
+    if not np.any(finite):
+        raise ValueError("No finite d2 values available to plot.")
+
+    kbest = int(np.nanargmin(np.where(finite, d2_np, np.nan)))
+
+    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["mathtext.fontset"] = "stix"
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    ax.plot(
+        k,
+        d2_np,
+        color="blue",
+        marker="o",
+        markersize=4,
+        linewidth=1.2,
+        label=r"$d^2(k)$",
+    )
+
+    if highlight_kbest:
+        ax.axvline(
+            k[kbest],
+            color="red",
+            linestyle="--",
+            linewidth=1.5,
+            label=rf"$k_{{\mathrm{{best}}}}={k[kbest]}$",
+        )
+        ax.scatter(
+            [k[kbest]],
+            [d2_np[kbest]],
+            color="red",
+            s=40,
+            zorder=5,
+        )
+
+    if threshold is not None:
+        ax.axhline(
+            threshold,
+            color="gray",
+            linestyle=":",
+            linewidth=1.5,
+            label=rf"Threshold = {threshold:g}",
+        )
+
+    if log_scale:
+        ax.set_yscale("log")
+
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.grid(True, alpha=0.3, which="both" if log_scale else "major")
+
+    if title is None:
+        title = r"Moteki & Kondo Statistical Distance $d^2(k)$"
+    ax.set_title(title, pad=14)
+
+    ax.legend(loc="best", fontsize=10)
+
+    return fig
