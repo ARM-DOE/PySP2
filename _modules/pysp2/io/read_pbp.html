@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -39,10 +39,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/act-theme.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../../_static/documentation_options.js?v=030dc6f6"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -357,9 +357,9 @@
                 <article class="bd-article">
                   
   <h1>Source code for pysp2.io.read_pbp</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Python module for reading SP2-XR Particle-by-Particle (PbP) files.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
@@ -375,27 +375,27 @@
 <span class="c1"># right are intended to look like the output of pysp2.util.gaussian_fit() so</span>
 <span class="c1"># that downstream calibration utilities can be used with SP2-XR data.</span>
 <span class="n">_PBP_RENAME_MAP</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;Scatter relPeak&#39;</span><span class="p">:</span> <span class="s1">&#39;PkHt_ch0&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Scatter Peak Time&#39;</span><span class="p">:</span> <span class="s1">&#39;PkPos_ch0&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Scatter FWHM&#39;</span><span class="p">:</span> <span class="s1">&#39;PkFWHM_ch0&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Scatter Transit Time&#39;</span><span class="p">:</span> <span class="s1">&#39;ScatTransitTime&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Incand relPeak&#39;</span><span class="p">:</span> <span class="s1">&#39;PkHt_ch1&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Incand Peak Time&#39;</span><span class="p">:</span> <span class="s1">&#39;PkPos_ch1&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Incand FWHM&#39;</span><span class="p">:</span> <span class="s1">&#39;PkFWHM_ch1&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Incand Transit Time&#39;</span><span class="p">:</span> <span class="s1">&#39;IncTransitTime&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Incand Delay&#39;</span><span class="p">:</span> <span class="s1">&#39;IncanDelay&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Particle Flags&#39;</span><span class="p">:</span> <span class="s1">&#39;ParticleFlags&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Particle Time Stamp&#39;</span><span class="p">:</span> <span class="s1">&#39;ParticleTimeStamp&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Packet Time Stamp&#39;</span><span class="p">:</span> <span class="s1">&#39;PacketTimeStamp&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Time (sec)&#39;</span><span class="p">:</span> <span class="s1">&#39;TimeWave&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Dropped Records&#39;</span><span class="p">:</span> <span class="s1">&#39;DroppedRecords&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Record Count&#39;</span><span class="p">:</span> <span class="s1">&#39;RecordCount&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Record Size&#39;</span><span class="p">:</span> <span class="s1">&#39;RecordSize&#39;</span><span class="p">,</span>
+    <span class="s1">'Scatter relPeak'</span><span class="p">:</span> <span class="s1">'PkHt_ch0'</span><span class="p">,</span>
+    <span class="s1">'Scatter Peak Time'</span><span class="p">:</span> <span class="s1">'PkPos_ch0'</span><span class="p">,</span>
+    <span class="s1">'Scatter FWHM'</span><span class="p">:</span> <span class="s1">'PkFWHM_ch0'</span><span class="p">,</span>
+    <span class="s1">'Scatter Transit Time'</span><span class="p">:</span> <span class="s1">'ScatTransitTime'</span><span class="p">,</span>
+    <span class="s1">'Incand relPeak'</span><span class="p">:</span> <span class="s1">'PkHt_ch1'</span><span class="p">,</span>
+    <span class="s1">'Incand Peak Time'</span><span class="p">:</span> <span class="s1">'PkPos_ch1'</span><span class="p">,</span>
+    <span class="s1">'Incand FWHM'</span><span class="p">:</span> <span class="s1">'PkFWHM_ch1'</span><span class="p">,</span>
+    <span class="s1">'Incand Transit Time'</span><span class="p">:</span> <span class="s1">'IncTransitTime'</span><span class="p">,</span>
+    <span class="s1">'Incand Delay'</span><span class="p">:</span> <span class="s1">'IncanDelay'</span><span class="p">,</span>
+    <span class="s1">'Particle Flags'</span><span class="p">:</span> <span class="s1">'ParticleFlags'</span><span class="p">,</span>
+    <span class="s1">'Particle Time Stamp'</span><span class="p">:</span> <span class="s1">'ParticleTimeStamp'</span><span class="p">,</span>
+    <span class="s1">'Packet Time Stamp'</span><span class="p">:</span> <span class="s1">'PacketTimeStamp'</span><span class="p">,</span>
+    <span class="s1">'Time (sec)'</span><span class="p">:</span> <span class="s1">'TimeWave'</span><span class="p">,</span>
+    <span class="s1">'Dropped Records'</span><span class="p">:</span> <span class="s1">'DroppedRecords'</span><span class="p">,</span>
+    <span class="s1">'Record Count'</span><span class="p">:</span> <span class="s1">'RecordCount'</span><span class="p">,</span>
+    <span class="s1">'Record Size'</span><span class="p">:</span> <span class="s1">'RecordSize'</span><span class="p">,</span>
 <span class="p">}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_find_matching_hk_file</span><span class="p">(</span><span class="n">pbp_path</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Locate the SP2-XR HK file that corresponds to a PbP file.</span>
 
 <span class="sd">    There is one HK file per acquisition session (always named ``_x0001``),</span>
@@ -403,12 +403,12 @@
 <span class="sd">    Both .csv and .zip variants are checked.</span>
 
 <span class="sd">    Returns None if no candidate exists on disk.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;PbP&#39;</span><span class="p">,</span> <span class="s1">&#39;hk&#39;</span><span class="p">,</span> <span class="n">pbp_path</span><span class="p">)</span>
-    <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(_x)\d</span><span class="si">{4}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\g&lt;1&gt;0001&#39;</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
-    <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\.(csv|zip)$&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">'PbP'</span><span class="p">,</span> <span class="s1">'hk'</span><span class="p">,</span> <span class="n">pbp_path</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">'(_x)\d</span><span class="si">{4}</span><span class="s1">'</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'\g&lt;1&gt;0001'</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\.(csv|zip)$'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;.zip&#39;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'.csv'</span><span class="p">,</span> <span class="s1">'.zip'</span><span class="p">):</span>
         <span class="n">candidate</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="n">ext</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">candidate</span>
@@ -418,7 +418,7 @@
 <div class="viewcode-block" id="read_sp2xr_pbp">
 <a class="viewcode-back" href="../../../developers_guide/generated/pysp2.io.read_sp2xr_pbp.html#pysp2.io.read_sp2xr_pbp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_sp2xr_pbp</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">keep_firmware_calibration</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Read a SP2-XR Particle-by-Particle (PbP) CSV or ZIP file into an</span>
 <span class="sd">    xarray Dataset.</span>
 
@@ -430,12 +430,12 @@
 <span class="sd">    (e.g. pysp2.util.calc_diams_masses) with appropriate SP2-XR</span>
 <span class="sd">    coefficients.</span>
 
-<span class="sd">    By default, the pre-calibrated &#39;Scatter Size (nm)&#39; and &#39;Incand Mass</span>
-<span class="sd">    (fg)&#39; columns are dropped to encourage recalibration with consistent</span>
+<span class="sd">    By default, the pre-calibrated 'Scatter Size (nm)' and 'Incand Mass</span>
+<span class="sd">    (fg)' columns are dropped to encourage recalibration with consistent</span>
 <span class="sd">    curves. Pass keep_firmware_calibration=True to retain them as</span>
-<span class="sd">    &#39;firmware_ScatterSize_nm&#39; and &#39;firmware_IncandMass_fg&#39;; in that case</span>
-<span class="sd">    the scattering / incandescence calibration CSVs (&#39;*_Scatt_*.csv&#39; and</span>
-<span class="sd">    &#39;*_Incan_*.csv&#39;) are auto-located alongside the PbP file and attached</span>
+<span class="sd">    'firmware_ScatterSize_nm' and 'firmware_IncandMass_fg'; in that case</span>
+<span class="sd">    the scattering / incandescence calibration CSVs ('*_Scatt_*.csv' and</span>
+<span class="sd">    '*_Incan_*.csv') are auto-located alongside the PbP file and attached</span>
 <span class="sd">    as dataset attributes for provenance.</span>
 
 <span class="sd">    Absolute particle datetimes are derived from the matching SP2-XR HK</span>
@@ -444,52 +444,52 @@
 <span class="sd">    files; the HK provides the wall-clock reference that converts the</span>
 <span class="sd">    PbP instrument seconds to UTC. If no matching HK file is found, a</span>
 <span class="sd">    warning is emitted and the dataset is returned without an absolute</span>
-<span class="sd">    &#39;time&#39; coordinate.</span>
+<span class="sd">    'time' coordinate.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    file_name: str</span>
 <span class="sd">        Path to the PbP CSV or ZIP file.</span>
 <span class="sd">    keep_firmware_calibration: bool</span>
-<span class="sd">        If True, retain the SP2-XR firmware&#39;s &#39;Scatter Size (nm)&#39; and</span>
-<span class="sd">        &#39;Incand Mass (fg)&#39; as &#39;firmware_ScatterSize_nm&#39; and</span>
-<span class="sd">        &#39;firmware_IncandMass_fg&#39;. Default False.</span>
+<span class="sd">        If True, retain the SP2-XR firmware's 'Scatter Size (nm)' and</span>
+<span class="sd">        'Incand Mass (fg)' as 'firmware_ScatterSize_nm' and</span>
+<span class="sd">        'firmware_IncandMass_fg'. Default False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pbp_ds: xarray.Dataset</span>
-<span class="sd">        Per-particle data indexed by &#39;event_index&#39;. Variable names follow</span>
+<span class="sd">        Per-particle data indexed by 'event_index'. Variable names follow</span>
 <span class="sd">        PySP2 conventions for peak fit outputs (PkHt_ch0, PkHt_ch1,</span>
 <span class="sd">        PkFWHM_ch0, ...), with SP2-XR-specific columns kept under</span>
 <span class="sd">        descriptive names (ScatTransitTime, IncTransitTime, IncanDelay,</span>
 <span class="sd">        ParticleFlags).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pandas handles both .csv and .zip transparently</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
 
-    <span class="c1"># Drop the &#39;Reserved&#39; column (always empty) and, by default, the</span>
+    <span class="c1"># Drop the 'Reserved' column (always empty) and, by default, the</span>
     <span class="c1"># firmware-calibrated diameter / mass.</span>
-    <span class="n">drop_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Reserved&#39;</span><span class="p">]</span>
+    <span class="n">drop_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Reserved'</span><span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_firmware_calibration</span><span class="p">:</span>
-        <span class="n">drop_cols</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;Scatter Size (nm)&#39;</span><span class="p">,</span> <span class="s1">&#39;Incand Mass (fg)&#39;</span><span class="p">]</span>
+        <span class="n">drop_cols</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">'Scatter Size (nm)'</span><span class="p">,</span> <span class="s1">'Incand Mass (fg)'</span><span class="p">]</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">drop_cols</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
 
     <span class="n">rename_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_PBP_RENAME_MAP</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">keep_firmware_calibration</span><span class="p">:</span>
-        <span class="n">rename_map</span><span class="p">[</span><span class="s1">&#39;Scatter Size (nm)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;firmware_ScatterSize_nm&#39;</span>
-        <span class="n">rename_map</span><span class="p">[</span><span class="s1">&#39;Incand Mass (fg)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;firmware_IncandMass_fg&#39;</span>
-    <span class="c1"># The packet-level &#39;Flag&#39; shares its name with the per-particle flag</span>
+        <span class="n">rename_map</span><span class="p">[</span><span class="s1">'Scatter Size (nm)'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'firmware_ScatterSize_nm'</span>
+        <span class="n">rename_map</span><span class="p">[</span><span class="s1">'Incand Mass (fg)'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'firmware_IncandMass_fg'</span>
+    <span class="c1"># The packet-level 'Flag' shares its name with the per-particle flag</span>
     <span class="c1"># column; rename it explicitly to avoid the collision.</span>
-    <span class="k">if</span> <span class="s1">&#39;Flag&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">rename_map</span><span class="p">[</span><span class="s1">&#39;Flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;PacketFlag&#39;</span>
+    <span class="k">if</span> <span class="s1">'Flag'</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">rename_map</span><span class="p">[</span><span class="s1">'Flag'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PacketFlag'</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">rename_map</span><span class="p">)</span>
 
     <span class="c1"># Use a monotonic event_index as the primary dimension, consistent</span>
     <span class="c1"># with read_sp2()/read_sp2xr().</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;event_index&#39;</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'float32'</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">'event_index'</span><span class="p">)</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
-    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;EventIndex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;event_index&#39;</span><span class="p">]</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">'EventIndex'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">'event_index'</span><span class="p">]</span>
 
     <span class="c1"># Attach calibration curve provenance only when the firmware-calibrated</span>
     <span class="c1"># size / mass columns are retained.</span>
@@ -503,23 +503,23 @@
     <span class="n">hk_file_name</span> <span class="o">=</span> <span class="n">_find_matching_hk_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">hk_file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;No matching SP2-XR HK file found next to </span><span class="si">%r</span><span class="s2">; &quot;</span>
-            <span class="s2">&quot;returning relative instrument seconds only. &quot;</span>
-            <span class="s2">&quot;Place the HK file alongside the PbP file (with &#39;_x0001&#39;) to &quot;</span>
-            <span class="s2">&quot;get absolute particle datetimes.&quot;</span> <span class="o">%</span> <span class="n">file_name</span><span class="p">,</span>
+            <span class="s2">"No matching SP2-XR HK file found next to </span><span class="si">%r</span><span class="s2">; "</span>
+            <span class="s2">"returning relative instrument seconds only. "</span>
+            <span class="s2">"Place the HK file alongside the PbP file (with '_x0001') to "</span>
+            <span class="s2">"get absolute particle datetimes."</span> <span class="o">%</span> <span class="n">file_name</span><span class="p">,</span>
             <span class="ne">UserWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">ds</span>
 
     <span class="n">hk_ds</span> <span class="o">=</span> <span class="n">read_sp2xr_hk_file</span><span class="p">(</span><span class="n">hk_file_name</span><span class="p">)</span>
-    <span class="n">t0</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="c1"># After read_sp2xr_hk_file strips the unit suffix, the HK &#39;Time (sec)&#39;</span>
-    <span class="c1"># column is exposed as &#39;Time&#39;.</span>
-    <span class="n">hk_first_sec</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hk_ds</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">delta_sec</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;ParticleTimeStamp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">hk_first_sec</span>
-    <span class="n">time_values</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">delta_sec</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
-    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">assign_coords</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;event_index&#39;</span><span class="p">,</span> <span class="n">time_values</span><span class="p">))</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">hk_ds</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="c1"># After read_sp2xr_hk_file strips the unit suffix, the HK 'Time (sec)'</span>
+    <span class="c1"># column is exposed as 'Time'.</span>
+    <span class="n">hk_first_sec</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hk_ds</span><span class="p">[</span><span class="s1">'Time'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">delta_sec</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">'ParticleTimeStamp'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">hk_first_sec</span>
+    <span class="n">time_values</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">delta_sec</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">'s'</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">assign_coords</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="s1">'event_index'</span><span class="p">,</span> <span class="n">time_values</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">ds</span></div>
 
@@ -552,8 +552,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -587,7 +587,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

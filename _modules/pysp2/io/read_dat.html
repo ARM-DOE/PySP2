@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -39,10 +39,10 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/act-theme.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../../_static/documentation_options.js?v=030dc6f6"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -357,7 +357,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for pysp2.io.read_dat</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; I/O function for reading .dat files from original IGOR processing.&quot;&quot;&quot;</span>
+<span></span><span class="sd">""" I/O function for reading .dat files from original IGOR processing."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -373,7 +373,7 @@
 <div class="viewcode-block" id="read_dat">
 <a class="viewcode-back" href="../../../developers_guide/generated/pysp2.io.read_dat.html#pysp2.io.read_dat">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_dat</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This reads the .dat files that generate the intermediate parameters used</span>
 <span class="sd">    by the Igor processing. Wildcards are supported.</span>
 
@@ -383,39 +383,39 @@
 <span class="sd">        The name of the file to save to. Use a wildcard to open multiple files at once.</span>
 <span class="sd">    type: str</span>
 <span class="sd">        This parameter must be one of:</span>
-<span class="sd">            &#39;particle&#39;: Load individual particle timeseries from .dat file</span>
-<span class="sd">            &#39;conc&#39;: Load timeseries of concentrations.</span>
+<span class="sd">            'particle': Load individual particle timeseries from .dat file</span>
+<span class="sd">            'conc': Load timeseries of concentrations.</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    ds: xarray.Dataset</span>
 <span class="sd">        The xarray dataset to store the parameters in.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">if</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;particle&#39;</span><span class="p">,</span> <span class="s1">&#39;conc&#39;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid input for type, must be either &#39;particle&#39; or &#39;conc&#39;!&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'particle'</span><span class="p">,</span> <span class="s1">'conc'</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid input for type, must be either 'particle' or 'conc'!"</span><span class="p">)</span>
 
     <span class="n">fname</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">ds_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;particle&#39;</span><span class="p">:</span>
-                <span class="n">ds</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'particle'</span><span class="p">:</span>
+                <span class="n">ds</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">ds</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">ds</span> <span class="o">=</span> <span class="n">act</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">ds_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">EmptyDataError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
             <span class="k">continue</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;particle&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">ds_list</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="s1">&#39;DateTimeWave&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;conc&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">ds_list</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="s1">&#39;Start DateTime&#39;</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'particle'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">ds_list</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">'index'</span><span class="p">)</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="s1">'DateTimeWave'</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'conc'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">ds_list</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">'index'</span><span class="p">)</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="s1">'Start DateTime'</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="read_arm_dat">
 <a class="viewcode-back" href="../../../developers_guide/generated/pysp2.io.read_arm_dat.html#pysp2.io.read_arm_dat">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_arm_dat</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="mi">199</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This reads mass and number distribution data that has been stored in the format</span>
 <span class="sd">    used in the ARM Archive.</span>
 
@@ -432,36 +432,36 @@
 <span class="sd">    -------</span>
 <span class="sd">    ds: pandas.DataFrame</span>
 <span class="sd">        The pandas dataframe containing the data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">fname</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="n">ds_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-                             <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;SP2_datetime_in_sec&quot;</span><span class="p">)</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                             <span class="n">index_col</span><span class="o">=</span><span class="s2">"SP2_datetime_in_sec"</span><span class="p">)</span>
             <span class="n">ds_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">EmptyDataError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
             <span class="k">continue</span>
 
     <span class="n">ds</span> <span class="o">=</span> <span class="n">ds_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">SP2_Dmin</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_Dmin&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">SP2_Dgeo</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_Dgeo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">SP2_Dmax</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_Dmax&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">SP2_date</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">SP2_time</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">SP2_Dmin</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_Dmin'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">SP2_Dgeo</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_Dgeo'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">SP2_Dmax</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_Dmax'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">SP2_date</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_date'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">SP2_time</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_time'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds_list</span><span class="p">)):</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span> <span class="o">+</span> <span class="n">ds_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">num_bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">num_bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">SP2_Dmin</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">ds</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;SP2_date&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_Dmin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_Dmin</span>
-    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_Dgeo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_Dgeo</span>
-    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_Dmax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_Dmax</span>
-    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_date</span>
-    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SP2_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_time</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_date'</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ds</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">'SP2_date'</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_Dmin'</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_Dmin</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_Dgeo'</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_Dgeo</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_Dmax'</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_Dmax</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_date'</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_date</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">'SP2_time'</span><span class="p">]</span> <span class="o">=</span> <span class="n">SP2_time</span>
 
     <span class="k">return</span> <span class="n">ds</span></div>
 
@@ -470,7 +470,7 @@
 <div class="viewcode-block" id="read_calibration">
 <a class="viewcode-back" href="../../../developers_guide/generated/pysp2.io.read_calibration.html#pysp2.io.read_calibration">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_calibration</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This reads data from a bead calibration from the SP2. Each dataset is stored</span>
 <span class="sd">    in a dictionary whose keys correspond to a given scattering or incadescence</span>
 <span class="sd">    diameter in nm.</span>
@@ -486,37 +486,37 @@
 <span class="sd">    -------</span>
 <span class="sd">    my_dat: dict</span>
 <span class="sd">        A dictionary storing the dataset for each scattering/incadescence diameter.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">file_list</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">))</span>
+    <span class="n">file_list</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">'*'</span><span class="p">))</span>
     <span class="c1"># Look for dataset date</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"Windows"</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">date_str</span> <span class="o">=</span> <span class="n">file_name</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">date_str</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
-            <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="s1">'%Y%m</span><span class="si">%d</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">break</span>
 
-    <span class="n">scat_ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">ExptDetail_Scat.txt&#39;</span> <span class="o">%</span> <span class="n">date_str</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">in_ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">ExptDetail_Aq.txt&#39;</span> <span class="o">%</span> <span class="n">date_str</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">scat_ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">ExptDetail_Scat.txt'</span> <span class="o">%</span> <span class="n">date_str</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
+    <span class="n">in_ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">ExptDetail_Aq.txt'</span> <span class="o">%</span> <span class="n">date_str</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="n">scat_diam</span> <span class="o">=</span> <span class="n">scat_ds</span><span class="o">.</span><span class="n">Diameter</span><span class="o">.</span><span class="n">values</span>
     <span class="n">incan_diam</span> <span class="o">=</span> <span class="n">in_ds</span><span class="o">.</span><span class="n">Diameter</span><span class="o">.</span><span class="n">values</span>
     <span class="n">calibration_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scat_diam</span><span class="p">)):</span>
         <span class="n">my_ds</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">scat_ds</span><span class="p">[</span><span class="s2">&quot;FileStart&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">scat_ds</span><span class="p">[</span><span class="s2">&quot;FileEnd&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">my_ds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">read_dat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">x</span><span class="si">%03d</span><span class="s1">.dat&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="n">j</span><span class="p">)),</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;particle&#39;</span><span class="p">))</span>
-        <span class="n">calibration_data</span><span class="p">[</span><span class="s2">&quot;scat_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">scat_diam</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="s1">&#39;DateTimeWave&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">scat_ds</span><span class="p">[</span><span class="s2">"FileStart"</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">scat_ds</span><span class="p">[</span><span class="s2">"FileEnd"</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">my_ds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">read_dat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">x</span><span class="si">%03d</span><span class="s1">.dat'</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="n">j</span><span class="p">)),</span> <span class="nb">type</span><span class="o">=</span><span class="s1">'particle'</span><span class="p">))</span>
+        <span class="n">calibration_data</span><span class="p">[</span><span class="s2">"scat_</span><span class="si">%d</span><span class="s2">"</span> <span class="o">%</span> <span class="n">scat_diam</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">'index'</span><span class="p">)</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="s1">'DateTimeWave'</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">incan_diam</span><span class="p">)):</span>
         <span class="n">my_ds</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">in_ds</span><span class="p">[</span><span class="s2">&quot;FileStart&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">in_ds</span><span class="p">[</span><span class="s2">&quot;FileEnd&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">my_ds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">read_dat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">x</span><span class="si">%03d</span><span class="s1">.dat&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="n">j</span><span class="p">)),</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;particle&#39;</span><span class="p">))</span>
-        <span class="n">calibration_data</span><span class="p">[</span><span class="s2">&quot;incan_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">incan_diam</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="s1">&#39;DateTimeWave&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">in_ds</span><span class="p">[</span><span class="s2">"FileStart"</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">in_ds</span><span class="p">[</span><span class="s2">"FileEnd"</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">my_ds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">read_dat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">x</span><span class="si">%03d</span><span class="s1">.dat'</span> <span class="o">%</span> <span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="n">j</span><span class="p">)),</span> <span class="nb">type</span><span class="o">=</span><span class="s1">'particle'</span><span class="p">))</span>
+        <span class="n">calibration_data</span><span class="p">[</span><span class="s2">"incan_</span><span class="si">%d</span><span class="s2">"</span> <span class="o">%</span> <span class="n">incan_diam</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">my_ds</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">'index'</span><span class="p">)</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="s1">'DateTimeWave'</span><span class="p">)</span>
 
     <span class="k">del</span> <span class="n">scat_ds</span>
     <span class="k">del</span> <span class="n">in_ds</span>
@@ -552,8 +552,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -587,7 +587,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>
