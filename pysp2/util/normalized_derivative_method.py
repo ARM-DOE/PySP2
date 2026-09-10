@@ -331,6 +331,10 @@ def _to_dataarray(
 
     raise TypeError(f"{name} must be an xarray DataArray or Dataset.")
 
+def _baseline_to_zero(s_event: np.ndarray) -> np.ndarray:
+    """Shift one event's signal so its minimum is 0, matching central_difference's baseline_to_zero."""
+    return s_event - np.nanmin(s_event)
+
 def _moteki_kondo_subset_statistics(
     yk: np.ndarray,
     sk: np.ndarray,
@@ -564,7 +568,7 @@ def mle_tau_moteki_kondo(
         return tau_hat
 
     # Extract event
-    s_event = S_std.sel({event_dim: event_index}).values
+    s_event = _baseline_to_zero(S_std.sel({event_dim: event_index}).values)
     y_event = y_std.sel({event_dim: event_index}).values
 
     tau_hat_1d = _tau_hat_for_one_event(s_event, y_event)
@@ -706,7 +710,7 @@ def compute_d2_moteki_kondo(
     # This should match the time axis used in mle_tau_moteki_kondo.
     t = np.arange(n_samples) * h
 
-    s_event = S_std.sel({event_dim: event_index}).values
+    s_event = _baseline_to_zero(S_std.sel({event_dim: event_index}).values)
     y_event = y_std.sel({event_dim: event_index}).values
 
     d2_vals = np.full(k_values.size, np.nan)
@@ -875,7 +879,7 @@ def compute_sigma_moteki_kondo(
     t = np.arange(n_samples, dtype=float) * h
 
     # Select the requested event.
-    s_event = np.asarray(S_std.sel({event_dim: event_index}).values, dtype=float)
+    s_event = _baseline_to_zero(np.asarray(S_std.sel({event_dim: event_index}).values, dtype=float))
     y_event = np.asarray(y_std.sel({event_dim: event_index}).values, dtype=float)
 
     if not (np.all(np.isfinite(s_event)) and np.all(np.isfinite(y_event))):
