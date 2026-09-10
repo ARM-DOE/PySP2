@@ -51,9 +51,12 @@ def test_plot_incident_irradiance():
     h=0.4,           # example: 0.4 microseconds
     sigma_bar= (18.5/ 2.35482 )*0.4,  # example; use your measured average width
     delta_sigma=(1.2/ 2.35482 )*0.4, # example; use your measured width std dev
-    A1=0.37*2.44,
-    A2=(1.6e-2)*2.44**(1/2),
-    A3=6.2e-4,
+    # measured pre-trigger baseline noise sd in raw ADC counts 
+    # A1, A2, and A3 are the coefficients for the polynomial used in the NDM model
+    # A parameters optimized for this dataset in external code (available upon request)
+    A1=37.0,
+    A2=1.56205,
+    A3=0.0008,
 )
     
     tau = mle_tau_moteki_kondo(
@@ -117,9 +120,9 @@ def test_plot_scattering_cross_section():
     h=0.4,           # example: 0.4 microseconds
     sigma_bar= (18.5/ 2.35482 )*0.4,  # example; use your measured average width
     delta_sigma=(1.2/ 2.35482 )*0.4, # example; use your measured width std dev
-    A1=0.37*2.44,
-    A2=(1.6e-2)*2.44**(1/2),
-    A3=6.2e-4,
+    A1=37.0,
+    A2=1.56205,
+    A3=0.0008,
 )
     
     tau = mle_tau_moteki_kondo(
@@ -181,9 +184,9 @@ def test_plot_d2():
     h=0.4,           # example: 0.4 microseconds
     sigma_bar= (18.5/ 2.35482 )*0.4,  # example; use your measured average width
     delta_sigma=(1.2/ 2.35482 )*0.4, # example; use your measured width std dev
-    A1=0.37*2.44,
-    A2=(1.6e-2)*2.44**(1/2),
-    A3=6.2e-4,
+    A1=37.0,
+    A2=1.56205,
+    A3=0.0008,
 )
     
     tau = mle_tau_moteki_kondo(
