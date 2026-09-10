@@ -37,7 +37,7 @@ def test_ndm_moteki_kondo():
     delta_sigma=(1.2/ 2.35482 )*0.4, # example; use your measured width std dev
     # measured pre-trigger baseline noise sd in raw ADC counts 
     # A1, A2, and A3 are the coefficients for the polynomial used in the NDM model
-    # A parameters optimized for this dataset in external code (available upon request)
+    # A parameters optimized for the PSL dataset
     A1=37.0,
     A2=1.56205,
     A3=0.0008,
@@ -103,7 +103,7 @@ def test_ndm_moteki_kondo():
     np.testing.assert_allclose(
          sigma_ds['sigma_hat'].values,
          sigma_best,
-         atol=0.15,  # absolute tolerance = 1.5 microseconds
+         atol=0.15,  # absolute tolerance = 0.15 microseconds
     )
     
     # Test the normalized irradiance function 

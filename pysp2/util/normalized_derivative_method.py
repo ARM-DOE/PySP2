@@ -415,6 +415,7 @@ def mle_tau_moteki_kondo(
     tau_grid: Optional[Union[np.ndarray, xr.DataArray]] = None,
     min_start: int = 15,
     width_metric: str = "fwhm",
+    baseline_to_zero: bool = True,
     config: Optional[MLEConfig] = None,
 ) -> xr.DataArray:
     """
@@ -445,6 +446,8 @@ def mle_tau_moteki_kondo(
         Minimum allowed start index to exclude unusable early samples.
     width_metric : str
         "fwhm" or "fwtm" for defining peak width.
+    baseline_to_zero : bool
+        If True, shift the selected scattering signal so its minimum is zero.
     config : MLEConfig
         Calibration / noise / grid settings.
     """
@@ -568,7 +571,9 @@ def mle_tau_moteki_kondo(
         return tau_hat
 
     # Extract event
-    s_event = _baseline_to_zero(S_std.sel({event_dim: event_index}).values)
+    s_event = S_std.sel({event_dim: event_index}).values
+    if baseline_to_zero:
+        s_event = _baseline_to_zero(s_event)
     y_event = y_std.sel({event_dim: event_index}).values
 
     tau_hat_1d = _tau_hat_for_one_event(s_event, y_event)
@@ -595,6 +600,7 @@ def compute_d2_moteki_kondo(
     y_sample_dim: Optional[str] = None,
     min_start=15,
     width_metric="fwhm",
+    baseline_to_zero: bool = True,
     config: Optional[MLEConfig] = None,
 ) -> xr.DataArray:
     """
@@ -628,6 +634,8 @@ def compute_d2_moteki_kondo(
         Minimum allowed start index to exclude unusable early samples.
     width_metric : str
         "fwhm" or "fwtm" for defining peak width.
+    baseline_to_zero : bool
+        If True, shift the selected scattering signal so its minimum is zero.
     config : MLEConfig
         Calibration / noise / grid settings.
 
@@ -710,7 +718,9 @@ def compute_d2_moteki_kondo(
     # This should match the time axis used in mle_tau_moteki_kondo.
     t = np.arange(n_samples) * h
 
-    s_event = _baseline_to_zero(S_std.sel({event_dim: event_index}).values)
+    s_event = S_std.sel({event_dim: event_index}).values
+    if baseline_to_zero:
+        s_event = _baseline_to_zero(s_event)
     y_event = y_std.sel({event_dim: event_index}).values
 
     d2_vals = np.full(k_values.size, np.nan)
@@ -756,6 +766,7 @@ def compute_sigma_moteki_kondo(
     min_start: int = 15,
     width_metric: str = "fwhm",
     d2_threshold: float = 20.0,
+    baseline_to_zero: bool = True,
     config: Optional[MLEConfig] = None,
 ) -> xr.Dataset:
     """
@@ -772,9 +783,14 @@ def compute_sigma_moteki_kondo(
 
     Notes
     -----
-    The paper applies the sigma estimate after requiring d²(kbest) < 200000.
-    For consistency, this function returns sigma_hat = NaN when the threshold
-    is not met, while still returning diagnostic fields.
+    The paper applies the sigma estimate after requiring d²(kbest) < 20. This is 
+    aligned with Moteki and Kondo (2008). For consistency, this function returns 
+    sigma_hat = NaN when the threshold is not met, while still returning diagnostic fields.
+
+    Parameters
+    ----------
+    baseline_to_zero : bool
+        If True, shift the selected scattering signal so its minimum is zero.
     """
     if config is None:
         raise ValueError("config must be provided.")
@@ -879,7 +895,9 @@ def compute_sigma_moteki_kondo(
     t = np.arange(n_samples, dtype=float) * h
 
     # Select the requested event.
-    s_event = _baseline_to_zero(np.asarray(S_std.sel({event_dim: event_index}).values, dtype=float))
+    s_event = np.asarray(S_std.sel({event_dim: event_index}).values, dtype=float)
+    if baseline_to_zero:
+        s_event = _baseline_to_zero(s_event)
     y_event = np.asarray(y_std.sel({event_dim: event_index}).values, dtype=float)
 
     if not (np.all(np.isfinite(s_event)) and np.all(np.isfinite(y_event))):
