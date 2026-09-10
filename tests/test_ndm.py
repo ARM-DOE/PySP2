@@ -40,9 +40,7 @@ def test_ndm_moteki_kondo():
     # A parameters optimized for this dataset in external code (available upon request)
     A1=37.0,
     A2=1.56205,
-    #A2=(1.6e-2)*2.44**(1/2),
     A3=0.0008,
-    #A3=6.2e-4,
 )
     
     ## Test one event ##################################################

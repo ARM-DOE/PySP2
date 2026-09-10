@@ -755,7 +755,7 @@ def compute_sigma_moteki_kondo(
     y_sample_dim: Optional[str] = None,
     min_start: int = 15,
     width_metric: str = "fwhm",
-    d2_threshold: float = 80000.0,
+    d2_threshold: float = 20.0,
     config: Optional[MLEConfig] = None,
 ) -> xr.Dataset:
     """
