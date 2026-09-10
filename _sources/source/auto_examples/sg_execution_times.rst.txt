@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:19.894** total execution time for 5 files **from source/auto_examples**:
+**00:18.589** total execution time for 5 files **from source/auto_examples**:
 
 .. container::
 
@@ -33,17 +33,17 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_source_auto_examples_plot_psd.py` (``plot_psd.py``)
-     - 00:08.850
+     - 00:08.210
      - 0.0
    * - :ref:`sphx_glr_source_auto_examples_plot_read_sp2b.py` (``plot_read_sp2b.py``)
-     - 00:06.281
+     - 00:05.463
      - 0.0
    * - :ref:`sphx_glr_source_auto_examples_plot_hk.py` (``plot_hk.py``)
-     - 00:02.506
+     - 00:02.678
      - 0.0
    * - :ref:`sphx_glr_source_auto_examples_plot_hk_sp2xr.py` (``plot_hk_sp2xr.py``)
-     - 00:01.906
+     - 00:01.904
      - 0.0
    * - :ref:`sphx_glr_source_auto_examples_plot_read_sp2xr.py` (``plot_read_sp2xr.py``)
-     - 00:00.351
+     - 00:00.334
      - 0.0
